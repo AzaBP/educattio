@@ -1,0 +1,59 @@
+/* =========================================
+   ESTILOS GLOBALES (Compartidos)
+   ========================================= */
+
+:root {
+    /* Fondo con degradado sutil */
+    --page-bg-start: #FF9F43; 
+    --page-bg-end: #ff7e5f;
+    
+    /* Tipografía y acentos */
+    --text-color: #333333;
+    --accent-color: #FF6B6B;
+    
+    /* Fuentes */
+    --font-serif: "Times New Roman", Times, serif;
+    --font-sans: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, var(--page-bg-start) 0%, var(--page-bg-end) 100%);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: var(--font-sans);
+    overflow: hidden; 
+    position: relative;
+}
+
+/* Imagen decorativa común */
+.graphic-teacher-corner {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 100px;
+    height: auto;
+    opacity: 0.8;
+    z-index: 5;
+    pointer-events: none;
+    animation: fadeInCornerLeft 1.5s ease-out 1s forwards;
+}
+
+/* Animación global de la imagen */
+@keyframes fadeInCornerLeft {
+    from {
+        opacity: 0;
+        transform: translate(-20px, 0);
+    }
+    to {
+        opacity: 0.8;
+        transform: translate(0, 0);
+    }
+}

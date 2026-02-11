@@ -1,0 +1,132 @@
+/* =========================================
+   ESTILOS PÁGINA DE BIENVENIDA
+   ========================================= */
+
+.welcome-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    width: 100%;
+    padding: 20px;
+}
+
+/* Título Grande */
+.main-title {
+    color: white;
+    font-size: 5rem;
+    font-family: var(--font-serif);
+    font-weight: normal;
+    letter-spacing: 3px;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    text-align: center;
+    animation: fadeInDown 1s ease-out forwards;
+}
+
+/* Botones independientes */
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 300px;
+    animation: fadeInUp 1s ease-out 0.5s both;
+}
+
+.btn {
+    text-decoration: none;
+    padding: 18px 25px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-align: center;
+    font-size: 1.1rem;
+    font-family: var(--font-sans);
+    display: block;
+}
+
+/* Estilo Botón Principal */
+.btn-primary {
+    background-color: white;
+    color: var(--accent-color);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary:hover {
+    background-color: #333;
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* Estilo Botón Secundario */
+.btn-secondary {
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+}
+
+.btn-secondary:hover {
+    background-color: white;
+    color: var(--accent-color);
+    transform: translateY(-3px);
+}
+
+/* Animaciones específicas de esta página */
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ... Debajo de .main-title ... */
+
+.tagline {
+    color: rgba(255, 255, 255, 0.85); /* Blanco con un poco de transparencia */
+    font-family: var(--font-sans);    /* Fuente moderna y limpia */
+    font-size: 1.1rem;                /* Tamaño discreto */
+    font-weight: 300;                 /* Letra fina */
+    letter-spacing: 2px;              /* Espaciado entre letras (toque estético) */
+    text-transform: lowercase;        /* Opcional: todo en minúsculas queda muy moderno */
+    font-style: italic;               /* Cursiva para darle elegancia */
+    
+    /* Ajustes de posición */
+    margin-top: -2.5rem;              /* ACERCA el texto al título (compensa el gap) */
+    margin-bottom: 1rem;              /* Separa un poco de los botones */
+    
+    /* Animación igual que el título pero con un pelín de retraso */
+    animation: fadeInDown 1s ease-out 0.2s forwards;
+    opacity: 0; /* Empieza invisible para la animación */
+}
+
+
+/*temporal*/
+/* =========================================
+   BOTÓN TEMPORAL (Borrar al finalizar)
+   ========================================= */
+
+.temp-dashboard-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(255, 255, 255, 0.2); /* Blanco semitransparente */
+    color: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px dashed rgba(255, 255, 255, 0.5); /* Borde discontinuo para indicar que es temporal */
+    transition: all 0.3s ease;
+    z-index: 1000; /* Para asegurar que esté encima de todo */
+}
+
+.temp-dashboard-btn:hover {
+    background-color: white;
+    color: var(--accent-color);
+    border-style: solid;
+    transform: translateY(2px);
+}

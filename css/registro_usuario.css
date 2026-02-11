@@ -1,0 +1,150 @@
+/* =========================================
+   ESTILOS PÁGINA DE REGISTRO
+   ========================================= */
+
+.register-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.register-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 850px;
+    padding: 3.5rem;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    animation: slideUpFade 0.7s ease-out forwards;
+}
+
+.register-header {
+    text-align: center;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.register-title {
+    font-family: var(--font-serif);
+    color: var(--text-color);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.register-subtitle {
+    color: #666;
+    font-size: 1rem;
+}
+
+/* --- GRID LAYOUT --- */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 2rem;
+    row-gap: 1.5rem;
+    margin-bottom: 1rem; /* Margen extra antes de la línea */
+}
+
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.input-wrapper label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #444;
+    margin-left: 5px;
+}
+
+.input-wrapper input {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.input-wrapper input:focus {
+    background-color: white;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.1);
+    outline: none;
+}
+
+/* --- CAMBIOS AQUÍ: MOVER LA LÍNEA --- */
+
+.form-actions {
+    /* La línea ahora está aquí, separando los inputs del botón */
+    border-top: 1px solid rgba(0,0,0,0.1); 
+    
+    margin-top: 2rem;   
+    padding-top: 2rem;  /* Espacio entre la línea y el botón */
+    text-align: center; 
+    width: 100%;
+}
+
+.btn-minimal {
+    background-color: transparent;
+    color: var(--accent-color);
+    border: 2px solid var(--accent-color);
+    box-shadow: none;
+    font-weight: 600;              
+    letter-spacing: 0.5px;
+    padding: 10px 40px; 
+    font-size: 0.95rem;
+    border-radius: 50px;
+    width: auto; 
+    display: inline-block;
+    cursor: pointer;
+    transition: all 0.4s ease;
+}
+
+.btn-minimal:hover {
+    background-color: var(--accent-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}
+
+/* --- FOOTER --- */
+.register-footer {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 1.5rem; /* Espacio entre botón y texto */
+    padding-top: 0;
+    border-top: none; /* ELIMINADA LA LÍNEA DE AQUÍ */
+}
+
+.register-footer a {
+    color: var(--accent-color);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.register-footer a:hover {
+    color: #333;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+    .register-card { padding: 2rem; }
+    .form-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .btn-minimal { width: 80%; }
+}
+
+@keyframes slideUpFade {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
