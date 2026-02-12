@@ -130,3 +130,49 @@
     border-style: solid;
     transform: translateY(2px);
 }
+
+/* =========================================
+   CAPA DEL DELFÍN (Transparente y Recortada)
+   ========================================= */
+
+/* Creamos una capa virtual encima del fondo pero debajo del texto */
+body::after {
+    content: "";
+    position: absolute;
+    
+    /* TAMAÑO DE LA CAPA */
+    width: 600px;  /* Ajusta según lo grande que quieras el delfín */
+    height: 600px;
+    
+    /* POSICIÓN: Valores negativos para "sacarlo" de la pantalla y que se corte */
+    bottom: -150px; /* Cuanto más negativo, más se hunde abajo */
+    right: -100px;  /* Cuanto más negativo, más se esconde a la derecha */
+    
+    /* LA IMAGEN */
+    background-image: url('../imagenes/dolphin.png');
+    background-size: contain; /* Ajusta la imagen al contenedor */
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    
+    /* OPACIDAD: Aquí controlas la transparencia (0.1 a 1.0) */
+    opacity: 0.2; /* Muy sutil. Súbelo a 0.4 o 0.5 si lo quieres más visible */
+    
+    /* ORDEN: Para asegurar que no tape los clics de los botones */
+    z-index: -1; 
+    pointer-events: none; /* Esto permite hacer clic "a través" de la imagen */
+}
+
+/* Aseguramos que el contenido (títulos y botones) esté por encima del delfín */
+.welcome-container {
+    position: relative;
+    z-index: 10;
+}
+
+/* OPCIONAL: Ajuste para móviles
+   (Para que el delfín no tape los botones en pantallas pequeñas) */
+@media (max-width: 768px) {
+    body {
+        background-size: 200px, cover; /* Delfín más pequeño */
+        background-position: right -50px bottom -50px, center; /* Un poco más escondido */
+    }
+}
