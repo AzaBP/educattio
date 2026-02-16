@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educattio - Mi Perfil</title>
+    
+    <link rel="icon" type="image/png" href="../imagenes/dolphin.png">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/portal_inicio_usuario.css"> 
+    <link rel="stylesheet" href="../css/perfil_usuario.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="dashboard-layout">
+        
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Educattio</h2>
+            </div>
+
+            <div class="sidebar-profile">
+                <div class="profile-link active">
+                    <img src="../imagenes/icons8-profesor-100.png" alt="Perfil" class="sidebar-pic">
+                </div>
+                <p class="sidebar-user-name">María García</p>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="portal_inicio_usuario.html" class="nav-item"><i class="fas fa-home"></i> <span>Inicio</span></a>
+                <a href="portal_cursos.html" class="nav-item"><i class="fas fa-chalkboard-teacher"></i> Mis Cursos</a>
+                <a href="ajustes.html" class="nav-item"><i class="fas fa-cog"></i> Ajustes</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="inicio_web.html" class="nav-item logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            
+            <header class="page-header">
+                <h1>Configuración de Perfil</h1>
+                <p>Gestiona tu información personal y académica</p>
+            </header>
+
+            <form class="profile-grid" action="#" method="POST">
+                
+                <section class="card profile-card-main">
+                    <div class="profile-banner"></div>
+                    <div class="profile-avatar-container">
+                        <img src="../imagenes/icons8-profesor-100.png" alt="Foto de perfil">
+                        <button type="button" class="btn-edit-photo"><i class="fas fa-camera"></i></button>
+                    </div>
+                    
+                    <div class="profile-inputs-main">
+                        <div class="input-group">
+                            <label>Nombre Completo</label>
+                            <input type="text" name="nombre" value="María García" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Título Profesional</label>
+                            <input type="text" name="titulo" value="Licenciada en Matemáticas" placeholder="Ej. Dr. en Historia">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card info-card">
+                    <h3 class="card-title"><i class="fas fa-address-card"></i> Datos Personales</h3>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>Correo Electrónico</label>
+                            <input type="email" name="email" value="maria.garcia@educattio.com">
+                        </div>
+                        <div class="input-group">
+                            <label>Teléfono</label>
+                            <input type="tel" name="telefono" value="+34 600 123 456">
+                        </div>
+                        <div class="input-group">
+                            <label>Ciudad / Ubicación</label>
+                            <input type="text" name="ubicacion" value="Madrid, España">
+                        </div>
+                        <div class="input-group">
+                            <label>Fecha de Nacimiento</label>
+                            <input type="date" name="fecha_nacimiento" value="1985-04-12">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card academic-card">
+                    <h3 class="card-title"><i class="fas fa-university"></i> Formación y Expediente</h3>
+                    
+                    <div class="input-group full-width">
+                        <label>Formación Académica</label>
+                        <textarea rows="4" placeholder="Describe tus títulos, másters y cursos...">Licenciada en Matemáticas - Universidad Complutense de Madrid (2008)
+Máster en Formación del Profesorado - UNED (2010)</textarea>
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label>Expediente / Experiencia</label>
+                        <textarea rows="4" placeholder="Detalla tu experiencia laboral previa...">Profesora titular en IES San Isidro (2012 - 2018)
+Jefa del Departamento de Ciencias (2019 - Presente)</textarea>
+                    </div>
+                </section>
+
+                <div class="form-actions-bar">
+                    <button type="button" class="btn btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+
+            </form>
+        </main>
+    </div>
+
+</body>
+</html>

@@ -348,12 +348,15 @@ body {
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-    transition: all 0.3s ease;
+    transition: transform 0.3s, box-shadow 0.3s;
     border: 1px solid #f0f0f0;
     cursor: pointer;
 }
 
-.class-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+.class-card:hover { 
+    transform: translateY(-5px); 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15); 
+}
 
 .card-banner {
     height: 100px;
@@ -521,4 +524,198 @@ body {
     .stats-container { grid-template-columns: 1fr; }
     .calendar-widget { flex-direction: column; text-align: center; }
     .calendar-body { align-items: center; }
+}
+
+/* Contenedor relativo para posicionar el menú */
+.card-menu {
+    position: relative;
+    margin-left: auto; /* Empuja los puntos a la derecha */
+}
+
+/* Botón de los 3 puntos */
+.menu-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem; /* Lo he hecho un pelín más grande para que se vea mejor */
+    color: white;      /* AQUÍ ESTÁ EL CAMBIO A BLANCO */
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: opacity 0.2s; /* Cambiamos la transición de color a opacidad */
+    opacity: 0.9; /* Un poco transparente al principio */
+}
+
+.menu-btn:hover {
+    color: white; /* Se mantiene blanco al pasar el ratón */
+    opacity: 1;   /* Se vuelve totalmente opaco para dar feedback visual */
+}
+
+/* El menú desplegable (oculto por defecto) */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%; /* Justo debajo del botón */
+    width: 140px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    z-index: 50;
+    overflow: hidden;
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* Clase que activa JS para mostrar el menú */
+.dropdown-menu.show {
+    display: block;
+}
+
+/* Enlaces del menú */
+.dropdown-menu a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #555;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f5f5f5;
+}
+
+/* Estilo rojo para eliminar */
+.dropdown-menu .delete-option {
+    color: #e74c3c;
+    border-top: 1px solid #eee;
+}
+
+.dropdown-menu .delete-option:hover {
+    background-color: #fff5f5;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- VENTANA MODAL (POPUP) --- */
+.modal-overlay {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
+    backdrop-filter: blur(5px); /* Efecto borroso de fondo */
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Clase para activar la visualización */
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-window {
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    position: relative;
+    transform: translateY(20px);
+    animation: slideUp 0.3s ease forwards;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-header h3 {
+    color: var(--text-color);
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: #999;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-btn:hover { color: var(--accent-color); }
+
+/* Formulario del Modal */
+.modal-form .form-group { margin-bottom: 1rem; }
+
+.modal-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 600;
+}
+
+.modal-form input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.modal-form input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 2rem;
+}
+
+.btn-cancel {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 10px 20px;
+}
+
+.btn-save {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-save:hover { transform: scale(1.05); }
+
+@keyframes slideUp {
+    to { transform: translateY(0); }
 }

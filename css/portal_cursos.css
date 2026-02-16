@@ -1,0 +1,333 @@
+/* =========================================
+   ESTILOS MIS CURSOS
+   ========================================= */
+
+/* Ajuste del layout principal */
+.main-content {
+    flex: 1;
+    margin-left: 260px;
+    padding: 3rem;
+    background-color: #f4f6f8;
+    min-height: 100vh;
+}
+
+/* Cabecera flexible con botón a la derecha */
+.page-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+}
+
+.page-header-flex h1 {
+    font-family: var(--font-serif);
+    color: var(--text-color);
+    font-size: 2.5rem;
+}
+
+.page-header-flex p {
+    color: #666;
+}
+
+/* --- GRID DE CURSOS --- */
+.courses-grid {
+    display: grid;
+    /* Responsive: columnas automáticas de mínimo 320px */
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* --- TARJETA DEL CURSO --- */
+.course-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none; /* Quitar subrayado del enlace */
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 1px solid transparent;
+}
+
+.course-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    border-color: rgba(0,0,0,0.05);
+}
+
+/* --- CABECERA DE LA TARJETA (BANNER) --- */
+.course-header {
+    height: 120px;
+    padding: 1.5rem;
+    color: white;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Variantes de degradados */
+.gradient-orange {
+    background: linear-gradient(135deg, #FF9F43, #ff7e5f);
+}
+
+.gradient-blue {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+}
+
+.gradient-green {
+    background: linear-gradient(135deg, #43e97b, #38f9d7);
+}
+
+.course-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.course-tag {
+    background: rgba(0,0,0,0.2);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.menu-dots {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.menu-dots:hover {
+    opacity: 1;
+}
+
+.course-title {
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.course-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-top: 2px;
+}
+
+/* --- CUERPO DE LA TARJETA --- */
+.course-body {
+    padding: 1rem 1.5rem;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Foto flotante del profesor (estilo Classroom) */
+.teacher-avatar {
+    position: absolute;
+    top: -35px; /* Subirla sobre el banner */
+    right: 20px;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 4px solid white;
+    background: white;
+    overflow: hidden;
+}
+
+.teacher-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.course-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 10px; /* Espacio para no chocar con el avatar si hay mucho texto */
+}
+
+.course-stats span {
+    font-size: 0.9rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.course-stats i {
+    color: #999;
+    width: 20px;
+    text-align: center;
+}
+
+/* --- PIE DE LA TARJETA (Notificaciones) --- */
+.course-footer {
+    padding: 1rem 1.5rem;
+    background-color: #fafafa;
+    min-height: 55px; /* Para que todas las tarjetas midan igual */
+    display: flex;
+    align-items: center;
+}
+
+.course-footer.empty {
+    padding: 0;
+    min-height: 10px; /* Pie pequeño si no hay nada */
+}
+
+.notification-badge {
+    font-size: 0.85rem;
+    color: #555;
+}
+
+.notification-badge i {
+    color: var(--accent-color);
+    margin-right: 5px;
+}
+
+.notification-badge.warning i {
+    color: #ff9800;
+}
+
+/* --- TARJETA "AÑADIR NUEVO" (Estilo punteado) --- */
+.add-card {
+    border: 3px dashed #ddd;
+    box-shadow: none;
+    background: transparent;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    min-height: 280px; /* Altura aproximada de las otras */
+}
+
+.add-card:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-5px);
+    background: rgba(255, 107, 107, 0.05);
+}
+
+.add-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #eee;
+    color: #999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    transition: 0.3s;
+}
+
+.add-card:hover .add-icon {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.add-card h3 {
+    color: #999;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.add-card:hover h3 {
+    color: var(--accent-color);
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .main-content {
+        margin-left: 80px;
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-header-flex {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    .main-content {
+        margin-left: 0;
+        padding-top: 80px;
+    }
+}
+
+/* Tarjeta "hueca" con líneas de puntitos */
+.add-card-dashed {
+    /* Mismas dimensiones que las tarjetas normales */
+    min-height: 250px; 
+    border-radius: 20px;
+    
+    /* APARIENCIA DE HUECO */
+    background-color: rgba(255, 255, 255, 0.3); /* Fondo muy sutil, casi transparente */
+    border: 3px dashed #ccc; /* Líneas de puntitos grises */
+    box-shadow: none; /* Sin sombra para que parezca plana */
+    
+    /* Alineación del contenido */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Efecto al pasar el ratón: se ilumina y se vuelve sólida */
+.add-card-dashed:hover {
+    background-color: white; /* Se vuelve blanca */
+    border-color: var(--accent-color); /* Borde del color principal */
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.add-icon {
+    width: 60px;
+    height: 60px;
+    background-color: transparent; /* Icono sin fondo */
+    border: 2px solid #ccc; /* Círculo gris */
+    color: #999;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s;
+}
+
+.add-card-dashed:hover .add-icon {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+}
+
+.add-card-dashed h3 {
+    font-family: var(--font-sans);
+    color: #999;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.add-card-dashed:hover h3 {
+    color: var(--accent-color);
+}

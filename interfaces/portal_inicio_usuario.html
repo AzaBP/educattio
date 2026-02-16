@@ -29,10 +29,8 @@
             
             <nav class="sidebar-nav">
                 <a href="#" class="nav-item active"><i class="fas fa-home"></i> Inicio</a>
-                <a href="portal_clases.html" class="nav-item"><i class="fas fa-chalkboard-teacher"></i> Mis Clases</a>
-                <a href="#" class="nav-item"><i class="fas fa-calendar-alt"></i> Calendario</a>
-                <a href="#" class="nav-item"><i class="fas fa-chart-pie"></i> Estadísticas</a>
-                <a href="#" class="nav-item"><i class="fas fa-cog"></i> Ajustes</a>
+                <a href="portal_cursos.html" class="nav-item"><i class="fas fa-chalkboard-teacher"></i> Mis Cursos</a>
+                <a href="ajustes.html" class="nav-item"><i class="fas fa-cog"></i> Ajustes</a>
             </nav>
 
             <div class="sidebar-footer">
@@ -65,7 +63,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>3</h3>
-                            <p>Clases Activas</p>
+                            <p>Cursos Activas</p>
                         </div>
                     </div>
                     
@@ -108,34 +106,58 @@
 
             <section class="classes-section">
                 <div class="section-header">
-                    <h2>Mis Asignaturas</h2>
-                    <button class="btn-add-class"><i class="fas fa-plus"></i> Nueva Clase</button>
+                    <h2>Mis Cursos</h2>
+                    <button class="btn-add-class" onclick="openModal()"><i class="fas fa-plus"></i> Nueva Clase</button>
                 </div>
 
                 <div class="classes-grid">
-                    <article class="class-card">
+                    
+                    <article class="class-card" onclick="window.location.href='detalles_curso.html'">
+    
                         <div class="card-banner banner-math">
-                            <span class="subject-tag">Matemáticas</span>
-                            <i class="fas fa-ellipsis-v card-options"></i>
+                            <span class="subject-tag">CEIP CERVANTES</span>
+                            
+                            <div class="card-menu">
+                                <button class="menu-btn" onclick="event.stopPropagation(); toggleMenu('menu1')">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                
+                                <div id="menu1" class="dropdown-menu" onclick="event.stopPropagation()">
+                                    <a href="#"><i class="fas fa-pen"></i> Modificar</a>
+                                    <a href="#" class="delete-option"><i class="fas fa-trash"></i> Eliminar</a>
+                                </div>
+                            </div>
+
                         </div>
+                        
                         <div class="card-body">
-                            <h3>1º Bachillerato A</h3>
-                            <p class="teacher-name">Prof. María García</p>
+                            <h3>CURSO 2025-2026</h3>
+                            <p class="teacher-name">Pedrola, Zaragoza</p>
                             <div class="card-footer">
                                 <span class="tasks-pending">4 tareas pendientes</span>
                                 <i class="fas fa-folder-open folder-icon"></i>
                             </div>
                         </div>
+
                     </article>
 
-                    <article class="class-card">
+                    <article class="class-card" onclick="window.location.href='detalles_curso.html'">
                         <div class="card-banner banner-science">
-                            <span class="subject-tag">Física y Química</span>
-                            <i class="fas fa-ellipsis-v card-options"></i>
-                        </div>
+                            <span class="subject-tag">CRA ALCALÁ DE EBRO</span>
+                            
+                            <div class="card-menu">
+                                <button class="menu-btn" onclick="toggleMenu('menu2')">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div id="menu2" class="dropdown-menu">
+                                    <a href="#"><i class="fas fa-pen"></i> Modificar</a>
+                                    <a href="#" class="delete-option"><i class="fas fa-trash"></i> Eliminar</a>
+                                </div>
+                            </div>
+                            </div>
                         <div class="card-body">
-                            <h3>4º ESO B</h3>
-                            <p class="teacher-name">Prof. María García</p>
+                            <h3>CURSO 2023-2024</h3>
+                            <p class="teacher-name">Alcalá de Ebro, Teruel</p>
                             <div class="card-footer">
                                 <span class="tasks-pending">Sin tareas pendientes</span>
                                 <i class="fas fa-folder-open folder-icon"></i>
@@ -143,14 +165,23 @@
                         </div>
                     </article>
 
-                    <article class="class-card">
+                    <article class="class-card" onclick="window.location.href='detalles_curso.html'">
                         <div class="card-banner banner-history">
-                            <span class="subject-tag">Tutoría</span>
-                            <i class="fas fa-ellipsis-v card-options"></i>
-                        </div>
+                            <span class="subject-tag">CRA PUEBLA DE HIJAR</span>
+                            
+                            <div class="card-menu">
+                                <button class="menu-btn" onclick="toggleMenu('menu3')">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div id="menu3" class="dropdown-menu">
+                                    <a href="#"><i class="fas fa-pen"></i> Modificar</a>
+                                    <a href="#" class="delete-option"><i class="fas fa-trash"></i> Eliminar</a>
+                                </div>
+                            </div>
+                            </div>
                         <div class="card-body">
-                            <h3>3º ESO C</h3>
-                            <p class="teacher-name">Prof. María García</p>
+                            <h3>CURSO 2026-2027</h3>
+                            <p class="teacher-name">La Puebla de Hijar, Teruel</p>
                             <div class="card-footer">
                                 <span class="tasks-pending">1 reunión programada</span>
                                 <i class="fas fa-folder-open folder-icon"></i>
@@ -187,6 +218,48 @@
             </section>
 
         </main>
+    </div>
+
+
+    <div id="modalCurso" class="modal-overlay">
+        <div class="modal-window">
+            
+            <div class="modal-header">
+                <h3>Añadir Nuevo Destino</h3>
+                <button class="close-btn" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form class="modal-form">
+                <div class="form-group">
+                    <label>Centro Educativo</label>
+                    <input type="text" placeholder="Ej. IES Cervantes" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Año del Curso Lectivo</label>
+                    <input type="text" placeholder="Ej. 2025 - 2026" value="2025-2026">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Población</label>
+                        <input type="text" placeholder="Ej. Alcalá de Henares" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Provincia</label>
+                        <input type="text" placeholder="Ej. Madrid" required>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-save">Guardar</button>
+                </div>
+            </form>
+
+        </div>
     </div>
 
     <script src="../js/portal_inicio_usuario.js"></script>

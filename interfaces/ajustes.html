@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educattio - Ajustes de Cuenta</title>
+    
+    <link rel="icon" type="image/png" href="../imagenes/dolphin.png">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/portal_inicio_usuario.css"> 
+    <link rel="stylesheet" href="../css/ajustes.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="dashboard-layout">
+        
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Educattio</h2>
+            </div>
+
+            <div class="sidebar-profile">
+                <a href="perfil_usuario.html" class="profile-link">
+                    <img src="../imagenes/icons8-profesor-100.png" alt="Perfil" class="sidebar-pic">
+                </a>
+                <p class="sidebar-user-name">María García</p>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="portal_inicio_usuario.html" class="nav-item"><i class="fas fa-home"></i> <span>Inicio</span></a>
+                <a href="portal_cursos.html" class="nav-item"><i class="fas fa-chalkboard-teacher"></i> Mis Cursos</a>
+                <a href="perfil_usuario.html" class="nav-item"><i class="fas fa-user"></i> <span>Mi Perfil</span></a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="inicio_web.html" class="nav-item logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            
+            <header class="page-header">
+                <h1>Ajustes de la Cuenta</h1>
+                <p>Gestiona tu seguridad, notificaciones y privacidad</p>
+            </header>
+
+            <div class="settings-container">
+                
+                <section class="card settings-card">
+                    <div class="card-header">
+                        <div class="icon-box color-purple"><i class="fas fa-at"></i></div>
+                        <h3>Dirección de Correo Electrónico</h3>
+                    </div>
+                    
+                    <div class="current-email-display">
+                        <p>Tu correo actual es: <strong>maria.garcia@educattio.com</strong></p>
+                        <span class="badge-verified"><i class="fas fa-check-circle"></i> Verificado</span>
+                    </div>
+
+                    <form action="#" class="settings-form email-change-form">
+                        <div class="form-row two-cols">
+                            <div class="input-group">
+                                <label>Nuevo Correo Electrónico</label>
+                                <input type="email" placeholder="ejemplo@nuevo.com">
+                            </div>
+                            <div class="input-group">
+                                <label>Confirmar con Contraseña</label>
+                                <input type="password" placeholder="Tu contraseña actual">
+                            </div>
+                        </div>
+                        <div class="card-action-right">
+                            <button type="button" class="btn btn-secondary">Actualizar Correo</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="card settings-card">
+                    <div class="card-header">
+                        <div class="icon-box"><i class="fas fa-key"></i></div> <h3>Contraseña</h3>
+                    </div>
+                    
+                    <form action="#" class="settings-form">
+                        <div class="form-row three-cols">
+                            <div class="input-group">
+                                <label>Contraseña Actual</label>
+                                <input type="password" placeholder="••••••••">
+                            </div>
+                            <div class="input-group">
+                                <label>Nueva Contraseña</label>
+                                <input type="password" placeholder="Mínimo 8 caracteres">
+                            </div>
+                            <div class="input-group">
+                                <label>Confirmar Nueva</label>
+                                <input type="password" placeholder="Repite la contraseña">
+                            </div>
+                        </div>
+                        <div class="card-action-right">
+                            <button type="button" class="btn btn-primary">Cambiar Contraseña</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="card settings-card">
+                    <div class="card-header">
+                        <div class="icon-box color-green"><i class="fas fa-user-shield"></i></div>
+                        <h3>Recuperación de la Cuenta</h3>
+                    </div>
+                    
+                    <div class="info-block">
+                        <p>Estos datos se usarán para verificar tu identidad si olvidas tu contraseña o pierdes el acceso.</p>
+                    </div>
+
+                    <form action="#" class="settings-form">
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label><i class="fas fa-mobile-alt"></i> Teléfono de Recuperación</label>
+                                <input type="tel" placeholder="+34 600 ...">
+                                <small>Te enviaremos un SMS para confirmar.</small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label><i class="fas fa-envelope-open-text"></i> Correo Electrónico Alternativo</label>
+                                <input type="email" placeholder="ej. personal@gmail.com">
+                            </div>
+                        </div>
+                        <div class="card-action-right">
+                            <button type="button" class="btn btn-secondary">Guardar Métodos de Recuperación</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="card settings-card">
+                    <div class="card-header">
+                        <div class="icon-box color-blue"><i class="fas fa-bell"></i></div>
+                        <h3>Notificaciones</h3>
+                    </div>
+                    <div class="toggles-list">
+                        <div class="toggle-item">
+                            <div class="toggle-info">
+                                <h4>Correos Electrónicos</h4>
+                                <p>Recibir resúmenes semanales.</p>
+                            </div>
+                            <label class="switch"><input type="checkbox" checked><span class="slider round"></span></label>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card settings-card danger-zone">
+                    <div class="card-header">
+                        <div class="icon-box color-red"><i class="fas fa-exclamation-triangle"></i></div>
+                        <h3 class="text-danger">Zona de Peligro</h3>
+                    </div>
+                    <div class="danger-content">
+                        <div class="danger-text">
+                            <h4>Eliminar Cuenta</h4>
+                            <p>Esta acción no se puede deshacer.</p>
+                        </div>
+                        <button class="btn btn-danger">Eliminar mi cuenta</button>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

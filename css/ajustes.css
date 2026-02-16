@@ -1,0 +1,355 @@
+/* =========================================
+   ESTILOS AJUSTES DE USUARIO
+   ========================================= */
+
+.main-content {
+    flex: 1;
+    margin-left: 260px;
+    padding: 3rem;
+    background-color: #f4f6f8;
+    min-height: 100vh;
+}
+
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-family: var(--font-serif);
+    color: var(--text-color);
+    font-size: 2.5rem;
+}
+
+.page-header p {
+    color: #666;
+}
+
+.settings-container {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* --- TARJETAS DE AJUSTES --- */
+.card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 1rem;
+}
+
+.card-header h3 {
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    color: var(--text-color);
+}
+
+/* Iconos de cabecera */
+.icon-box {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 107, 107, 0.1); /* Color suave basado en accent */
+    color: var(--accent-color);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.icon-box.color-blue {
+    background-color: rgba(66, 133, 244, 0.1);
+    color: #4285f4;
+}
+
+.icon-box.color-red {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+/* --- FORMULARIOS --- */
+.form-row {
+    margin-bottom: 1.5rem;
+}
+
+.form-row.two-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.input-group label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.input-group input, .select-styled {
+    padding: 12px 15px;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-family: var(--font-sans);
+    transition: all 0.3s;
+    width: 100%;
+}
+
+.input-group input:focus, .select-styled:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+/* --- TOGGLES / INTERRUPTORES (CSS PURO) --- */
+.toggles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.toggle-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.toggle-info h4 {
+    margin-bottom: 0.3rem;
+    color: var(--text-color);
+}
+
+.toggle-info p {
+    font-size: 0.9rem;
+    color: #888;
+}
+
+/* El Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--accent-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(22px);
+}
+
+.divider {
+    border: 0;
+    border-top: 1px solid #f0f0f0;
+    margin: 1rem 0;
+}
+
+/* --- BOTONES --- */
+.card-action-right {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn {
+    padding: 10px 25px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s;
+}
+
+.btn-primary {
+    background: var(--accent-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #ff5252;
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+/* --- ZONA DE PELIGRO --- */
+.danger-zone {
+    border: 2px solid rgba(220, 53, 69, 0.2);
+}
+
+.text-danger {
+    color: #dc3545;
+}
+
+.danger-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.danger-text h4 {
+    color: var(--text-color);
+    margin-bottom: 0.3rem;
+}
+
+.danger-text p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.btn-danger {
+    background-color: white;
+    color: #dc3545;
+    border: 2px solid #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 900px) {
+    .main-content {
+        margin-left: 80px;
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-row.two-cols {
+        grid-template-columns: 1fr;
+    }
+    .danger-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    .btn-danger {
+        width: 100%;
+    }
+}
+
+/* --- NUEVOS ESTILOS AÑADIDOS --- */
+
+/* Colores adicionales para los iconos de cabecera */
+.icon-box.color-purple {
+    background-color: rgba(130, 80, 200, 0.1);
+    color: #8e44ad;
+}
+
+.icon-box.color-green {
+    background-color: rgba(46, 204, 113, 0.1);
+    color: #27ae60;
+}
+
+/* Estilo para mostrar el email actual */
+.current-email-display {
+    background-color: #f9f9f9;
+    padding: 1rem;
+    border-radius: 10px;
+    border-left: 4px solid var(--accent-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.current-email-display p {
+    color: #555;
+    margin: 0;
+}
+
+.current-email-display strong {
+    color: var(--text-color);
+}
+
+.badge-verified {
+    background-color: #e8f5e9; /* Verde muy suave */
+    color: #2ecc71;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Grid de 3 columnas para la contraseña (para que quepa todo en una línea en PC) */
+.form-row.three-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Texto informativo pequeño */
+.info-block {
+    margin-bottom: 1.5rem;
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+small {
+    display: block;
+    margin-top: 5px;
+    color: #888;
+    font-size: 0.85rem;
+}
+
+/* Ajustes Responsive para los nuevos grids */
+@media (max-width: 768px) {
+    .form-row.three-cols {
+        grid-template-columns: 1fr; /* En móvil, uno debajo de otro */
+    }
+    
+    .current-email-display {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
