@@ -1,4 +1,5 @@
 <?php
+session_start();
 include 'conexion.php'; // Importamos la conexión
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -28,7 +29,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // 5. Ejecutar
         if ($stmt->execute()) {
-            echo "¡Usuario registrado con éxito! <a href='inicio_sesion.html'>Inicia sesión aquí</a>";
+            // 2. Obtenemos el ID del usuario que se acaba de crear
+            $usuario_id = $conexion->lastInsertId();
+
+            // 3. Guardamos los datos en la SESIÓN para que el sistema le reconozca
+            $_SESSION['usuario_id'] = $conexion->lastInsertId();
+            $_SESSION['nombre_usuario'] = $usuario; // La variable del formulario
+
+            // 4. REDIRIGIR al portal de inicio
+            header("Location: portal_inicio_usuario.php");
+            exit();
         }
 
     } catch (PDOException $e) {
