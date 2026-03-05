@@ -65,15 +65,15 @@ try {
     $stmt->execute();
 
     // Redirigimos con éxito
-    header("Location: ../interfaces/ajustes.php?exito=1");
+    header("Location: ../php/ajustes.php?exito=1");
     exit();
 
 } catch (PDOException $e) {
     // Si hay un error, comprobamos si es porque el correo ya está registrado por otro usuario (Código de error 23000 en MySQL)
     if ($e->getCode() == 23000) {
-        header("Location: ../interfaces/ajustes.php?error=email_duplicado");
+        header("Location: ../php/ajustes.php?error=email_duplicado");
     } else {
-        header("Location: ../interfaces/ajustes.php?error=bd");
+        header("Location: ../php/ajustes.php?error=bd");
     }
     exit();
 }

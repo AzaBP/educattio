@@ -26,7 +26,7 @@ try {
 
 } catch (PDOException $e) {
     // Si falla algo
-    header("Location: ../interfaces/ajustes.php?error=bd");
+    header("Location: ../php/ajustes.php?error=bd");
     exit();
 }
 ?>
