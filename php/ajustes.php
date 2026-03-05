@@ -49,25 +49,7 @@ try {
 
     <div class="dashboard-layout">
         
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>Educattio</h2>
-            </div>
-
-            <div class="sidebar-profile">
-                <a href="perfil_usuario.html" class="profile-link">
-                    <img src="../imagenes/icons8-profesor-100.png" alt="Perfil" class="sidebar-pic">
-                </a>
-                <p class="sidebar-user-name"><?php echo htmlspecialchars($datos_usuario['nombre_completo'] ?? $datos_usuario['nombre_usuario']); ?></p>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <a href="portal_inicio_usuario.php" class="nav-item"><i class="fas fa-home"></i> <span>Inicio</span></a>
-                <a href="portal_cursos.php" class="nav-item"><i class="fas fa-book"></i> <span>Mis Cursos</span></a>
-                <a href="ajustes.php" class="nav-item active"><i class="fas fa-cog"></i> <span>Ajustes</span></a>
-                <a href="../php/logout.php" class="nav-item"><i class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span></a>
-            </nav>
-        </aside>
+        <?php include 'sidebar.php'; ?>
 
         <main class="main-content">
             <header class="page-header">

@@ -34,7 +34,7 @@ $nombre_usuario = $_SESSION['nombre_usuario'];
             </div>
 
             <div class="sidebar-profile">
-                <a href="perfil_usuario.html" class="profile-link">
+                <a href="perfil_usuario.php" class="profile-link">
                     <img src="../imagenes/icons8-profesor-100.png" alt="Perfil" class="sidebar-pic">
                     <span class="edit-icon"><i class="fas fa-pen"></i></span>
                 </a>
