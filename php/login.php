@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['usuario_id'] = $usuario_encontrado['id'];
                 $_SESSION['nombre_usuario'] = $usuario_encontrado['nombre_usuario'];
 
-                header("Location: ../interfaces/portal_inicio_usuario.php");
+                header("Location: ../php/portal_inicio_usuario.php");
                 exit();
                 
             } else {

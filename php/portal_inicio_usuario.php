@@ -44,9 +44,9 @@ $nombre_usuario = $_SESSION['nombre_usuario'];
             </div>
             
             <nav class="sidebar-nav">
-                <a href="#" class="nav-item active"><i class="fas fa-home"></i> Inicio</a>
+                <a href="portal_inicio_usuario.php" class="nav-item active"><i class="fas fa-home"></i> Inicio</a>
                 <a href="portal_cursos.html" class="nav-item"><i class="fas fa-chalkboard-teacher"></i> Mis Cursos</a>
-                <a href="ajustes.html" class="nav-item"><i class="fas fa-cog"></i> Ajustes</a>
+                <a href="ajustes.php" class="nav-item"><i class="fas fa-cog"></i> Ajustes</a>
             </nav>
 
             <div class="sidebar-footer">
