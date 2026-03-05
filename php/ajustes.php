@@ -63,9 +63,9 @@ try {
             
             <nav class="sidebar-nav">
                 <a href="portal_inicio_usuario.php" class="nav-item"><i class="fas fa-home"></i> <span>Inicio</span></a>
-                <a href="portal_cursos.html" class="nav-item"><i class="fas fa-book"></i> <span>Mis Cursos</span></a>
+                <a href="portal_cursos.php" class="nav-item"><i class="fas fa-book"></i> <span>Mis Cursos</span></a>
                 <a href="ajustes.php" class="nav-item active"><i class="fas fa-cog"></i> <span>Ajustes</span></a>
-                <a href="../php/logout.php" class="nav-item text-danger"><i class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span></a>
+                <a href="../php/logout.php" class="nav-item"><i class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span></a>
             </nav>
         </aside>
 
