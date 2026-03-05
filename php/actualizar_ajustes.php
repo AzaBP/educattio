@@ -18,7 +18,7 @@ $pass_repetida = $_POST['pass_repetida'] ?? '';
 
 // Validar que el email no esté vacío
 if (empty($nuevo_email)) {
-    header("Location: ../interfaces/ajustes.php?error=email_vacio");
+    header("Location: ../php/ajustes.php?error=email_vacio");
     exit();
 }
 
@@ -28,7 +28,7 @@ try {
         
         // 1. Comprobamos que las contraseñas nuevas coinciden
         if ($pass_nueva !== $pass_repetida) {
-            header("Location: ../interfaces/ajustes.php?error=pass_no_coincide");
+            header("Location: ../php/ajustes.php?error=pass_no_coincide");
             exit();
         }
 
@@ -40,7 +40,7 @@ try {
 
         // 3. Verificamos la contraseña actual
         if (!$user || !password_verify($pass_actual, $user['password'])) {
-            header("Location: ../interfaces/ajustes.php?error=pass_incorrecta");
+            header("Location: ../php/ajustes.php?error=pass_incorrecta");
             exit();
         }
 
