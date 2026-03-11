@@ -81,3 +81,17 @@ CREATE TABLE eventos (
     FOREIGN KEY (clase_id) REFERENCES clases(id) ON DELETE CASCADE,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
+
+-- Tabla para las columnas del cuaderno (Ej: "Examen T1", "Participación", "Proyecto")
+CREATE TABLE items_evaluacion (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    peso DECIMAL(5,2) DEFAULT 100.00, -- Porcentaje del valor de esta nota (0-100)
+    asignatura_id INT NOT NULL,
+    FOREIGN KEY (asignatura_id) REFERENCES asignaturas(id) ON DELETE CASCADE
+);
+
+-- Modificar o asegurar que la tabla evaluaciones permita la edición rápida
+-- Relacionamos cada nota de un alumno con un ítem específico
+ALTER TABLE evaluaciones ADD COLUMN item_id INT AFTER asignatura_id;
+ALTER TABLE evaluaciones ADD FOREIGN KEY (item_id) REFERENCES items_evaluacion(id) ON DELETE CASCADE;
