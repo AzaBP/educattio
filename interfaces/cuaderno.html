@@ -1,0 +1,35 @@
+<div class="spreadsheet-container">
+    <table class="gradebook-table">
+        <thead>
+            <tr>
+                <th>Alumno</th>
+                <?php foreach ($items as $item): ?>
+                    <th>
+                        <?php echo $item['titulo']; ?> 
+                        <small>(<?php echo $item['peso']; ?>%)</small>
+                    </th>
+                <?php endforeach; ?>
+                <th class="col-final">Media Final</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($alumnos as $alumno): ?>
+            <tr>
+                <td class="student-name"><?php echo $alumno['nombre_alumno']; ?></td>
+                <?php foreach ($items as $item): ?>
+                    <td>
+                        <input type="number" 
+                               class="grade-input" 
+                               data-alumno="<?php echo $alumno['id']; ?>" 
+                               data-item="<?php echo $item['id']; ?>" 
+                               data-peso="<?php echo $item['peso']; ?>"
+                               value="<?php echo obtenerNota($alumno['id'], $item['id']); ?>" 
+                               step="0.1" min="0" max="10">
+                    </td>
+                <?php endforeach; ?>
+                <td class="final-grade" id="media-<?php echo $alumno['id']; ?>">0.0</td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
