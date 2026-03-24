@@ -72,6 +72,11 @@ function obtenerNotaActual($alumno_id, $item_id, $matriz_notas) {
     <link rel="stylesheet" href="../css/portal_inicio_usuario.css">
     <link rel="stylesheet" href="../css/cuaderno.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- SheetJS (Excel) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- jsPDF y autoTable (PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.7.0/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 

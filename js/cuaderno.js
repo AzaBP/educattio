@@ -1,3 +1,40 @@
+    // --- EXPORTAR A EXCEL Y PDF ---
+    // SheetJS y jsPDF deben estar incluidos en el HTML (CDN)
+    document.addEventListener('DOMContentLoaded', function() {
+        // ...existing code...
+
+        // Exportar a Excel
+        const btnExcel = document.getElementById('exportarExcel');
+        if (btnExcel) {
+            btnExcel.addEventListener('click', function() {
+                exportarTablaExcel();
+            });
+        }
+        // Exportar a PDF
+        const btnPDF = document.getElementById('exportarPDF');
+        if (btnPDF) {
+            btnPDF.addEventListener('click', function() {
+                exportarTablaPDF();
+            });
+        }
+    });
+
+    function exportarTablaExcel() {
+        // Requiere SheetJS (xlsx.min.js)
+        if (typeof XLSX === 'undefined') { alert('SheetJS no está cargado'); return; }
+        const tabla = document.querySelector('.gradebook-table');
+        const wb = XLSX.utils.table_to_book(tabla, {sheet: "Notas"});
+        XLSX.writeFile(wb, 'cuaderno_notas.xlsx');
+    }
+
+    function exportarTablaPDF() {
+        // Requiere jsPDF y autoTable
+        if (typeof jsPDF === 'undefined' || typeof window.jspdfAutoTable === 'undefined') { alert('jsPDF o autoTable no están cargados'); return; }
+        const doc = new jsPDF();
+        doc.text('Cuaderno de Notas', 14, 16);
+        window.jspdfAutoTable.autoTable(doc, { html: '.gradebook-table', startY: 22 });
+        doc.save('cuaderno_notas.pdf');
+    }
     // 7. Aplicar fórmulas a celdas seleccionadas
     document.querySelectorAll('.formula-btn').forEach(btn => {
         btn.addEventListener('click', function() {
