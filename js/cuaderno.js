@@ -20,7 +20,81 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.value < 0) this.value = 0;
         });
     });
+
+    // 3. Filtrado de alumnos en tiempo real
+    const filtroInput = document.getElementById('filtroAlumno');
+    if (filtroInput) {
+        filtroInput.addEventListener('input', function() {
+            const texto = this.value.toLowerCase();
+            document.querySelectorAll('.gradebook-table tbody tr').forEach(tr => {
+                const nombre = tr.querySelector('.student-name').textContent.toLowerCase();
+                tr.style.display = nombre.includes(texto) ? '' : 'none';
+            });
+        });
+    }
+
+    // 4. Mostrar icono comentario solo al pasar el ratón
+    document.querySelectorAll('.nota-celda').forEach(td => {
+        td.addEventListener('mouseenter', function() {
+            const btn = td.querySelector('.comentario-btn');
+            if (btn) btn.style.display = 'block';
+        });
+        td.addEventListener('mouseleave', function() {
+            const btn = td.querySelector('.comentario-btn');
+            if (btn) btn.style.display = 'none';
+        });
+    });
+
+    // 5. Abrir modal de comentario
+    document.querySelectorAll('.comentario-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const alumnoId = btn.dataset.alumno;
+            const itemId = btn.dataset.item;
+            abrirModalComentario(alumnoId, itemId);
+        });
+    });
 });
+
+// Modal comentario
+function abrirModalComentario(alumnoId, itemId) {
+    document.getElementById('comentarioAlumnoId').value = alumnoId;
+    document.getElementById('comentarioItemId').value = itemId;
+    document.getElementById('comentarioTexto').value = '';
+    document.getElementById('modalComentario').style.display = 'flex';
+    // Cargar comentario existente
+    fetch('../php/obtener_comentario.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ alumno_id: alumnoId, item_id: itemId })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            document.getElementById('comentarioTexto').value = data.comentario || '';
+        }
+    });
+}
+function cerrarModalComentario() {
+    document.getElementById('modalComentario').style.display = 'none';
+}
+function guardarComentario(event) {
+    event.preventDefault();
+    const alumnoId = document.getElementById('comentarioAlumnoId').value;
+    const itemId = document.getElementById('comentarioItemId').value;
+    const comentario = document.getElementById('comentarioTexto').value;
+    fetch('../php/guardar_comentario.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ alumno_id: alumnoId, item_id: itemId, comentario: comentario })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            cerrarModalComentario();
+        }
+    });
+}
 
 // --- FUNCIONES DE CÁLCULO ---
 function calcularMedia(alumnoId) {
