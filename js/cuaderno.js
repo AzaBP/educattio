@@ -1,3 +1,66 @@
+    // 7. Aplicar fórmulas a celdas seleccionadas
+    document.querySelectorAll('.formula-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (!selectedCells || selectedCells.length === 0) return;
+            const formula = btn.dataset.formula;
+            const valor = parseFloat(document.getElementById('valorFormula').value);
+            let nuevoValor = null;
+            if (formula === 'sumar') {
+                selectedCells.forEach(inp => {
+                    let v = parseFloat(inp.value) || 0;
+                    if (!isNaN(valor)) v += valor;
+                    v = Math.max(0, Math.min(10, v));
+                    inp.value = v;
+                    triggerNotaUpdate(inp, v);
+                });
+            } else if (formula === 'promedio') {
+                let suma = 0, count = 0;
+                selectedCells.forEach(inp => {
+                    let v = parseFloat(inp.value);
+                    if (!isNaN(v)) { suma += v; count++; }
+                });
+                if (count > 0) {
+                    nuevoValor = (suma / count).toFixed(2);
+                    selectedCells.forEach(inp => {
+                        inp.value = nuevoValor;
+                        triggerNotaUpdate(inp, nuevoValor);
+                    });
+                }
+            } else if (formula === 'multiplicar') {
+                selectedCells.forEach(inp => {
+                    let v = parseFloat(inp.value) || 0;
+                    if (!isNaN(valor)) v *= valor;
+                    v = Math.max(0, Math.min(10, v));
+                    inp.value = v;
+                    triggerNotaUpdate(inp, v);
+                });
+            } else if (formula === 'dividir') {
+                if (valor === 0) return;
+                selectedCells.forEach(inp => {
+                    let v = parseFloat(inp.value) || 0;
+                    if (!isNaN(valor)) v /= valor;
+                    v = Math.max(0, Math.min(10, v));
+                    inp.value = v;
+                    triggerNotaUpdate(inp, v);
+                });
+            } else if (formula === 'fijar') {
+                if (isNaN(valor)) return;
+                selectedCells.forEach(inp => {
+                    let v = Math.max(0, Math.min(10, valor));
+                    inp.value = v;
+                    triggerNotaUpdate(inp, v);
+                });
+            }
+            clearSelectedCells();
+        });
+    });
+
+    function triggerNotaUpdate(input, valor) {
+        const alumnoId = input.dataset.alumno;
+        const itemId = input.dataset.item;
+        calcularMedia(alumnoId);
+        guardarNotaBD(alumnoId, itemId, valor, input);
+    }
 // cuaderno.js - Versión unificada y sin duplicados
 document.addEventListener('DOMContentLoaded', function() {
     // 1. Calcular medias iniciales
@@ -54,7 +117,61 @@ document.addEventListener('DOMContentLoaded', function() {
             abrirModalComentario(alumnoId, itemId);
         });
     });
+
+    // 6. Selección múltiple de celdas tipo arrastrar
+    let isSelecting = false;
+    let startCell = null;
+    let endCell = null;
+    let selectedCells = [];
+
+    document.querySelectorAll('.grade-input').forEach(input => {
+        input.addEventListener('mousedown', function(e) {
+            isSelecting = true;
+            startCell = this;
+            clearSelectedCells();
+            this.classList.add('selected-cell');
+            selectedCells = [this];
+            updateSeleccionadasInfo();
+        });
+        input.addEventListener('mouseenter', function(e) {
+            if (isSelecting && startCell) {
+                endCell = this;
+                selectRange(startCell, endCell);
+            }
+        });
+    });
+    document.addEventListener('mouseup', function() {
+        isSelecting = false;
+        startCell = null;
+        endCell = null;
+    });
+
+    function selectRange(cell1, cell2) {
+        clearSelectedCells();
+        const allInputs = Array.from(document.querySelectorAll('.grade-input'));
+        const idx1 = allInputs.indexOf(cell1);
+        const idx2 = allInputs.indexOf(cell2);
+        const [min, max] = [Math.min(idx1, idx2), Math.max(idx1, idx2)];
+        selectedCells = allInputs.slice(min, max + 1);
+        selectedCells.forEach(inp => inp.classList.add('selected-cell'));
+        updateSeleccionadasInfo();
+    }
+    function clearSelectedCells() {
+        document.querySelectorAll('.grade-input.selected-cell').forEach(inp => inp.classList.remove('selected-cell'));
+        selectedCells = [];
+        updateSeleccionadasInfo();
+    }
+    function updateSeleccionadasInfo() {
+        const info = document.getElementById('seleccionadas-info');
+        if (info) {
+            info.textContent = selectedCells.length > 0 ? `Seleccionadas: ${selectedCells.length}` : '';
+        }
+    }
 });
+// CSS para celdas seleccionadas (puedes moverlo a tu CSS principal)
+const style = document.createElement('style');
+style.innerHTML = `.grade-input.selected-cell { outline: 2px solid #007bff !important; background: #e3f0ff !important; }`;
+document.head.appendChild(style);
 
 // Modal comentario
 function abrirModalComentario(alumnoId, itemId) {
