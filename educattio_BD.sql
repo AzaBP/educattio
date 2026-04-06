@@ -95,3 +95,13 @@ CREATE TABLE items_evaluacion (
 -- Relacionamos cada nota de un alumno con un ítem específico
 ALTER TABLE evaluaciones ADD COLUMN item_id INT AFTER asignatura_id;
 ALTER TABLE evaluaciones ADD FOREIGN KEY (item_id) REFERENCES items_evaluacion(id) ON DELETE CASCADE;
+
+
+
+-- ################ NUEVO ##################
+ALTER TABLE clases 
+ADD COLUMN materia_principal VARCHAR(100) AFTER nombre_clase,
+ADD COLUMN color_clase VARCHAR(30) DEFAULT 'color-1',
+ADD COLUMN icono_clase VARCHAR(50) DEFAULT 'fa-chalkboard-teacher';
+
+ALTER TABLE cursos ADD color VARCHAR(7) NOT NULL DEFAULT '#4a90e2';

@@ -50,89 +50,6 @@
             </header>
 
             <div class="classes-grid">
-                
-                <article class="class-card">
-                    <div class="card-banner banner-math">
-                        <span class="subject-tag">CEIP CERVANTES</span>
-                        
-                        <div class="card-menu">
-                            <button class="menu-btn" onclick="toggleMenu('menu1')">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <div id="menu1" class="dropdown-menu">
-                                <a href="#"><i class="fas fa-pen"></i> Modificar</a>
-                                <a href="#" class="delete-option"><i class="fas fa-trash"></i> Eliminar</a>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="card-body">
-                        <h3>CURSO 2025-2026</h3>
-                        <p class="teacher-name">Pedrola, Zaragoza</p>
-                        <div class="card-footer">
-                            <span class="tasks-pending">4 tareas pendientes</span>
-                            <i class="fas fa-folder-open folder-icon"></i>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="class-card">
-                    <div class="card-banner banner-science">
-                        <span class="subject-tag">CRA ALCALÁ DE EBRO</span>
-                        
-                        <div class="card-menu">
-                            <button class="menu-btn" onclick="toggleMenu('menu2')">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <div id="menu2" class="dropdown-menu">
-                                <a href="#"><i class="fas fa-pen"></i> Modificar</a>
-                                <a href="#" class="delete-option"><i class="fas fa-trash"></i> Eliminar</a>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="card-body">
-                        <h3>CURSO 2023-2024</h3>
-                        <p class="teacher-name">Alcalá de Ebro, Teruel</p>
-                        <div class="card-footer">
-                            <span class="tasks-pending">Sin tareas pendientes</span>
-                            <i class="fas fa-folder-open folder-icon"></i>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="class-card">
-                    <div class="card-banner banner-history">
-                        <span class="subject-tag">CRA PUEBLA DE HIJAR</span>
-                        
-                        <div class="card-menu">
-                            <button class="menu-btn" onclick="toggleMenu('menu3')">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <div id="menu3" class="dropdown-menu">
-                                <a href="#"><i class="fas fa-pen"></i> Modificar</a>
-                                <a href="#" class="delete-option"><i class="fas fa-trash"></i> Eliminar</a>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="card-body">
-                        <h3>CURSO 2026-2027</h3>
-                        <p class="teacher-name">La Puebla de Hijar, Teruel</p>
-                        <div class="card-footer">
-                            <span class="tasks-pending">1 reunión programada</span>
-                            <i class="fas fa-folder-open folder-icon"></i>
-                        </div>
-                    </div>
-                </article>
-
-                <div class="add-card-dashed" onclick="openModal()">
-                    <div class="add-icon">
-                        <i class="fas fa-plus"></i>
-                    </div>
-                    <h3>Añadir Nuevo Destino</h3>
-                </div>
-
             </div>
         </main>
     </div>
@@ -141,43 +58,61 @@
         <div class="modal-window">
             
             <div class="modal-header">
-                <h3>Añadir Nuevo Destino</h3>
+                <h3>Crear nuevo curso</h3>
                 <button class="close-btn" onclick="closeModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
 
-            <form class="modal-form">
+            <form id="formCrearCurso" class="modal-form">
+                <input type="hidden" id="editCursoId" value="">
+                
                 <div class="form-group">
-                    <label>Centro Educativo</label>
-                    <input type="text" placeholder="Ej. IES Cervantes" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Año del Curso Lectivo</label>
-                    <input type="text" placeholder="Ej. 2025 - 2026" value="2025-2026">
+                    <label for="inputNombreCentro">Centro Educativo</label>
+                    <input type="text" id="inputNombreCentro" placeholder="Ej. IES Cervantes" required>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Población</label>
-                        <input type="text" placeholder="Ej. Alcalá de Henares" required>
+                        <label for="inputPoblacion">Población</label>
+                        <input type="text" id="inputPoblacion" placeholder="Ej. Zaragoza" required>
                     </div>
                     <div class="form-group">
-                        <label>Provincia</label>
-                        <input type="text" placeholder="Ej. Madrid" required>
+                        <label for="inputProvincia">Provincia</label>
+                        <input type="text" id="inputProvincia" placeholder="Ej. Zaragoza" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="inputAnio">Año del Curso Lectivo</label>
+                        <input type="text" id="inputAnio" value="2025-2026" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Color del Curso</label>
+                        <div class="color-palette-container" style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
+                            <div class="color-presets" id="colorPresets" style="display: flex; gap: 8px;">
+                                <div class="color-dot" data-color="#ff7a59" onclick="selectPresetColor('#ff7a59', this)" style="background:#ff7a59;"></div>
+                                <div class="color-dot" data-color="#4a90e2" onclick="selectPresetColor('#4a90e2', this)" style="background:#4a90e2;"></div>
+                                <div class="color-dot" data-color="#47b39d" onclick="selectPresetColor('#47b39d', this)" style="background:#47b39d;"></div>
+                                <div class="color-dot" data-color="#ffc107" onclick="selectPresetColor('#ffc107', this)" style="background:#ffc107;"></div>
+                                <div class="color-dot" data-color="#9b59b6" onclick="selectPresetColor('#9b59b6', this)" style="background:#9b59b6;"></div>
+                            </div>
+                            <div style="height: 25px; width: 1px; background: #ddd;"></div>
+                            <input type="color" id="inputColor" value="#ff7a59" oninput="deselectPresets()">
+                        </div>
                     </div>
                 </div>
 
                 <div class="modal-footer">
                     <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
-                    <button type="submit" class="btn-save">Guardar</button>
+                    <button type="submit" class="btn-save" id="btnGuardarCurso">Guardar</button>
                 </div>
             </form>
 
         </div>
     </div>
 
-    <script src="../js/portal_inicio_usuario.js"></script>
+    <script src="../js/portal_cursos.js"></script>
 </body>
 </html>

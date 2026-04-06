@@ -1,3 +1,368 @@
+/* --- FIX: Forzar opacidad y blend normal en el contenedor del menú de opciones para evitar transparencia heredada --- */
+.card-options {
+    opacity: 1 !important;
+    mix-blend-mode: normal !important;
+}
+
+/* --- Refuerzo: menú de opciones siempre blanco y opaco --- */
+.menu-opciones-aislado {
+    background: #fff !important;
+    background-color: #fff !important;
+    opacity: 1 !important;
+    mix-blend-mode: normal !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+}
+/* --- FIX: Forzar opacidad y blend normal en tarjetas y cabeceras para evitar transparencia heredada en el menú --- */
+.group-card-wrapper, .group-card, .group-header {
+    opacity: 1 !important;
+    mix-blend-mode: normal !important;
+}
+
+/* --- FIX: Fondo blanco sólido y sin blend en el menú de opciones --- */
+.menu-opciones-aislado {
+    background: rgb(255,255,255) !important;
+    background-color: rgb(255,255,255) !important;
+    opacity: 1 !important;
+    mix-blend-mode: normal !important;
+}
+/* 1. ESQUINAS SUPERIORES REDONDEADAS */
+/* Como la tarjeta tiene overflow visible, debemos redondear directamente la cabecera */
+.group-header {
+    border-top-left-radius: 15px !important;
+    border-top-right-radius: 15px !important;
+}
+
+/* 2. ÁREA DE CLIC DE LOS TRES PUNTOS MÁS GRANDE */
+.menu-dots {
+    padding: 15px !important; /* Expande el área pulsable */
+    margin: -15px !important; /* Compensa la expansión para que el icono no se mueva visualmente */
+    background: transparent !important;
+}
+
+/* 3. FORZAR FONDO BLANCO DEL MENÚ (CERO TRANSPARENCIA) */
+.menu-opciones-aislado {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    opacity: 1 !important;
+    border: 1px solid #e0e0e0 !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+}
+
+/* =========================================
+   ESTILOS DEL MODAL (EDITAR/AÑADIR CLASE)
+   ========================================= */
+
+/* Forzar los botones de Guardar y Cancelar */
+#modalClase .modal-footer .btn-secondary,
+#modalNuevaClase .modal-footer .btn-secondary {
+    background-color: #f0f2f5 !important;
+    color: #444 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font-weight: 500 !important;
+}
+
+#modalClase .modal-footer .btn-primary,
+#modalNuevaClase .modal-footer .btn-primary {
+    background-color: #0d6efd !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font-weight: 500 !important;
+}
+
+/* Forzar el input de color redondo */
+#colorClase, #color_clase, #color_nueva_clase, input[type="color"] {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    border: none !important;
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background-color: transparent !important;
+}
+input[type="color"]::-webkit-color-swatch-wrapper { padding: 0 !important; }
+input[type="color"]::-webkit-color-swatch { border: none !important; border-radius: 50% !important; }
+input[type="color"]::-moz-color-swatch { border: none !important; border-radius: 50% !important; }
+
+/* --- MODAL DE CLASES: OCULTO POR DEFECTO Y VISIBLE CON .active --- */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+.modal.active {
+    display: flex;
+}
+.modal-content {
+    background: white; width: 90%; max-width: 500px;
+    border-radius: 20px; padding: 2rem;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    animation: slideUp 0.3s ease forwards;
+}
+/* --- DOTS DE COLOR PARA MODAL DE CLASES --- */
+.color-selector {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+}
+.color-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #eee;
+    cursor: pointer;
+    transition: border 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+.color-dot.selected {
+    border: 3px solid var(--accent-color, #1976d2);
+    box-shadow: 0 0 0 2px #1976d233;
+}
+.color-dot .fa-check {
+    color: #fff;
+    font-size: 1rem;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+/* --- BASE LIMPIA DE TARJETAS (RESTAURADA) --- */
+.group-card {
+    background: #ffffff;
+    border-radius: 15px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.group-header {
+    height: 60px; /* Reducido para parecerse a cursos */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative; /* Necesario para los tres puntos dinámicos */
+}
+
+/* Container for all groups/classes cards */
+.groups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+/* Base style for a single class card, restoring look from image_6.png */
+.group-card {
+    background: #ffffff;
+    border-radius: 15px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    /* Create context for absolute positioning inside the card */
+    position: relative; 
+}
+
+.group-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+/* Card Header (the solid color banner) */
+.group-header {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    background-size: cover;
+    background-position: center;
+    position: relative; /* Context for card options */
+}
+
+/* --- THE KEY FIX for icons and meatball dots style --- */
+
+/* Correct FontAwesome icons rendering and visibility */
+.group-icon i {
+    font-size: 2rem;
+    color: white; /* Make banner icons white on dark, can adjust per JS */
+}
+
+/* Bottom status icon */
+.group-stats i {
+    color: #888;
+    margin-right: 8px;
+}
+
+/* Area containing the meatball button and dropdown, inside the colored header */
+.card-options {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+}
+
+/* The meatball menu button: transparent, discreet, no circle background */
+.menu-dots {
+    color: white; /* Make dots white on dark banners */
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer;
+    font-size: 1.2rem;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    padding: 0;
+}
+.menu-dots:hover {
+    opacity: 1;
+}
+
+/* Style for light colored headers - can be set via JS adding a class */
+.group-header.light-banner .group-icon i { color: #555; }
+.group-header.light-banner .menu-dots { color: #666; }
+
+/* The dropdown menu: solid white, floats above everything, no translucency */
+.menu-opciones-aislado {
+    display: none;
+    position: absolute;
+    top: 100%; /* Below the dots */
+    right: 0;
+    margin-top: 10px;
+    background-color: #ffffff !important; /* Force solid white */
+    border-radius: 8px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+    min-width: 140px;
+    z-index: 9999 !important; /* Float above everything */
+    overflow: hidden;
+    padding: 0;
+    /* Explicitly disable inherited filters */
+    backdrop-filter: none !important;
+    filter: none !important;
+}
+
+.menu-opciones-aislado.show {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-opciones-aislado .item-opcion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    color: #333 !important;
+    text-decoration: none;
+    font-size: 0.9rem;
+    background: none;
+    border: none;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-bottom: 1px solid #f0f0f0;
+}
+.menu-opciones-aislado .item-opcion:last-child {
+    border-bottom: none;
+}
+.menu-opciones-aislado .item-opcion:hover {
+    background-color: #f5f5f5 !important;
+}
+
+.menu-opciones-aislado .delete-option {
+    color: #e74c3c !important; /* Standard red delete color */
+}
+.menu-opciones-aislado .delete-option:hover {
+    background-color: #fbe9e7 !important;
+    color: #c0392b !important;
+}
+
+/* Card Body (the white area with class info) */
+.group-body {
+    padding: 15px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.group-body h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.group-body .subtitle {
+    margin: 2px 0 8px 0;
+    font-size: 0.9rem;
+    color: #666;
+    flex-grow: 1;
+}
+
+.group-stats {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 10px;
+}
+
+/* Reset any problematic previous attempts */
+.group-card-container {
+    all: unset;
+}
+
+/* --- BOTÓN ELIMINAR MINI EN TARJETA DE CLASE --- */
+.group-card-container {
+    position: relative;
+}
+
+.btn-delete-mini {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+    z-index: 10;
+}
+
+.btn-delete-mini:hover {
+    background: #e74c3c;
+}
+
 /* =========================================
    ESTILOS DETALLE DEL CURSO
    ========================================= */
@@ -64,19 +429,22 @@
 
 .header-content h1 {
     font-family: var(--font-serif);
-    font-size: 2.5rem;
-    color: var(--text-color);
-    margin-bottom: 0.5rem;
-}
-
-.course-badges {
-    display: flex;
-    gap: 10px;
+     background: none;
+     border: none;
+     color: white;
+     font-size: 1.2rem;
+     cursor: pointer;
+     opacity: 0.8;
+     width: 30px;
+     height: 30px;
+     border-radius: 50%;
+     transition: opacity 0.2s;
 }
 
 .badge {
     padding: 5px 12px;
     border-radius: 20px;
+     opacity: 1;
     font-size: 0.85rem;
     font-weight: 600;
 }
@@ -179,16 +547,31 @@
 .color-3 { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); }
 
 .group-icon {
-    font-size: 2rem; color: white;
+    font-size: 2rem;
     background: rgba(255,255,255,0.2);
     width: 50px; height: 50px;
     display: flex; align-items: center; justify-content: center;
     border-radius: 50%;
 }
+.group-icon i {
+    font-size: 1.5rem;
+    color: inherit; /* Hereda el color calculado por JS para contraste */
+}
 
 .menu-dots {
-    position: absolute; top: 10px; right: 10px;
-    color: white; opacity: 0.8; cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: inherit; /* Hereda color calculado por JS para contraste */
+    background: transparent !important;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0;
+    transition: transform 0.2s;
+}
+.menu-dots:hover {
+    transform: scale(1.1);
 }
 
 .group-body { padding: 1rem; text-align: center; }
@@ -280,3 +663,28 @@
     .danger-zone-modal { flex-direction: column; align-items: flex-start; gap: 10px; }
     .btn-delete-course { width: 100%; justify-content: center; }
 }
+
+/* --- FIX PARA MENÚS DE TRES PUNTOS Y Z-INDEX --- */
+.groups-grid > div:nth-child(1) { z-index: 100; }
+.groups-grid > div:nth-child(2) { z-index: 99; }
+.groups-grid > div:nth-child(3) { z-index: 98; }
+.groups-grid > div:nth-child(4) { z-index: 97; }
+.groups-grid > div:nth-child(5) { z-index: 96; }
+.groups-grid > div:nth-child(6) { z-index: 95; }
+.groups-grid > div.add-card-dashed-container { z-index: 1; }
+
+.card-options { position: absolute; top: 15px; right: 15px; z-index: 10; }
+
+.menu-dots { background: transparent !important; border: none !important; cursor: pointer; font-size: 1.2rem; opacity: 0.7; transition: opacity 0.2s; padding: 0; box-shadow: none !important; }
+.menu-dots:hover { opacity: 1; }
+
+.menu-opciones-aislado {
+    display: none; position: absolute; top: 100%; right: 0; margin-top: 10px;
+    background-color: #ffffff !important; border-radius: 8px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important; min-width: 140px;
+    z-index: 9999 !important; overflow: hidden; padding: 0;
+}
+.menu-opciones-aislado.show { display: flex; flex-direction: column; }
+
+/* Para asegurarnos de que el contenedor de la tarjeta no oculte el menú */
+.group-card { overflow: visible !important; }

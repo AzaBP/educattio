@@ -1,3 +1,42 @@
+/* Contraste y visibilidad para banners claros */
+.card-banner {
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    box-shadow: inset 0 -15px 15px -15px rgba(0,0,0,0.1);
+}
+
+.subject-tag {
+    padding: 4px 12px;
+    border-radius: 15px;
+    background: none;
+}
+/* Selector de color mejorado */
+.color-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s, border-color 0.2s;
+}
+.color-dot:hover {
+    transform: scale(1.1);
+}
+.color-dot.selected {
+    border-color: #333;
+    transform: scale(1.1);
+}
+#inputColor {
+    -webkit-appearance: none;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 0;
+    overflow: hidden;
+}
+#inputColor::-webkit-color-swatch-wrapper { padding: 0; }
+#inputColor::-webkit-color-swatch { border: none; border-radius: 50%; }
 /* =========================================
    ESTILOS MIS CURSOS
    ========================================= */

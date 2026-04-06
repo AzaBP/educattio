@@ -72,11 +72,6 @@ function obtenerNotaActual($alumno_id, $item_id, $matriz_notas) {
     <link rel="stylesheet" href="../css/portal_inicio_usuario.css">
     <link rel="stylesheet" href="../css/cuaderno.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- SheetJS (Excel) -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <!-- jsPDF y autoTable (PDF) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.7.0/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
@@ -153,7 +148,7 @@ function obtenerNotaActual($alumno_id, $item_id, $matriz_notas) {
                                 </td>
                                 
                                 <?php foreach ($items_evaluacion as $item): ?>
-                                    <td class="nota-celda" style="position:relative;">
+                                    <td>
                                         <input type="number" 
                                                class="grade-input" 
                                                data-alumno="<?php echo $alumno['id']; ?>" 
@@ -161,36 +156,8 @@ function obtenerNotaActual($alumno_id, $item_id, $matriz_notas) {
                                                data-peso="<?php echo $item['peso']; ?>"
                                                value="<?php echo obtenerNotaActual($alumno['id'], $item['id'], $matriz_notas); ?>" 
                                                step="0.1" min="0" max="10" placeholder="-">
-                                        <button class="comentario-btn" 
-                                                data-alumno="<?php echo $alumno['id']; ?>" 
-                                                data-item="<?php echo $item['id']; ?>" 
-                                                title="Ver/Editar observación"
-                                                style="display:none; position:absolute; right:2px; top:2px; background:transparent; border:none; cursor:pointer; color:#888;">
-                                            <i class="fas fa-comment-dots"></i>
-                                        </button>
                                     </td>
                                 <?php endforeach; ?>
-                                    <!-- Modal de comentario -->
-                                    <div id="modalComentario" class="modal-overlay" style="display:none;">
-                                        <div class="modal-content" style="max-width:400px;">
-                                            <div class="modal-header">
-                                                <h3>Observación</h3>
-                                                <button class="close-btn" onclick="cerrarModalComentario()"><i class="fas fa-times"></i></button>
-                                            </div>
-                                            <form id="formComentario" onsubmit="guardarComentario(event)">
-                                                <input type="hidden" id="comentarioAlumnoId">
-                                                <input type="hidden" id="comentarioItemId">
-                                                <div class="form-group">
-                                                    <label for="comentarioTexto">Observación para este alumno y prueba:</label>
-                                                    <textarea id="comentarioTexto" rows="4" style="width:100%;"></textarea>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn-cancel" onclick="cerrarModalComentario()">Cancelar</button>
-                                                    <button type="submit" class="btn-save">Guardar</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
                                 
                                 <td class="final-grade" id="media-<?php echo $alumno['id']; ?>">0.00</td>
                             </tr>
