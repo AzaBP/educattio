@@ -1,52 +1,64 @@
-// Lógica para seleccionar iconos en el modal
-document.addEventListener('DOMContentLoaded', function() {
-    // Iconos
-    document.querySelectorAll('.icono-opcion').forEach(item => {
-        item.addEventListener('click', function() {
-            document.querySelectorAll('.icono-opcion').forEach(el => {
-                el.classList.remove('active');
-                el.style.border = '2px solid transparent';
-                el.style.background = '#f3f4f6';
-                el.style.color = '#6b7280';
-            });
-            this.classList.add('active');
-            this.style.border = '2px solid #3b82f6';
-            this.style.background = '#eff6ff';
-            this.style.color = '#3b82f6';
-            if(document.getElementById('icono_clase')) {
-                document.getElementById('icono_clase').value = this.getAttribute('data-icon');
-            }
-        });
+
+// --- LÓGICA DE SELECCIÓN DE COLORES E ICONOS ---
+// Seleccionar Iconos
+document.querySelectorAll('.icono-opcion').forEach(item => {
+    item.addEventListener('click', function() {
+        document.querySelectorAll('.icono-opcion').forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
     });
-    // Colores
-    document.querySelectorAll('.color-opcion').forEach(item => {
-        item.addEventListener('click', function() {
-            document.querySelectorAll('.color-opcion').forEach(el => {
-                el.classList.remove('active');
-                el.style.boxShadow = 'none';
-            });
+});
+
+// Selección de color (incluyendo input[type="color"] visible)
+document.querySelectorAll('.color-opcion').forEach(item => {
+    if (item.tagName.toLowerCase() === 'input' && item.type === 'color') {
+        // Input de color personalizado
+        item.addEventListener('input', function() {
+            // Al cambiar el color, marcar como activo y actualizar el valor
+            document.querySelectorAll('.color-opcion').forEach(c => c.classList.remove('active'));
             this.classList.add('active');
-            const color = this.getAttribute('data-color');
-            this.style.boxShadow = `0 0 0 2px ${color}`;
-            if(document.getElementById('color_clase')) {
-                document.getElementById('color_clase').value = color;
-            }
+            this.setAttribute('data-color', this.value);
         });
-    });
+        item.addEventListener('click', function(e) {
+            document.querySelectorAll('.color-opcion').forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            this.setAttribute('data-color', this.value);
+        });
+    } else {
+        // Presets
+        item.addEventListener('click', function() {
+            document.querySelectorAll('.color-opcion').forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+        });
+    }
 });
 
 let editClaseId = null;
 
 function abrirModalEditarClase(id, nombre, materia, color, icono) {
-    // Rellenar los nuevos campos del modal
-    const idClase = document.getElementById('id_clase');
-    const nombreClase = document.getElementById('nombre_clase');
-    const materiaClase = document.getElementById('materia_clase');
-    const colorClase = document.getElementById('color_clase');
-    if (idClase) idClase.value = id;
-    if (nombreClase) nombreClase.value = nombre;
-    if (materiaClase) materiaClase.value = materia;
-    if (colorClase) colorClase.value = color;
+    // Rellenar los campos del modal
+    document.getElementById('inputIdClase').value = id;
+    document.getElementById('inputNombreClase').value = nombre;
+    document.getElementById('inputMateria').value = materia;
+    document.getElementById('inputColorClase').value = color;
+    document.getElementById('inputIconoClase').value = icono;
+
+    // Seleccionar visualmente el color
+    document.querySelectorAll('.color-opcion').forEach(el => {
+        if (el.getAttribute('data-color') === color) {
+            el.classList.add('active');
+        } else {
+            el.classList.remove('active');
+        }
+    });
+    // Seleccionar visualmente el icono
+    document.querySelectorAll('.icono-opcion').forEach(el => {
+        if (el.getAttribute('data-icon') === icono) {
+            el.classList.add('active');
+        } else {
+            el.classList.remove('active');
+        }
+    });
+
     // Cambiar título
     const tituloModal = document.getElementById('modalClaseLabel') || document.querySelector('#modalClase .modal-header h3');
     if (tituloModal) tituloModal.innerText = 'Modificar Clase';
@@ -328,18 +340,29 @@ document.addEventListener('click', () => {
    ACCIONES (CREAR Y ELIMINAR)
    ========================================== */
 
+
+// --- FUNCIÓN PARA GUARDAR / EDITAR CLASE ---
 async function guardarNuevaClase(e) {
     e.preventDefault();
     const cursoId = document.getElementById('cursoIdAsociado').value;
+    // Buscar qué color e icono tienen la clase 'active' en este momento
+    const colorActivo = document.querySelector('.color-opcion.active');
+    const iconoActivo = document.querySelector('.icono-opcion.active');
+
+    if (!colorActivo || !iconoActivo) {
+        alert("Por favor, selecciona un color y un icono.");
+        return;
+    }
+
     const datos = {
         nombre_clase: document.getElementById('inputNombreClase').value,
         materia_principal: document.getElementById('inputMateria').value,
-        color_clase: document.getElementById('inputColorClase').value,
-        icono_clase: document.getElementById('inputIconoClase').value,
+        color_clase: colorActivo.getAttribute('data-color'),
+        icono_clase: iconoActivo.getAttribute('data-icon'),
         curso_id: cursoId
     };
     let url = 'controllers/crear_clase.php';
-    if (editClaseId) {
+    if (typeof editClaseId !== 'undefined' && editClaseId) {
         url = 'controllers/editar_clase.php';
         datos.id = editClaseId;
     }
@@ -354,10 +377,11 @@ async function guardarNuevaClase(e) {
             closeModalClase();
             document.getElementById('formCrearClase').reset();
             cargarDatosPantalla(cursoId);
-            // Resetear modo edición
-            editClaseId = null;
-            // Restaurar título
+            // Resetear modo edición y título
+            if (typeof editClaseId !== 'undefined') editClaseId = null;
             document.querySelector('#modalClase .modal-header h3').textContent = 'Crear Clase';
+        } else {
+            alert("Error al guardar: " + resultado.message);
         }
     } catch (error) {
         console.error("Error:", error);

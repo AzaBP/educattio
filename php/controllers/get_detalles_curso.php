@@ -27,11 +27,23 @@ try {
     // 3. Obtener listado de clases de ese curso
     $clases = $claseDAO->listarPorCurso($cursoId);
 
+    // Convertir objetos ClaseVO a arrays asociativos
+    $clases_array = array_map(function($clase) {
+        return [
+            'id' => $clase->id,
+            'nombre_clase' => $clase->nombre_clase,
+            'materia_principal' => $clase->materia_principal,
+            'curso_id' => $clase->curso_id,
+            'color_clase' => $clase->color_clase,
+            'icono_clase' => $clase->icono_clase
+        ];
+    }, $clases);
+
     // 4. Responder con éxito
     echo json_encode([
         'status' => 'success',
         'curso' => $curso,
-        'clases' => $clases
+        'clases' => $clases_array
     ]);
 
 } catch (Exception $e) {

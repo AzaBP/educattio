@@ -12,6 +12,8 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
     <title>Educattio - Detalles del Curso</title>
     
     <link rel="icon" type="image/png" href="../imagenes/dolphin.png">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/portal_inicio_usuario.css">
     <link rel="stylesheet" href="../css/detalles_curso.css">
@@ -137,119 +139,91 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
             </section>
         </main>
     </div>
-    <div id="modalClase" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="tituloModalClase">Añadir Nueva Clase</h3>
-                <span class="close-btn" onclick="closeModalClase()">&times;</span>
-            </div>
-            <form id="formCrearClase">
-                <input type="hidden" id="editClaseId" value="">
-                <input type="hidden" id="cursoIdAsociado" value="<?php echo htmlspecialchars($_GET['id'] ?? ''); ?>">
-                <div class="modal-body">
-                    <input type="hidden" id="id_clase">
-                    <div class="mb-3">
-                        <label for="nombre_clase" class="form-label" style="font-weight: 600; font-size: 0.95rem; color: #333; margin-left: 5px;">Nombre del grupo</label>
-                        <div class="d-flex align-items-center" style="border: 1px solid #d1d5db; border-radius: 50px; padding: 6px 15px; background: #fff;">
-                            <div style="background-color: #f3f4f6; border-radius: 50%; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
-                                <i class="fas fa-users" style="color: #4b5563; font-size: 1rem;"></i>
-                            </div>
-                            <input type="text" id="nombre_clase" class="form-control" placeholder="Ej: 1º ESO A" style="border: none; box-shadow: none; padding: 0; background: transparent; width: 100%;">
-                        </div>
-                    </div>
+    <div id="modalClase" class="modal fade" tabindex="-1" aria-labelledby="modalClaseLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                <div class="modal-header" style="border-bottom: none; padding: 25px 0 0 16px;">
+                    <h3 class="modal-title fw-bold" id="modalClaseLabel">Añadir Nueva Clase</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
 
-                    <div class="mb-3">
-                        <label for="materia_clase" class="form-label" style="font-weight: 600; font-size: 0.95rem; color: #333; margin-left: 5px;">Materia Principal / Rol</label>
-                        <div class="d-flex align-items-center" style="border: 1px solid #d1d5db; border-radius: 50px; padding: 6px 15px; background: #fff;">
-                            <div style="background-color: #f3f4f6; border-radius: 50%; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
-                                <i class="fas fa-book" style="color: #4b5563; font-size: 1rem;"></i>
-                            </div>
-                            <input type="text" id="materia_clase" class="form-control" placeholder="Ej: Matemáticas" style="border: none; box-shadow: none; padding: 0; background: transparent; width: 100%;">
-                        </div>
-                    </div>
 
-                    <div class="mb-4">
-                        <label for="color_clase" class="form-label" style="font-weight: 600; font-size: 0.95rem; color: #333; margin-left: 5px;">Color de la tarjeta</label>
-                        <div class="d-flex align-items-center" style="border: 1px solid #d1d5db; border-radius: 50px; padding: 6px 15px; background: #fff;">
-                            <div style="background-color: #f3f4f6; border-radius: 50%; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
-                                <i class="fas fa-palette" style="color: #4b5563; font-size: 1rem;"></i>
+                <form id="formCrearClase">
+                    <input type="hidden" id="inputIdClase">
+                    <input type="hidden" id="inputColorClase" value="#3b82f6">
+                    <input type="hidden" id="inputIconoClase" value="fa-users">
+
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-4" style="position: relative;">
+                            <label class="form-label fw-bold" style="position: static !important; transform: none !important; color: #4b5563; font-size: 0.9rem; display: block; margin-bottom: 8px; pointer-events: auto;">Nombre del grupo</label>
+                            <div class="d-flex align-items-center" style="border: 1px solid #d1d5db; border-radius: 12px; padding: 5px 10px; background: #fff;">
+                                <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                    <i class="fas fa-users" style="color: #6b7280; font-size: 1.1rem;"></i>
+                                </div>
+                                <input type="text" id="inputNombreClase" class="form-control" placeholder="Ej: 1º ESO A" style="border: none !important; box-shadow: none !important; padding: 0 !important; background: transparent !important; width: 100%; font-size: 0.95rem; height: auto !important; margin: 0 !important;">
                             </div>
-                            <div style="flex-grow: 1; display: flex; align-items: center; justify-content: space-between;">
-                                <span style="color: #6b7280; font-size: 0.95rem;">Selecciona un color</span>
-                                <input type="color" id="color_clase" style="width: 32px; height: 32px; border: none; border-radius: 50%; cursor: pointer; padding: 0; background: transparent; overflow: hidden; -webkit-appearance: none;">
+                        </div>
+                        <div class="col-12 col-md-6 mb-4" style="position: relative;">
+                            <label class="form-label fw-bold" style="position: static !important; transform: none !important; color: #4b5563; font-size: 0.9rem; display: block; margin-bottom: 8px; pointer-events: auto;">Materia principal / Rol</label>
+                            <div class="d-flex align-items-center" style="border: 1px solid #d1d5db; border-radius: 12px; padding: 5px 10px; background: #fff;">
+                                <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                    <i class="fas fa-book" style="color: #6b7280; font-size: 1.1rem;"></i>
+                                </div>
+                                <input type="text" id="inputMateria" class="form-control" placeholder="Ej: Matemáticas" style="border: none !important; box-shadow: none !important; padding: 0 !important; background: transparent !important; width: 100%; font-size: 0.95rem; height: auto !important; margin: 0 !important;">
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer" style="border-top: none; padding-bottom: 20px; justify-content: flex-end;">
-                    <button type="button" class="btn" data-bs-dismiss="modal" style="background-color: #f3f4f6; color: #4b5563; border-radius: 10px; font-weight: 600; padding: 10px 20px; border: none;">Cancelar</button>
-                    <button type="button" class="btn" onclick="guardarClase()" style="background-color: #0d6efd; color: white; border-radius: 10px; font-weight: 600; padding: 10px 20px; border: none;">Guardar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <div id="modalClase" class="modal">
-        <div class="modal-content">
-            <div class="modal-header" style="border-bottom: none; padding: 20px 20px 0;">
-                <h5 class="modal-title fw-bold" id="modalClaseLabel" style="color: #1f2937;">Añadir Nueva Clase</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <div class="modal-body" style="padding: 20px;">
-                <input type="hidden" id="id_clase">
-                <input type="hidden" id="color_clase" value="#3b82f6">
-                <input type="hidden" id="icono_clase" value="fa-users">
-
-                <div class="mb-4">
-                    <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.9rem;">Nombre del grupo</label>
-                    <div class="d-flex align-items-center" style="border: 1px solid #d1d5db; border-radius: 12px; padding: 5px 10px; background: #fff;">
-                        <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
-                            <i class="fas fa-users" style="color: #6b7280; font-size: 1.1rem;"></i>
+                    <div class="row mb-3 align-items-end">
+                        <div class="col-12 d-flex flex-row gap-4">
+                            <div style="flex:1; min-width: 0;">
+                                <label class="form-label fw-bold" style="position: static !important; transform: none !important; color: #4b5563; font-size: 0.9rem; display: block; margin-bottom: 8px;">Color</label>
+                                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; justify-items: center;" id="contenedor-colores">
+                                    <div class="color-opcion seleccionable active" data-color="#3b82f6" style="background-color: #3b82f6;"><i class="fas fa-check"></i></div>
+                                    <div class="color-opcion seleccionable" data-color="#ef4444" style="background-color: #ef4444;"><i class="fas fa-check"></i></div>
+                                    <div class="color-opcion seleccionable" data-color="#10b981" style="background-color: #10b981;"><i class="fas fa-check"></i></div>
+                                    <div class="color-opcion seleccionable" data-color="#f59e0b" style="background-color: #f59e0b;"><i class="fas fa-check"></i></div>
+                                    <div class="color-opcion seleccionable" data-color="#8b5cf6" style="background-color: #8b5cf6;"><i class="fas fa-check"></i></div>
+                                    <div class="color-opcion seleccionable" data-color="#ec4899" style="background-color: #ec4899;"><i class="fas fa-check"></i></div>
+                                    <div class="color-opcion seleccionable" data-color="#47b39d" style="background-color: #47b39d;"><i class="fas fa-check"></i></div>
+                                    <input type="color" class="color-opcion color-input-visible" id="input-color-personalizado" value="#000000" title="Color personalizado" style="background: none;">
+                                </div>
+                            </div>
+                            <div style="flex:2; min-width: 0;">
+                                <label class="form-label fw-bold" style="position: static !important; transform: none !important; color: #4b5563; font-size: 0.9rem; display: block; margin-bottom: 8px; padding-left: 42px;">Icono</label>
+                                <div style="display: grid; grid-template-columns: repeat(4, 1fr); column-gap: 0px; row-gap: 10px; justify-items: center; padding-left: 32px;" id="contenedor-iconos">
+                                    <div class="icono-opcion seleccionable active" data-icon="fa-users"><i class="fas fa-users"></i></div>
+                                    <div class="icono-opcion seleccionable" data-icon="fa-book"><i class="fas fa-book"></i></div>
+                                    <div class="icono-opcion seleccionable" data-icon="fa-flask"><i class="fas fa-flask"></i></div>
+                                    <div class="icono-opcion seleccionable" data-icon="fa-laptop-code"><i class="fas fa-laptop-code"></i></div>
+                                    <div class="icono-opcion seleccionable" data-icon="fa-globe"><i class="fas fa-globe"></i></div>
+                                    <div class="icono-opcion seleccionable" data-icon="fa-calculator"><i class="fas fa-calculator"></i></div>
+                                    <div class="icono-opcion seleccionable" data-icon="fa-palette"><i class="fas fa-palette"></i></div>
+                                    <div class="icono-opcion seleccionable" data-icon="fa-music"><i class="fas fa-music"></i></div>
+                                    <div class="icono-opcion seleccionable" data-icon="fa-basketball-ball"><i class="fas fa-basketball-ball"></i></div>
+                                    <div class="icono-opcion seleccionable" data-icon="fa-language"><i class="fas fa-language"></i></div>
+                                    <div class="icono-opcion seleccionable" data-icon="fa-atom"><i class="fas fa-atom"></i></div>
+                                    <div class="icono-opcion seleccionable" data-icon="fa-chart-line"><i class="fas fa-chart-line"></i></div>
+                                    <div class="icono-opcion seleccionable" data-icon="fa-history"><i class="fas fa-history"></i></div>
+                                    <div class="icono-opcion seleccionable" data-icon="fa-leaf"><i class="fas fa-leaf"></i></div>
+                                    <div class="icono-opcion seleccionable" data-icon="fa-heartbeat"><i class="fas fa-heartbeat"></i></div>
+                                    <div class="icono-opcion seleccionable" data-icon="fa-comments"><i class="fas fa-comments"></i></div>
+                                </div>
+                            </div>
                         </div>
-                        <input type="text" id="nombre_clase" class="form-control" placeholder="Ej: 1º ESO A" style="border: none; box-shadow: none; padding: 0; background: transparent; width: 100%; font-size: 0.95rem;">
                     </div>
+                </form>
+
+                <div class="modal-footer" style="border-top: none; padding: 0 30px 25px;">
+                    <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="formCrearClase" class="btn-save">Guardar</button>
                 </div>
 
-                <div class="mb-4">
-                    <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.9rem;">Materia principal / Rol</label>
-                    <div class="d-flex align-items-center" style="border: 1px solid #d1d5db; border-radius: 12px; padding: 5px 10px; background: #fff;">
-                        <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
-                            <i class="fas fa-book" style="color: #6b7280; font-size: 1.1rem;"></i>
-                        </div>
-                        <input type="text" id="materia_clase" class="form-control" placeholder="Ej: Matemáticas" style="border: none; box-shadow: none; padding: 0; background: transparent; width: 100%; font-size: 0.95rem;">
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.9rem;">Icono</label>
-                    <div class="d-flex gap-3 flex-wrap" id="contenedor-iconos">
-                        <div class="icono-opcion seleccionable active" data-icon="fa-users" style="width: 45px; height: 45px; border-radius: 50%; background: #eff6ff; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid #3b82f6; color: #3b82f6; font-size: 1.2rem;"><i class="fas fa-users"></i></div>
-                        <div class="icono-opcion seleccionable" data-icon="fa-book" style="width: 45px; height: 45px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid transparent; color: #6b7280; font-size: 1.2rem;"><i class="fas fa-book"></i></div>
-                        <div class="icono-opcion seleccionable" data-icon="fa-flask" style="width: 45px; height: 45px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid transparent; color: #6b7280; font-size: 1.2rem;"><i class="fas fa-flask"></i></div>
-                        <div class="icono-opcion seleccionable" data-icon="fa-laptop-code" style="width: 45px; height: 45px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid transparent; color: #6b7280; font-size: 1.2rem;"><i class="fas fa-laptop-code"></i></div>
-                        <div class="icono-opcion seleccionable" data-icon="fa-globe" style="width: 45px; height: 45px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid transparent; color: #6b7280; font-size: 1.2rem;"><i class="fas fa-globe"></i></div>
-                    </div>
-                </div>
-
-                <div class="mb-2">
-                    <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.9rem;">Color</label>
-                    <div class="d-flex gap-3 flex-wrap" id="contenedor-colores">
-                        <div class="color-opcion seleccionable active" data-color="#3b82f6" style="width: 35px; height: 35px; border-radius: 50%; background-color: #3b82f6; cursor: pointer; border: 3px solid #fff; box-shadow: 0 0 0 2px #3b82f6;"></div>
-                        <div class="color-opcion seleccionable" data-color="#ef4444" style="width: 35px; height: 35px; border-radius: 50%; background-color: #ef4444; cursor: pointer; border: 3px solid #fff; box-shadow: none;"></div>
-                        <div class="color-opcion seleccionable" data-color="#10b981" style="width: 35px; height: 35px; border-radius: 50%; background-color: #10b981; cursor: pointer; border: 3px solid #fff; box-shadow: none;"></div>
-                        <div class="color-opcion seleccionable" data-color="#f59e0b" style="width: 35px; height: 35px; border-radius: 50%; background-color: #f59e0b; cursor: pointer; border: 3px solid #fff; box-shadow: none;"></div>
-                        <div class="color-opcion seleccionable" data-color="#8b5cf6" style="width: 35px; height: 35px; border-radius: 50%; background-color: #8b5cf6; cursor: pointer; border: 3px solid #fff; box-shadow: none;"></div>
-                        <div class="color-opcion seleccionable" data-color="#ec4899" style="width: 35px; height: 35px; border-radius: 50%; background-color: #ec4899; cursor: pointer; border: 3px solid #fff; box-shadow: none;"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-footer" style="border-top: none; padding: 0 20px 20px;">
-                <button type="button" class="btn" data-bs-dismiss="modal" style="background-color: #f3f4f6; color: #4b5563; border-radius: 8px; font-weight: 600; padding: 10px 20px; border: none;">Cancelar</button>
-                <button type="button" class="btn" onclick="guardarClase()" style="background-color: #3b82f6; color: white; border-radius: 8px; font-weight: 600; padding: 10px 20px; border: none;">Guardar</button>
             </div>
         </div>
     </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/detalles_curso.js"></script>
 </body>
 </html>
