@@ -1,3 +1,103 @@
+    // --- EXPORTAR A EXCEL Y PDF ---
+    // SheetJS y jsPDF deben estar incluidos en el HTML (CDN)
+    document.addEventListener('DOMContentLoaded', function() {
+        // ...existing code...
+
+        // Exportar a Excel
+        const btnExcel = document.getElementById('exportarExcel');
+        if (btnExcel) {
+            btnExcel.addEventListener('click', function() {
+                exportarTablaExcel();
+            });
+        }
+        // Exportar a PDF
+        const btnPDF = document.getElementById('exportarPDF');
+        if (btnPDF) {
+            btnPDF.addEventListener('click', function() {
+                exportarTablaPDF();
+            });
+        }
+    });
+
+    function exportarTablaExcel() {
+        // Requiere SheetJS (xlsx.min.js)
+        if (typeof XLSX === 'undefined') { alert('SheetJS no está cargado'); return; }
+        const tabla = document.querySelector('.gradebook-table');
+        const wb = XLSX.utils.table_to_book(tabla, {sheet: "Notas"});
+        XLSX.writeFile(wb, 'cuaderno_notas.xlsx');
+    }
+
+    function exportarTablaPDF() {
+        // Requiere jsPDF y autoTable
+        if (typeof jsPDF === 'undefined' || typeof window.jspdfAutoTable === 'undefined') { alert('jsPDF o autoTable no están cargados'); return; }
+        const doc = new jsPDF();
+        doc.text('Cuaderno de Notas', 14, 16);
+        window.jspdfAutoTable.autoTable(doc, { html: '.gradebook-table', startY: 22 });
+        doc.save('cuaderno_notas.pdf');
+    }
+    // 7. Aplicar fórmulas a celdas seleccionadas
+    document.querySelectorAll('.formula-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (!selectedCells || selectedCells.length === 0) return;
+            const formula = btn.dataset.formula;
+            const valor = parseFloat(document.getElementById('valorFormula').value);
+            let nuevoValor = null;
+            if (formula === 'sumar') {
+                selectedCells.forEach(inp => {
+                    let v = parseFloat(inp.value) || 0;
+                    if (!isNaN(valor)) v += valor;
+                    v = Math.max(0, Math.min(10, v));
+                    inp.value = v;
+                    triggerNotaUpdate(inp, v);
+                });
+            } else if (formula === 'promedio') {
+                let suma = 0, count = 0;
+                selectedCells.forEach(inp => {
+                    let v = parseFloat(inp.value);
+                    if (!isNaN(v)) { suma += v; count++; }
+                });
+                if (count > 0) {
+                    nuevoValor = (suma / count).toFixed(2);
+                    selectedCells.forEach(inp => {
+                        inp.value = nuevoValor;
+                        triggerNotaUpdate(inp, nuevoValor);
+                    });
+                }
+            } else if (formula === 'multiplicar') {
+                selectedCells.forEach(inp => {
+                    let v = parseFloat(inp.value) || 0;
+                    if (!isNaN(valor)) v *= valor;
+                    v = Math.max(0, Math.min(10, v));
+                    inp.value = v;
+                    triggerNotaUpdate(inp, v);
+                });
+            } else if (formula === 'dividir') {
+                if (valor === 0) return;
+                selectedCells.forEach(inp => {
+                    let v = parseFloat(inp.value) || 0;
+                    if (!isNaN(valor)) v /= valor;
+                    v = Math.max(0, Math.min(10, v));
+                    inp.value = v;
+                    triggerNotaUpdate(inp, v);
+                });
+            } else if (formula === 'fijar') {
+                if (isNaN(valor)) return;
+                selectedCells.forEach(inp => {
+                    let v = Math.max(0, Math.min(10, valor));
+                    inp.value = v;
+                    triggerNotaUpdate(inp, v);
+                });
+            }
+            clearSelectedCells();
+        });
+    });
+
+    function triggerNotaUpdate(input, valor) {
+        const alumnoId = input.dataset.alumno;
+        const itemId = input.dataset.item;
+        calcularMedia(alumnoId);
+        guardarNotaBD(alumnoId, itemId, valor, input);
+    }
 // cuaderno.js - Versión unificada y sin duplicados
 document.addEventListener('DOMContentLoaded', function() {
     // 1. Calcular medias iniciales
@@ -20,7 +120,135 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.value < 0) this.value = 0;
         });
     });
+
+    // 3. Filtrado de alumnos en tiempo real
+    const filtroInput = document.getElementById('filtroAlumno');
+    if (filtroInput) {
+        filtroInput.addEventListener('input', function() {
+            const texto = this.value.toLowerCase();
+            document.querySelectorAll('.gradebook-table tbody tr').forEach(tr => {
+                const nombre = tr.querySelector('.student-name').textContent.toLowerCase();
+                tr.style.display = nombre.includes(texto) ? '' : 'none';
+            });
+        });
+    }
+
+    // 4. Mostrar icono comentario solo al pasar el ratón
+    document.querySelectorAll('.nota-celda').forEach(td => {
+        td.addEventListener('mouseenter', function() {
+            const btn = td.querySelector('.comentario-btn');
+            if (btn) btn.style.display = 'block';
+        });
+        td.addEventListener('mouseleave', function() {
+            const btn = td.querySelector('.comentario-btn');
+            if (btn) btn.style.display = 'none';
+        });
+    });
+
+    // 5. Abrir modal de comentario
+    document.querySelectorAll('.comentario-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const alumnoId = btn.dataset.alumno;
+            const itemId = btn.dataset.item;
+            abrirModalComentario(alumnoId, itemId);
+        });
+    });
+
+    // 6. Selección múltiple de celdas tipo arrastrar
+    let isSelecting = false;
+    let startCell = null;
+    let endCell = null;
+    let selectedCells = [];
+
+    document.querySelectorAll('.grade-input').forEach(input => {
+        input.addEventListener('mousedown', function(e) {
+            isSelecting = true;
+            startCell = this;
+            clearSelectedCells();
+            this.classList.add('selected-cell');
+            selectedCells = [this];
+            updateSeleccionadasInfo();
+        });
+        input.addEventListener('mouseenter', function(e) {
+            if (isSelecting && startCell) {
+                endCell = this;
+                selectRange(startCell, endCell);
+            }
+        });
+    });
+    document.addEventListener('mouseup', function() {
+        isSelecting = false;
+        startCell = null;
+        endCell = null;
+    });
+
+    function selectRange(cell1, cell2) {
+        clearSelectedCells();
+        const allInputs = Array.from(document.querySelectorAll('.grade-input'));
+        const idx1 = allInputs.indexOf(cell1);
+        const idx2 = allInputs.indexOf(cell2);
+        const [min, max] = [Math.min(idx1, idx2), Math.max(idx1, idx2)];
+        selectedCells = allInputs.slice(min, max + 1);
+        selectedCells.forEach(inp => inp.classList.add('selected-cell'));
+        updateSeleccionadasInfo();
+    }
+    function clearSelectedCells() {
+        document.querySelectorAll('.grade-input.selected-cell').forEach(inp => inp.classList.remove('selected-cell'));
+        selectedCells = [];
+        updateSeleccionadasInfo();
+    }
+    function updateSeleccionadasInfo() {
+        const info = document.getElementById('seleccionadas-info');
+        if (info) {
+            info.textContent = selectedCells.length > 0 ? `Seleccionadas: ${selectedCells.length}` : '';
+        }
+    }
 });
+// CSS para celdas seleccionadas (puedes moverlo a tu CSS principal)
+const style = document.createElement('style');
+style.innerHTML = `.grade-input.selected-cell { outline: 2px solid #007bff !important; background: #e3f0ff !important; }`;
+document.head.appendChild(style);
+
+// Modal comentario
+function abrirModalComentario(alumnoId, itemId) {
+    document.getElementById('comentarioAlumnoId').value = alumnoId;
+    document.getElementById('comentarioItemId').value = itemId;
+    document.getElementById('comentarioTexto').value = '';
+    document.getElementById('modalComentario').style.display = 'flex';
+    // Cargar comentario existente
+    fetch('../php/obtener_comentario.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ alumno_id: alumnoId, item_id: itemId })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            document.getElementById('comentarioTexto').value = data.comentario || '';
+        }
+    });
+}
+function cerrarModalComentario() {
+    document.getElementById('modalComentario').style.display = 'none';
+}
+function guardarComentario(event) {
+    event.preventDefault();
+    const alumnoId = document.getElementById('comentarioAlumnoId').value;
+    const itemId = document.getElementById('comentarioItemId').value;
+    const comentario = document.getElementById('comentarioTexto').value;
+    fetch('../php/guardar_comentario.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ alumno_id: alumnoId, item_id: itemId, comentario: comentario })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            cerrarModalComentario();
+        }
+    });
+}
 
 // --- FUNCIONES DE CÁLCULO ---
 function calcularMedia(alumnoId) {
