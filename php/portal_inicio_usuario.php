@@ -102,14 +102,6 @@ $nombre_usuario = $_SESSION['nombre_usuario'];
                     <button class="btn-add-class" onclick="openModal()"><i class="fas fa-plus"></i> Nueva Clase</button>
                 </div>
 
-                <div class="classes-grid">
-                    <article class="class-card">
-                        <div class="card-body">
-                            <h3>CURSO DEMO</h3>
-                            <p>Bienvenido al sistema, <?php echo htmlspecialchars($nombre_usuario); ?>.</p>
-                        </div>
-                    </article>
-                </div>
             </section>
         </main>
     </div>
