@@ -110,7 +110,7 @@ window.addEventListener('mouseup', function(event) {
 
 document.addEventListener('DOMContentLoaded', () => {
     // Evitar bucle de login: solo verificar sesión si no estamos en la página de login
-    if (!window.location.pathname.endsWith('inicio_sesion.html')) {
+    if (!window.location.pathname.endsWith('login.php')) {
         verificarSesion();
     }
     cargarCursos();
@@ -130,8 +130,8 @@ async function verificarSesion() {
             (data.message === 'No autorizado' || data.message === 'No hay sesión activa')
         ) {
             // Solo redirigir si realmente no estamos en login
-            if (!window.location.pathname.includes('inicio_sesion.html')) {
-                window.location.href = 'inicio_sesion.html';
+            if (!window.location.pathname.includes('login.php')) {
+                window.location.href = 'login.php';
             }
         }
     } catch (e) {

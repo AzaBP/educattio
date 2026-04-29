@@ -4,7 +4,7 @@ include 'conexion.php';
 
 // 1. SEGURIDAD: Comprobar si el usuario está logueado
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../interfaces/inicio_sesion.html");
+    header("Location: login.php");
     exit();
 }
 

@@ -128,3 +128,17 @@ CREATE TABLE alumnos_asignaturas (
     FOREIGN KEY (alumno_id) REFERENCES alumnos(id) ON DELETE CASCADE,
     FOREIGN KEY (asignatura_id) REFERENCES asignaturas(id) ON DELETE CASCADE
 );
+
+
+--Para recuperar la contraseña
+CREATE TABLE IF NOT EXISTS password_resets (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    email email VARCHAR(100) NOT NULL UNIQUE,        
+    token VARCHAR(64) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY idx_email_token (email, token),
+    -- Clave foránea opcional (asegura que el email exista en usuarios)
+    CONSTRAINT fk_password_resets_email FOREIGN KEY (email) REFERENCES usuarios(email) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -34,7 +34,14 @@
             </form>
             
             <div class="login-footer">
-                <a href="#">¿Olvidaste tu contraseña?</a>
+                    <h3>¿Olvidaste tu contraseña?</h3>
+                    <form action="../php/procesar_recuperacion.php" method="POST">
+                        <label for="email">Correo electrónico:</label>
+                        <input type="email" name="email" id="email" required>
+                        <button type="submit" name="reset_request">Enviar enlace de recuperación</button>
+                    </form>
+
+
                 <span>¿No tienes cuenta? <a href="registro_usuario.html">Regístrate</a></span>
             </div>
         </div>
@@ -48,13 +55,14 @@
 
         // Dependiendo del error, mostramos un texto u otro
         if (error === 'user') {
-            mensajeError.textContent = '❌ No existe ninguna cuenta con ese correo o usuario.';
+            mensajeError.textContent = 'No existe ninguna cuenta con ese correo o usuario.';
             mensajeError.style.display = 'block'; // Hacemos visible la caja
         } else if (error === 'pass') {
-            mensajeError.textContent = '❌ La contraseña es incorrecta. Inténtalo de nuevo.';
+            mensajeError.textContent = 'La contraseña es incorrecta. Inténtalo de nuevo.';
             mensajeError.style.display = 'block'; // Hacemos visible la caja
         }
     </script>
+    
 
 </body>
 </html>

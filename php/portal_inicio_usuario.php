@@ -4,7 +4,7 @@ session_start();
 
 // Seguridad: Si no hay un nombre de usuario en la sesión, el sistema te expulsa al login
 if (!isset($_SESSION['nombre_usuario'])) {
-    header("Location: inicio_sesion.html");
+    header("Location: login.php");
     exit();
 }
 

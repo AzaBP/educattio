@@ -4,7 +4,7 @@ include 'conexion.php';
 
 // Verificación de seguridad básica
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../interfaces/inicio_sesion.html");
+    header("Location: login.php");
     exit();
 }
 

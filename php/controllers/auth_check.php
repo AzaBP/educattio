@@ -2,7 +2,7 @@
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
     // Si no hay sesión, mandamos al usuario al login
-    header("Location: ../interfaces/inicio_sesion.html");
+    header("Location: login.php");
     exit();
 }
 ?>

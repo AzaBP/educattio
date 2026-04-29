@@ -5,7 +5,7 @@ include '../php/conexion.php';
 
 // 1. SEGURIDAD: Si no está logueado, lo echamos al login
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: inicio_sesion.html");
+    header("Location: login.php");
     exit();
 }
 
@@ -24,7 +24,7 @@ try {
     // Por si la cuenta fue borrada mientras estaba logueado
     if (!$datos_usuario) {
         session_destroy();
-        header("Location: inicio_sesion.html");
+        header("Location: login.php");
         exit();
     }
 } catch (PDOException $e) {
