@@ -354,3 +354,45 @@
     color: var(--accent-color);
     border-bottom: 3px solid var(--accent-color);
 }
+
+/* =========================================
+   DISEÑO DE ALUMNOS (AVATAR Y NOMBRE)
+   ========================================= */
+
+/* Celda que contiene la información del alumno */
+.student-cell {
+    padding: 10px 15px !important;
+    min-width: 250px;
+    vertical-align: middle !important;
+}
+
+/* Contenedor flexible para alinear avatar y nombre */
+.student-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* El círculo con la inicial */
+.student-avatar {
+    width: 35px;
+    height: 35px;
+    background-color: #6366f1; /* Un color azul/violeta profesional */
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0; /* Evita que el círculo se aplaste */
+    border: 2px solid white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Estilo para el texto del nombre */
+.student-name {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 0.95rem;
+}

@@ -16,12 +16,12 @@ if (isset($datos['alumno_id']) && isset($datos['item_id']) && isset($datos['come
         $stmt_check = $conexion->prepare($sql_check);
         $stmt_check->execute([':alumno' => $alumno_id, ':item' => $item_id]);
         if ($stmt_check->rowCount() > 0) {
-            $sql = "UPDATE evaluaciones SET comentarios = :comentario WHERE alumno_id = :alumno AND item_id = :item";
+            $sql = "UPDATE evaluaciones SET  = :comentario WHERE alumno_id = :alumno AND item_id = :item";
             $stmt = $conexion->prepare($sql);
             $stmt->execute([':comentario' => $comentario, ':alumno' => $alumno_id, ':item' => $item_id]);
             echo json_encode(['status' => 'success', 'accion' => 'actualizado']);
         } else {
-            $sql = "INSERT INTO evaluaciones (alumno_id, item_id, comentarios) VALUES (:alumno, :item, :comentario)";
+            $sql = "INSERT INTO evaluaciones (alumno_id, item_id, comentario) VALUES (:alumno, :item, :comentario)";
             $stmt = $conexion->prepare($sql);
             $stmt->execute([':alumno' => $alumno_id, ':item' => $item_id, ':comentario' => $comentario]);
             echo json_encode(['status' => 'success', 'accion' => 'insertado']);

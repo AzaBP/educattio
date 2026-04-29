@@ -46,6 +46,24 @@ body {
     animation: fadeInCornerLeft 1.5s ease-out 1s forwards;
 }
 
+/* Estilos para el selector de avatares */
+.avatar-option {
+    width: 45px; 
+    height: 45px; 
+    border-radius: 50%;
+    cursor: pointer; 
+    border: 3px solid transparent;
+    transition: all 0.2s ease-in-out; 
+    object-fit: cover;
+}
+.avatar-option:hover { transform: scale(1.15); }
+.avatar-option.selected { 
+    border-color: #0d6efd; 
+    box-shadow: 0 0 10px rgba(13,110,253,0.5); 
+    transform: scale(1.1);
+}
+.cursor-pointer { cursor: pointer; }
+
 /* Animación global de la imagen */
 @keyframes fadeInCornerLeft {
     from {

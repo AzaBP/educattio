@@ -276,16 +276,13 @@ function renderizarTarjetasClases(clases) {
         html += `
             <div class="group-card-wrapper" style="position: relative; z-index: 2;">
                 <div class="group-card">
-                    <a href="cuaderno.php?id=${id}" style="text-decoration: none; color: inherit;">
+                    <a href="detalles_clase.php?id=${id}" style="text-decoration: none; color: inherit;">
                         <div class="group-header" style="background-color: ${color}; color: ${contrastColor};">
                             <span class="group-icon"><i class="fas ${icono}"></i></span>
                         </div>
                         <div class="group-body">
                             <h3>${nombre}</h3>
                             <p class="subtitle">${materia}</p>
-                            <div class="group-stats">
-                                <span><i class="fas fa-user-friends"></i> Gestionar alumnos</span>
-                            </div>
                         </div>
                     </a>
                     
@@ -302,13 +299,14 @@ function renderizarTarjetasClases(clases) {
                             </a>
                         </div>
                     </div>
+
                 </div>
             </div>
         `;
     });
     // Usar el HTML original del botón de añadir clase
     const htmlBotonAdd = `
-        <div class="add-card-dashed" onclick="abrirModalNuevaClase()">
+        <div class="add-card-dashed" onclick="abrirModalNuevaClase()" style="align-self: start; height: 150px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box;">
             <div class="add-icon">
                 <i class="fas fa-plus"></i>
             </div>

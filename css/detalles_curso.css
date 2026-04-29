@@ -248,11 +248,11 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
-    padding: 20px 0;
+    align-items: stretch; /* Esto hace que todas midan lo mismo verticalmente */
 }
 
 /* Base style for a single class card, restoring look from image_6.png */
-.group-card {
+.group-card, .add-card-dashed {
     background: #ffffff;
     border-radius: 15px;
     overflow: hidden;
@@ -264,6 +264,8 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
     flex-direction: column;
     /* Create context for absolute positioning inside the card */
     position: relative; 
+    height: 100%;
+    margin: 0;
 }
 
 .group-card:hover {
@@ -677,6 +679,7 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
     display: flex; flex-direction: column;
     justify-content: center; align-items: center;
     cursor: pointer; transition: all 0.3s;
+    padding: 20px;
 }
 .add-card-dashed:hover { background-color: white; border-color: var(--accent-color); }
 .add-card-dashed .add-icon {
@@ -1190,3 +1193,67 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
 
 /* Para asegurarnos de que el contenedor de la tarjeta no oculte el menú */
 .group-card { overflow: visible !important; }
+
+/* --- ZONA DE ASIGNATURAS (Opción B) --- */
+.asignaturas-panel {
+    display: none; /* Oculto por defecto */
+    background-color: #f8fafc;
+    border-top: 1px dashed #cbd5e1;
+    padding: 15px;
+    margin-top: 10px;
+    border-radius: 0 0 8px 8px;
+    animation: fadeInDown 0.3s ease;
+}
+
+.asignaturas-panel.active {
+    display: block;
+}
+
+.chips-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.chip-asignatura {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: all 0.2s;
+}
+
+.chip-asignatura:hover {
+    border-color: #94a3b8;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.chip-btn-delete {
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.chip-btn-delete:hover {
+    opacity: 1;
+}
+
+.chip-add {
+    background-color: #eff6ff;
+    border: 1px dashed #3b82f6;
+    color: #3b82f6;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.chip-add:hover {
+    background-color: #dbeafe;
+}

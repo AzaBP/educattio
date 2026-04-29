@@ -98,9 +98,6 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
                         <div class="group-body">
                             <h3>4º Primaria A</h3>
                             <p class="subtitle">Tutoría</p>
-                            <div class="group-stats">
-                                <span><i class="fas fa-user"></i> 24 Alumnos</span>
-                            </div>
                         </div>
                     </a>
                     <a href="detalles_clase.html" class="group-card">
@@ -111,9 +108,6 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
                         <div class="group-body">
                             <h3>1º Primaria B</h3>
                             <p class="subtitle">Matemáticas</p>
-                            <div class="group-stats">
-                                <span><i class="fas fa-user"></i> 18 Alumnos</span>
-                            </div>
                         </div>
                     </a>
                     <a href="detalles_clase.html" class="group-card">
@@ -124,9 +118,6 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
                         <div class="group-body">
                             <h3>Aula PT</h3>
                             <p class="subtitle">Pedagogía Terapéutica</p>
-                            <div class="group-stats">
-                                <span><i class="fas fa-user"></i> 5 Alumnos</span>
-                            </div>
                         </div>
                     </a>
                     <div class="add-card-dashed" onclick="openModalClase()">
@@ -149,6 +140,7 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
 
 
                 <form id="formCrearClase">
+                    <input type="hidden" id="cursoIdAsociado" value="<?php echo isset($_GET['id']) ? htmlspecialchars($_GET['id']) : ''; ?>">
                     <input type="hidden" id="inputIdClase">
                     <input type="hidden" id="inputColorClase" value="#3b82f6">
                     <input type="hidden" id="inputIconoClase" value="fa-users">

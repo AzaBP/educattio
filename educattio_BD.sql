@@ -105,3 +105,26 @@ ADD COLUMN color_clase VARCHAR(30) DEFAULT 'color-1',
 ADD COLUMN icono_clase VARCHAR(50) DEFAULT 'fa-chalkboard-teacher';
 
 ALTER TABLE cursos ADD color VARCHAR(7) NOT NULL DEFAULT '#4a90e2';
+
+-- Crear la tabla de periodos personalizables por asignatura
+CREATE TABLE IF NOT EXISTS periodos_evaluacion (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_periodo VARCHAR(50) NOT NULL,
+    asignatura_id INT NOT NULL,
+    FOREIGN KEY (asignatura_id) REFERENCES asignaturas(id) ON DELETE CASCADE
+);
+
+-- Asegurarnos de que la tabla items_evaluacion apunte a este nuevo periodo
+-- (Si ya tenías la tabla items_evaluacion creada, borramos la columna vieja y añadimos la nueva)
+ALTER TABLE items_evaluacion DROP COLUMN IF EXISTS periodo_evaluacion;
+ALTER TABLE items_evaluacion ADD COLUMN periodo_id INT NOT NULL;
+ALTER TABLE items_evaluacion ADD FOREIGN KEY (periodo_id) REFERENCES periodos_evaluacion(id) ON DELETE CASCADE;
+
+CREATE TABLE alumnos_asignaturas (
+    alumno_id INT NOT NULL,
+    asignatura_id INT NOT NULL,
+    foto VARCHAR(255) DEFAULT NULL,
+    PRIMARY KEY (alumno_id, asignatura_id),
+    FOREIGN KEY (alumno_id) REFERENCES alumnos(id) ON DELETE CASCADE,
+    FOREIGN KEY (asignatura_id) REFERENCES asignaturas(id) ON DELETE CASCADE
+);
