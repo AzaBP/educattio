@@ -17,7 +17,7 @@ try {
         $_SESSION['usuario_id'] = $usuario['id'];
         $_SESSION['nombre_usuario'] = $user;
         
-        header("Location: portal_cursos.php");
+        header("Location: portal_inicio_usuario.php");
     } else {
         header("Location: ../interfaces/inicio_sesion.html?error=1");
     }
