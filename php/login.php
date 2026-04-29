@@ -97,15 +97,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
         </form>
 
         <div class="login-footer">
-            <!-- Formulario para recuperar contraseña -->
-            <h3>¿Olvidaste tu contraseña?</h3>
-            <form action="procesar_recuperacion.php" method="POST">
-                <label for="email">Correo electrónico:</label>
-                <input type="email" name="email" id="email" required>
-                <button type="submit" name="reset_request">Enviar enlace de recuperación</button>
-            </form>
-
-            <span>¿No tienes cuenta? <a href="../interfaces/registro_usuario.html">Regístrate</a></span>
+            <div class="separator">
+                <span>o</span>
+            </div>
+            
+            <div class="forgot-section">
+                <h3 class="forgot-title">¿Olvidaste tu contraseña?</h3>
+                <p class="forgot-text">Ingresa tu correo y te enviaremos un enlace para restablecerla.</p>
+                <form action="procesar_recuperacion.php" method="POST" class="forgot-form">
+                    <div class="input-group">
+                        <label for="email">Correo electrónico</label>
+                        <input type="email" name="email" id="email" placeholder="usuario@ejemplo.com" required>
+                    </div>
+                    <button type="submit" name="reset_request" class="btn-forgot">Enviar enlace de recuperación</button>
+                </form>
+            </div>
+            
+            <div class="register-link">
+                ¿No tienes cuenta? <a href="registro_usuario.php">Regístrate</a>
+            </div>
         </div>
     </div>
 </main>

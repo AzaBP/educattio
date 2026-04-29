@@ -142,3 +142,11 @@ CREATE TABLE IF NOT EXISTS password_resets (
     -- Clave foránea opcional (asegura que el email exista en usuarios)
     CONSTRAINT fk_password_resets_email FOREIGN KEY (email) REFERENCES usuarios(email) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+--para la verificacion de email
+ALTER TABLE usuarios ADD COLUMN verificado BOOLEAN DEFAULT FALSE;
+ALTER TABLE usuarios ADD COLUMN token_verificacion VARCHAR(64) NULL;
+
+--para la foto de perfil
+ALTER TABLE usuarios ADD COLUMN foto_perfil VARCHAR(255) DEFAULT NULL;
