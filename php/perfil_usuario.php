@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../php/conexion.php';
+include 'conexion.php';
 
 // 1. SEGURIDAD: Si no está logueado, lo echamos al login
 if (!isset($_SESSION['usuario_id'])) {
@@ -12,7 +12,7 @@ $id_usuario = $_SESSION['usuario_id'];
 
 // 2. OBTENER LOS DATOS ACTUALES DEL USUARIO
 try {
-    $sql = "SELECT nombre_completo, nombre_usuario, telefono, fecha_nacimiento, formacion_academica, experiencia_laboral FROM usuarios WHERE id = :id";
+    $sql = "SELECT nombre_completo, nombre_usuario, telefono, fecha_nacimiento, formacion_academica, experiencia_laboral, foto_perfil FROM usuarios WHERE id = :id";
     $stmt = $conexion->prepare($sql);
     $stmt->bindParam(':id', $id_usuario);
     $stmt->execute();
@@ -66,7 +66,7 @@ try {
                 </div>
             <?php endif; ?>
 
-            <form action="../php/actualizar_perfil.php" method="POST" class="profile-grid">
+            <form action="actualizar_perfil.php" method="POST" class="profile-grid">
                 
                 <section class="card personal-card">
                     <h3 class="card-title"><i class="fas fa-user"></i> Datos Personales</h3>
@@ -105,6 +105,36 @@ try {
                     <div class="input-group full-width">
                         <label>Expediente / Experiencia</label>
                         <textarea name="experiencia_laboral" rows="4" placeholder="Detalla tu experiencia laboral previa..."><?php echo htmlspecialchars($datos_usuario['experiencia_laboral'] ?? ''); ?></textarea>
+                    </div>
+                </section>
+
+                <section class="card photo-card">
+                    <h3 class="card-title"><i class="fas fa-camera"></i> Foto de Perfil</h3>
+                    <div class="photo-container">
+                        <?php 
+                        $foto_actual = $datos_usuario['foto_perfil'] ?? '';
+                        // Construir la ruta para el navegador (relativa a la raíz del proyecto)
+                        if (!empty($foto_actual)) {
+                            // La ruta guardada es tipo "uploads/perfil/nombre.jpg"
+                            // Desde perfil_usuario.php (que está en /php/) tenemos que subir un nivel
+                            $foto_url = '../' . $foto_actual;
+                        } else {
+                            $foto_url = '../uploads/perfil/default-avatar.png';
+                        }
+                        ?>
+                        <img src="<?php echo $foto_url; ?>" alt="Foto de perfil" class="profile-photo" id="previewFoto">
+                        
+                        <form action="subir_foto.php" method="POST" enctype="multipart/form-data" class="upload-form" id="uploadForm">
+                            <label for="foto_perfil" class="btn btn-mini"><i class="fas fa-upload"></i> Seleccionar imagen</label>
+                            <input type="file" name="foto_perfil" id="foto_perfil" accept="image/jpeg, image/png, image/webp" style="display: none;">
+                            <button type="submit" name="submit_foto" class="btn btn-mini btn-primary"><i class="fas fa-save"></i> Subir foto</button>
+                        </form>
+                        
+                        <?php if(isset($_GET['foto_ok'])): ?>
+                            <div class="success-msg"><i class="fas fa-check-circle"></i> ¡Foto actualizada!</div>
+                        <?php elseif(isset($_GET['foto_error'])): ?>
+                            <div class="error-msg"><i class="fas fa-exclamation-triangle"></i> Error al subir la foto. Verifica formato y tamaño (max 2MB).</div>
+                        <?php endif; ?>
                     </div>
                 </section>
 
