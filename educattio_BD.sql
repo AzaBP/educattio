@@ -119,11 +119,12 @@ CREATE TABLE IF NOT EXISTS periodos_evaluacion (
 ALTER TABLE items_evaluacion DROP COLUMN IF EXISTS periodo_evaluacion;
 ALTER TABLE items_evaluacion ADD COLUMN periodo_id INT NOT NULL;
 ALTER TABLE items_evaluacion ADD FOREIGN KEY (periodo_id) REFERENCES periodos_evaluacion(id) ON DELETE CASCADE;
+ALTER TABLE alumnos ADD COLUMN foto VARCHAR(255) DEFAULT NULL;
+
 
 CREATE TABLE alumnos_asignaturas (
     alumno_id INT NOT NULL,
     asignatura_id INT NOT NULL,
-    foto VARCHAR(255) DEFAULT NULL,
     PRIMARY KEY (alumno_id, asignatura_id),
     FOREIGN KEY (alumno_id) REFERENCES alumnos(id) ON DELETE CASCADE,
     FOREIGN KEY (asignatura_id) REFERENCES asignaturas(id) ON DELETE CASCADE
