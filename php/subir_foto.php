@@ -3,32 +3,46 @@ session_start();
 require_once 'conexion.php';
 
 if (!isset($_SESSION['usuario_id'])) {
-    die("No autorizado");
+    header("Location: perfil_usuario.php?foto_error=1");
+    exit();
 }
 
 $usuario_id = $_SESSION['usuario_id'];
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_FILES['foto_perfil'])) {
-    die("No se recibió el archivo");
+    header("Location: perfil_usuario.php?foto_error=1");
+    exit();
 }
 
 $archivo = $_FILES['foto_perfil'];
 if ($archivo['error'] !== UPLOAD_ERR_OK) {
-    die("Error en la subida: código " . $archivo['error']);
+    header("Location: perfil_usuario.php?foto_error=1");
+    exit();
 }
 
 // Validaciones
 $maxSize = 2 * 1024 * 1024;
-if ($archivo['size'] > $maxSize) die("El archivo es demasiado grande (máx 2MB)");
+if ($archivo['size'] > $maxSize) {
+    header("Location: perfil_usuario.php?foto_error=1");
+    exit();
+}
 
 $tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
-if (!in_array($archivo['type'], $tiposPermitidos)) die("Formato no permitido");
+if (!in_array($archivo['type'], $tiposPermitidos)) {
+    header("Location: perfil_usuario.php?foto_error=1");
+    exit();
+}
 
-// ✅ Ruta corregida: apunta a la raíz del proyecto
+// Ruta corregida: apunta a la raíz del proyecto
 $directorio = dirname(__DIR__) . '/uploads/perfil/';
 
 if (!is_dir($directorio)) {
     mkdir($directorio, 0777, true);
+}
+
+if (!is_writable($directorio)) {
+    header("Location: perfil_usuario.php?foto_error=1");
+    exit();
 }
 
 $extension = strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
@@ -45,6 +59,10 @@ if (move_uploaded_file($archivo['tmp_name'], $rutaDestino)) {
     header("Location: perfil_usuario.php?foto_ok=1");
     exit();
 } else {
-    die("Error al mover el archivo");
+    header("Location: perfil_usuario.php?foto_error=1");
+    exit();
+}
+} else {
+    die("Error al mover el archivo a: " . $rutaDestino);
 }
 ?>

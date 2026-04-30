@@ -122,8 +122,8 @@ try {
                         ?>
                         <img src="<?php echo $foto_url; ?>" alt="Foto de perfil" class="profile-photo" id="previewFoto">
                         
-                        <form action="subir_foto.php" method="POST" enctype="multipart/form-data" class="upload-form">
-                            <input type="file" name="foto_perfil" id="foto_perfil" accept="image/jpeg, image/png, image/webp" style="display: none;">
+                        <form action="subir_foto.php" method="POST" enctype="multipart/form-data" class="upload-form" id="uploadForm">
+                            <input type="file" name="foto_perfil" id="foto_perfil" accept="image/jpeg, image/png, image/webp">
                             <button type="submit" name="submit_foto">Subir foto</button>
                         </form>
                         
