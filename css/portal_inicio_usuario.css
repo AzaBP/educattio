@@ -184,7 +184,7 @@ body {
 /* --- SECCIÓN 1: OVERVIEW (Stats + Widget Pequeño) --- */
 .dashboard-overview {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 30px;
     margin-bottom: 3rem;
     animation: fadeInUp 0.8s ease-out 0.2s both;
@@ -192,8 +192,14 @@ body {
 
 .stats-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr;
     gap: 20px;
+}
+
+.calendar-widget {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 }
 
 .stat-card {
@@ -493,9 +499,7 @@ body {
 /* RESPONSIVE */
 @media (max-width: 1100px) {
     .dashboard-overview { grid-template-columns: 1fr; }
-    .calendar-widget { flex-direction: row; align-items: center; text-align: left; gap: 20px; }
-    .calendar-body { align-items: flex-start; }
-    .calendar-footer { margin: 0; background: transparent; font-size: 1.5rem; }
+    .calendar-widget { order: -1; margin-bottom: 30px; }
 }
 
 @media (max-width: 900px) {

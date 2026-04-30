@@ -90,11 +90,9 @@ try {
                 </div>
             </div>
 
-                <?php 
-                    $widget_show_events = true;
-                    $widget_title = 'Eventos próximos';
-                    include 'calendar_widget.php'; 
-                ?>    
+            <div class="calendar-widget">
+                <?php include 'calendar_widget.php'; ?>
+            </div>
         </section>
 
         <section class="classes-section">
@@ -170,6 +168,7 @@ try {
 
 <script src="../js/portal_cursos.js"></script>
 <script src="../js/portal_inicio_usuario.js"></script>
+<script src="../js/notificaciones.js"></script>
 <script src="../js/calendario.js"></script>
 
 <script>
