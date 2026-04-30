@@ -8,8 +8,19 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
+// Obtener datos completos del usuario para el sidebar
+$usuario_id = $_SESSION['usuario_id'];
+try {
+    $sql = "SELECT nombre_completo, nombre_usuario, foto_perfil FROM usuarios WHERE id = :id";
+    $stmt = $conexion->prepare($sql);
+    $stmt->execute([':id' => $usuario_id]);
+    $datos_usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $datos_usuario = null;
+}
+
 // Obtener IDs de la URL dinámica
-$asignatura_id = $_GET['asig_id'] ?? null; 
+$asignatura_id = $_GET['asig_id'] ?? null;
 $periodo_id_actual = $_GET['periodo_id'] ?? null;
 
 if (!$asignatura_id || !$periodo_id_actual) {

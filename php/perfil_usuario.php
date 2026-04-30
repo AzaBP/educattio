@@ -113,13 +113,11 @@ try {
                     <div class="photo-container">
                         <?php 
                         $foto_actual = $datos_usuario['foto_perfil'] ?? '';
-                        // Construir la ruta para el navegador (relativa a la raíz del proyecto)
+                        // Construir la ruta para el navegador desde la raíz
                         if (!empty($foto_actual)) {
-                            // La ruta guardada es tipo "uploads/perfil/nombre.jpg"
-                            // Desde perfil_usuario.php (que está en /php/) tenemos que subir un nivel
-                            $foto_url = '../' . $foto_actual;
+                            $foto_url = '/' . ltrim($foto_actual, '/');
                         } else {
-                            $foto_url = '../uploads/perfil/default-avatar.png';
+                            $foto_url = '/uploads/perfil/default-avatar.png';
                         }
                         ?>
                         <img src="<?php echo $foto_url; ?>" alt="Foto de perfil" class="profile-photo" id="previewFoto">
@@ -146,6 +144,20 @@ try {
             </form>
         </main>
     </div>
+
+    <script>
+        // Previsualización de imagen antes de subir
+        document.getElementById('foto_perfil').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewFoto').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
 
 </body>
 </html>

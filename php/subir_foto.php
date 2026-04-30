@@ -35,15 +35,17 @@ if (!is_writable($directorio_destino)) {
 $extension = strtolower(pathinfo($archivo["name"], PATHINFO_EXTENSION));
 $nombre_unico = $usuario_id . '_' . uniqid() . '.' . $extension;
 $ruta_absoluta = $directorio_destino . $nombre_unico;
-$ruta_relativa = "uploads/perfil/" . $nombre_unico;
+$ruta_relativa = "/uploads/perfil/" . $nombre_unico;
 
 if (move_uploaded_file($archivo["tmp_name"], $ruta_absoluta)) {
     // Actualizar BD
     require_once 'conexion.php';
     $stmt = $conexion->prepare("UPDATE usuarios SET foto_perfil = :ruta WHERE id = :id");
     $stmt->execute([':ruta' => $ruta_relativa, ':id' => $usuario_id]);
-    echo "✅ Foto subida correctamente. Ruta guardada: $ruta_relativa<br>";
-    echo "<a href='perfil_usuario.php'>Volver al perfil</a>";
+    
+    // Redirigir con mensaje de éxito
+    header("Location: perfil_usuario.php?foto_ok=1");
+    exit();
 } else {
     die("❌ Error al mover el archivo. Posible problema de permisos en la carpeta temporal o destino.");
 }

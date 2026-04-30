@@ -1,8 +1,17 @@
 <?php
 require_once __DIR__ . '/controllers/auth_check.php';
-// Variables de usuario para el sidebar
-$nombreUsuario = isset($_SESSION['nombre']) ? $_SESSION['nombre'] : 'Usuario';
-$fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons8-profesor-100.png';
+
+// Obtener datos completos del usuario para el sidebar
+$usuario_id = $_SESSION['usuario_id'];
+try {
+    require_once 'conexion.php';
+    $sql = "SELECT nombre_completo, nombre_usuario, foto_perfil FROM usuarios WHERE id = :id";
+    $stmt = $conexion->prepare($sql);
+    $stmt->execute([':id' => $usuario_id]);
+    $datos_usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $datos_usuario = null;
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">

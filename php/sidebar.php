@@ -9,6 +9,12 @@ if (isset($datos_usuario['nombre_completo']) && trim($datos_usuario['nombre_comp
 } elseif (isset($datos_usuario['nombre_usuario'])) {
     $nombre_sidebar = $datos_usuario['nombre_usuario'];
 }
+
+// 3. Determinar la foto de perfil
+$foto_sidebar = '/uploads/perfil/default-avatar.png'; // Imagen por defecto
+if (!empty($datos_usuario['foto_perfil'])) {
+    $foto_sidebar = '/' . ltrim($datos_usuario['foto_perfil'], '/');
+}
 ?>
 
 <aside class="sidebar">
@@ -18,7 +24,7 @@ if (isset($datos_usuario['nombre_completo']) && trim($datos_usuario['nombre_comp
 
     <div class="sidebar-profile">
         <a href="perfil_usuario.php" class="profile-link <?php echo ($pagina_actual == 'perfil_usuario.php') ? 'active' : ''; ?>">
-            <img src="../imagenes/icons8-profesor-100.png" alt="Perfil" class="sidebar-pic">
+            <img src="<?php echo htmlspecialchars($foto_sidebar); ?>" alt="Perfil" class="sidebar-pic">
             <span class="edit-icon"><i class="fas fa-pen"></i></span>
         </a>
         <p class="sidebar-user-name"><?php echo htmlspecialchars($nombre_sidebar); ?></p>

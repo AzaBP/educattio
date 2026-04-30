@@ -4,6 +4,19 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: login.php");
     exit();
 }
+
+// Obtener datos completos del usuario para el sidebar
+$usuario_id = $_SESSION['usuario_id'];
+try {
+    include 'conexion.php';
+    $sql = "SELECT nombre_completo, nombre_usuario, foto_perfil FROM usuarios WHERE id = :id";
+    $stmt = $conexion->prepare($sql);
+    $stmt->execute([':id' => $usuario_id]);
+    $datos_usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $datos_usuario = null;
+}
+
 $nombre_usuario = $_SESSION['nombre_usuario'];
 ?>
 <!DOCTYPE html>
