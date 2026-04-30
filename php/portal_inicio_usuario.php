@@ -1,6 +1,9 @@
 <?php
 // 1. INICIO DEL "CEREBRO" (PHP)
-session_start(); 
+session_start();
+
+require_once 'conexion.php';  
+
 
 // Seguridad: Si no hay un nombre de usuario en la sesión, el sistema te expulsa al login
 if (!isset($_SESSION['nombre_usuario'])) {
@@ -10,6 +13,26 @@ if (!isset($_SESSION['nombre_usuario'])) {
 
 // Guardamos el nombre en una variable para usarlo abajo
 $nombre_usuario = $_SESSION['nombre_usuario'];
+
+// Guardamos el nombre en una variable para usarlo abajo
+$usuario_id = $_SESSION['usuario_id'];
+
+// Calcular año académico actual y contar cursos activos (igual que antes)
+$anio_actual = date('Y');
+$mes_actual = date('n');
+if ($mes_actual >= 9) {
+    $anio_academico = $anio_actual . '-' . ($anio_actual + 1);
+} else {
+    $anio_academico = ($anio_actual - 1) . '-' . $anio_actual;
+}
+try {
+    $sql = "SELECT COUNT(*) FROM cursos WHERE usuario_id = :usuario_id AND anio_academico = :anio_academico";
+    $stmt = $conexion->prepare($sql);
+    $stmt->execute([':usuario_id' => $usuario_id, ':anio_academico' => $anio_academico]);
+    $total_cursos_activos = $stmt->fetchColumn();
+} catch (PDOException $e) {
+    $total_cursos_activos = 0;
+}
 ?>
 
 <!DOCTYPE html>
@@ -40,7 +63,18 @@ $nombre_usuario = $_SESSION['nombre_usuario'];
                 <p>Hoy es un buen día para evaluar.</p>
             </div>
             
-            <!-- 🔔 ELIMINADO EL BOTÓN DE NOTIFICACIONES (campana) -->
+            <div class="user-profile">
+                <div class="notification-bell" id="notificationBell">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notificationCount">0</span>
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <h4>Próximos eventos (próximos 7 días)</h4>
+                        <ul id="notificationList">
+                            <li>Cargando...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </header>
 
         <section class="dashboard-overview">
@@ -50,32 +84,20 @@ $nombre_usuario = $_SESSION['nombre_usuario'];
                         <i class="fas fa-chalkboard"></i>
                     </div>
                     <div class="stat-info">
-                        <h3>3</h3>
+                        <h3><?php echo $total_cursos_activos; ?></h3>
                         <p>Cursos Activos</p>
                     </div>
                 </div>
-                </div>
-
-            <div class="calendar-widget">
-                <div class="calendar-header"><span id="current-day-name">--</span></div>
-                <div class="calendar-body">
-                    <span id="current-day-number">--</span>
-                    <span id="current-month-year">--</span>
-                </div>
-                <div class="calendar-footer">
-                    <i class="far fa-clock"></i>
-                    <span id="real-time-clock">--:--:--</span>
-                </div>
             </div>
+
+                <?php 
+                    $widget_show_events = true;
+                    $widget_title = 'Eventos próximos';
+                    include 'calendar_widget.php'; 
+                ?>    
         </section>
 
         <section class="classes-section">
-            <div class="section-header">
-                <h2>Mis Cursos</h2>
-                <!-- 🔁 Botón cambiado: "Nuevo Curso" y llama a openModal() -->
-                <button class="btn-add-class" onclick="openModal()"><i class="fas fa-plus"></i> Nuevo Curso</button>
-            </div>
-
             <!-- Aquí podrías listar los cursos reales del usuario (similar a portal_cursos.php) -->
             <div class="classes-grid" id="cursos-grid">
                 <!-- Se llenará dinámicamente con JS o con PHP, pero por ahora vacío -->
@@ -92,7 +114,7 @@ $nombre_usuario = $_SESSION['nombre_usuario'];
         
         <div class="modal-header">
             <h3>Crear nuevo curso</h3>
-            <button class="close-btn" onclick="closeModal()">
+            <button class="close-btn" onclick="closeModalCurso()">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -138,7 +160,7 @@ $nombre_usuario = $_SESSION['nombre_usuario'];
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                <button type="button" class="btn-cancel" onclick="closeModalCurso()">Cancelar</button>
                 <button type="submit" class="btn-save" id="btnGuardarCurso">Guardar</button>
             </div>
         </form>
@@ -146,10 +168,137 @@ $nombre_usuario = $_SESSION['nombre_usuario'];
     </div>
 </div>
 
-<!-- Incluimos el mismo JavaScript que usas en portal_cursos.php -->
 <script src="../js/portal_cursos.js"></script>
-<!-- También incluimos el JS del portal de inicio (para calendario, etc.) -->
 <script src="../js/portal_inicio_usuario.js"></script>
+<script src="../js/calendario.js"></script>
+
+<script>
+    // ========================
+    // MANEJO DEL MODAL DE CURSO
+    // ========================
+    const modalCurso = document.getElementById('modalCurso');
+    const formCurso = document.getElementById('formCrearCurso');
+
+    window.openModalCurso = function() {
+        if (modalCurso) modalCurso.style.display = 'flex';
+        // Resetear formulario
+        formCurso.reset();
+        document.getElementById('editCursoId').value = '';
+        document.getElementById('inputColor').value = '#ff7a59';
+        // Resetear selección de color
+        document.querySelectorAll('.color-dot').forEach(dot => dot.style.border = 'none');
+    };
+
+    window.closeModalCurso = function() {
+        if (modalCurso) modalCurso.style.display = 'none';
+    };
+
+    // Funciones para los colores
+    window.selectPresetColor = function(color, element) {
+        document.getElementById('inputColor').value = color;
+        document.querySelectorAll('.color-dot').forEach(dot => dot.style.border = 'none');
+        if (element) element.style.border = '2px solid #333';
+    };
+
+    window.deselectPresets = function() {
+        document.querySelectorAll('.color-dot').forEach(dot => dot.style.border = 'none');
+    };
+
+    // Envío del formulario vía AJAX
+    formCurso.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const payload = {
+            nombre_centro: document.getElementById('inputNombreCentro').value.trim(),
+            poblacion: document.getElementById('inputPoblacion').value.trim(),
+            provincia: document.getElementById('inputProvincia').value.trim(),
+            anio: document.getElementById('inputAnio').value.trim(),
+            color: document.getElementById('inputColor').value
+        };
+
+        fetch('../php/guardar_curso.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert('Curso creado correctamente');
+                closeModalCurso();
+                // Opcional: actualizar el contador de cursos activos sin recargar toda la página
+                // Por ahora recargamos para que se actualice el número
+                location.reload();
+            } else {
+                alert('Error: ' + (data.error || 'No se pudo guardar el curso'));
+            }
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            alert('Error de conexión con el servidor');
+        });
+    });
+
+    // Cerrar modal si se hace clic fuera
+    window.onclick = function(event) {
+        if (event.target === modalCurso) closeModalCurso();
+    };
+
+    
+    // Calendario y reloj 
+    function updateCalendarAndClock() {
+        const now = new Date();
+        const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        document.getElementById('current-day-name').textContent = days[now.getDay()];
+        document.getElementById('current-day-number').textContent = now.getDate();
+        document.getElementById('current-month-year').textContent = `${months[now.getMonth()]} ${now.getFullYear()}`;
+        document.getElementById('real-time-clock').textContent = now.toLocaleTimeString('es-ES');
+    }
+    setInterval(updateCalendarAndClock, 1000);
+    updateCalendarAndClock();
+
+    // Cargar notificaciones de eventos próximos
+    function cargarNotificaciones() {
+        fetch('../php/obtener_notificaciones.php')
+            .then(res => res.json())
+            .then(data => {
+                const count = data.length;
+                document.getElementById('notificationCount').innerText = count;
+                const list = document.getElementById('notificationList');
+                list.innerHTML = '';
+                if (count === 0) {
+                    list.innerHTML = '<li>No hay eventos próximos</li>';
+                } else {
+                    data.forEach(ev => {
+                        const fecha = new Date(ev.fecha);
+                        const fechaStr = fecha.toLocaleDateString('es-ES');
+                        const li = document.createElement('li');
+                        li.innerHTML = `<strong>${escapeHtml(ev.titulo)}</strong> <small>${fechaStr}</small><br><span style="font-size:0.75rem;">${ev.tipo_evento}</span>`;
+                        list.appendChild(li);
+                    });
+                }
+            })
+            .catch(err => {
+                console.error('Error cargando notificaciones:', err);
+                document.getElementById('notificationList').innerHTML = '<li>Error al cargar</li>';
+            });
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // Cargar cada 60 segundos
+    cargarNotificaciones();
+    setInterval(cargarNotificaciones, 60000);
+</script>
 
 </body>
 </html>
