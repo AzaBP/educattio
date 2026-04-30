@@ -23,20 +23,8 @@ $fotoUsuario = $_SESSION['foto'] ?? '../imagenes/dolphin.png';
 
 
     <div class="dashboard-layout">
-        <aside class="sidebar">
-        <div class="sidebar-header">
-            <h2>Educattio</h2>
-        </div>
-
-        <div class="sidebar-profile">
-            <a href="perfil_usuario.php" class="profile-link">
-                <img src="../imagenes/icons8-profesor-100.png" alt="Perfil" class="sidebar-pic">
-                <span class="edit-icon"><i class="fas fa-pen"></i></span>
-            </a>
-            <p class="sidebar-user-name">
-                <?php echo htmlspecialchars($nombre_usuario); ?>
-            </p>
-        </div>
+        
+        <?php include 'sidebar.php'; ?>
         
         <nav class="sidebar-nav">
             <a href="portal_inicio_usuario.php" class="nav-item active"><i class="fas fa-home"></i> Inicio</a>

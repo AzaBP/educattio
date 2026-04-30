@@ -36,9 +36,9 @@ if (isset($datos_usuario['nombre_completo']) && trim($datos_usuario['nombre_comp
         <a href="ajustes.php" class="nav-item <?php echo ($pagina_actual == 'ajustes.php') ? 'active' : ''; ?>">
             <i class="fas fa-cog"></i> <span>Ajustes</span>
         </a>
-        
-        <a href="../php/logout.php" class="nav-item text-danger">
-            <i class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span>
-        </a>
     </nav>
+    
+    <div class="sidebar-footer">
+        <a href="logout.php" class="nav-item logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+    </div>
 </aside>
