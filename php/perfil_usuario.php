@@ -117,7 +117,7 @@ try {
                         if (!empty($foto_actual)) {
                             $foto_url = '/' . ltrim($foto_actual, '/');
                         } else {
-                            $foto_url = '/uploads/perfil/default-avatar.png';
+                            $foto_url = '../uploads/perfil/default-avatar.png';
                         }
                         ?>
                         <img src="<?php echo $foto_url; ?>" alt="Foto de perfil" class="profile-photo" id="previewFoto">

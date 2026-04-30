@@ -11,7 +11,7 @@ if (isset($datos_usuario['nombre_completo']) && trim($datos_usuario['nombre_comp
 }
 
 // 3. Determinar la foto de perfil
-$foto_sidebar = '/uploads/perfil/default-avatar.png'; // Imagen por defecto
+$foto_sidebar = '../uploads/perfil/default-avatar.png'; // Imagen por defecto
 if (!empty($datos_usuario['foto_perfil'])) {
     $foto_sidebar = '/' . ltrim($datos_usuario['foto_perfil'], '/');
 }

@@ -16,7 +16,7 @@ $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 // Si no tiene foto personalizada, usamos una por defecto.
 // Asegúrate de tener una imagen por defecto en tu proyecto.
 if (empty($usuario['foto_perfil'])) {
-    $usuario['foto_perfil'] = "/uploads/perfil/default-avatar.png";
+    $usuario['foto_perfil'] = "../uploads/perfil/default-avatar.png";
 } else {
     $usuario['foto_perfil'] = '/' . ltrim($usuario['foto_perfil'], '/');
 }

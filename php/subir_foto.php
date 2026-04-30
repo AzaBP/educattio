@@ -35,7 +35,7 @@ if (!is_writable($directorio_destino)) {
 $extension = strtolower(pathinfo($archivo["name"], PATHINFO_EXTENSION));
 $nombre_unico = $usuario_id . '_' . uniqid() . '.' . $extension;
 $ruta_absoluta = $directorio_destino . $nombre_unico;
-$ruta_relativa = "/uploads/perfil/" . $nombre_unico;
+$ruta_relativa = "../uploads/perfil/" . $nombre_unico;
 
 if (move_uploaded_file($archivo["tmp_name"], $ruta_absoluta)) {
     // Actualizar BD
