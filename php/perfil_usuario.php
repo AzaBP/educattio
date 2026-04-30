@@ -122,10 +122,9 @@ try {
                         ?>
                         <img src="<?php echo $foto_url; ?>" alt="Foto de perfil" class="profile-photo" id="previewFoto">
                         
-                        <form action="subir_foto.php" method="POST" enctype="multipart/form-data" class="upload-form" id="uploadForm">
-                            <label for="foto_perfil" class="btn btn-mini"><i class="fas fa-upload"></i> Seleccionar imagen</label>
+                        <form action="subir_foto.php" method="POST" enctype="multipart/form-data" class="upload-form">
                             <input type="file" name="foto_perfil" id="foto_perfil" accept="image/jpeg, image/png, image/webp" style="display: none;">
-                            <button type="submit" name="submit_foto" class="btn btn-mini btn-primary"><i class="fas fa-save"></i> Subir foto</button>
+                            <button type="submit" name="submit_foto">Subir foto</button>
                         </form>
                         
                         <?php if(isset($_GET['foto_ok'])): ?>

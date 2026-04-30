@@ -24,17 +24,23 @@ if ($archivo['size'] > $maxSize) die("El archivo es demasiado grande (máx 2MB)"
 $tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
 if (!in_array($archivo['type'], $tiposPermitidos)) die("Formato no permitido");
 
-$directorio = 'uploads/perfil/';
-if (!is_dir($directorio)) mkdir($directorio, 0777, true);
+// ✅ Ruta corregida: apunta a la raíz del proyecto
+$directorio = dirname(__DIR__) . '/uploads/perfil/';
+
+if (!is_dir($directorio)) {
+    mkdir($directorio, 0777, true);
+}
 
 $extension = strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
 $nombreUnico = $usuario_id . '_' . uniqid() . '.' . $extension;
 $rutaDestino = $directorio . $nombreUnico;
 
+// Guardar en BD la ruta relativa (desde la raíz del proyecto)
+$rutaRelativa = 'uploads/perfil/' . $nombreUnico;
+
 if (move_uploaded_file($archivo['tmp_name'], $rutaDestino)) {
-    // Actualizar BD
     $stmt = $conexion->prepare("UPDATE usuarios SET foto_perfil = :ruta WHERE id = :id");
-    $stmt->execute([':ruta' => $rutaDestino, ':id' => $usuario_id]);
+    $stmt->execute([':ruta' => $rutaRelativa, ':id' => $usuario_id]);
 
     header("Location: perfil_usuario.php?foto_ok=1");
     exit();
