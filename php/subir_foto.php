@@ -1,52 +1,44 @@
 <?php
 session_start();
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+require_once 'conexion.php';
 
-// Verificar login
 if (!isset($_SESSION['usuario_id'])) {
-    die("❌ No has iniciado sesión.");
+    die("No autorizado");
 }
+
 $usuario_id = $_SESSION['usuario_id'];
 
-if ($_SERVER["REQUEST_METHOD"] != "POST") {
-    die("❌ No es método POST.");
-}
-if (!isset($_FILES["foto_perfil"]) || $_FILES["foto_perfil"]["error"] != UPLOAD_ERR_OK) {
-    die("❌ No se recibió el archivo o hubo error. Error: " . ($_FILES["foto_perfil"]["error"] ?? 'No file'));
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_FILES['foto_perfil'])) {
+    die("No se recibió el archivo");
 }
 
-$archivo = $_FILES["foto_perfil"];
+$archivo = $_FILES['foto_perfil'];
+if ($archivo['error'] !== UPLOAD_ERR_OK) {
+    die("Error en la subida: código " . $archivo['error']);
+}
+
 // Validaciones
-if ($archivo["size"] > 2 * 1024 * 1024) die("❌ Archivo demasiado grande (>2MB)");
-$tipo = $archivo["type"];
-if (!in_array($tipo, ['image/jpeg','image/png','image/webp'])) die("❌ Tipo no permitido: $tipo");
-if (!getimagesize($archivo["tmp_name"])) die("❌ No es una imagen válida.");
+$maxSize = 2 * 1024 * 1024;
+if ($archivo['size'] > $maxSize) die("El archivo es demasiado grande (máx 2MB)");
 
-// Directorio de destino
-$directorio_destino = dirname(__DIR__) . "/uploads/perfil/";
-if (!file_exists($directorio_destino)) {
-    mkdir($directorio_destino, 0777, true);
-}
-if (!is_writable($directorio_destino)) {
-    die("❌ El directorio no tiene permisos de escritura: " . $directorio_destino);
-}
+$tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
+if (!in_array($archivo['type'], $tiposPermitidos)) die("Formato no permitido");
 
-$extension = strtolower(pathinfo($archivo["name"], PATHINFO_EXTENSION));
-$nombre_unico = $usuario_id . '_' . uniqid() . '.' . $extension;
-$ruta_absoluta = $directorio_destino . $nombre_unico;
-$ruta_relativa = "../uploads/perfil/" . $nombre_unico;
+$directorio = 'uploads/perfil/';
+if (!is_dir($directorio)) mkdir($directorio, 0777, true);
 
-if (move_uploaded_file($archivo["tmp_name"], $ruta_absoluta)) {
+$extension = strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
+$nombreUnico = $usuario_id . '_' . uniqid() . '.' . $extension;
+$rutaDestino = $directorio . $nombreUnico;
+
+if (move_uploaded_file($archivo['tmp_name'], $rutaDestino)) {
     // Actualizar BD
-    require_once 'conexion.php';
     $stmt = $conexion->prepare("UPDATE usuarios SET foto_perfil = :ruta WHERE id = :id");
-    $stmt->execute([':ruta' => $ruta_relativa, ':id' => $usuario_id]);
-    
-    // Redirigir con mensaje de éxito
+    $stmt->execute([':ruta' => $rutaDestino, ':id' => $usuario_id]);
+
     header("Location: perfil_usuario.php?foto_ok=1");
     exit();
 } else {
-    die("❌ Error al mover el archivo. Posible problema de permisos en la carpeta temporal o destino.");
+    die("Error al mover el archivo");
 }
 ?>

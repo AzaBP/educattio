@@ -113,9 +113,9 @@ try {
                     <div class="photo-container">
                         <?php 
                         $foto_actual = $datos_usuario['foto_perfil'] ?? '';
-                        // Construir la ruta para el navegador desde la raíz
+                        // Construir la ruta para el navegador desde /php/ hacia uploads/perfil
                         if (!empty($foto_actual)) {
-                            $foto_url = '/' . ltrim($foto_actual, '/');
+                            $foto_url = '../' . ltrim($foto_actual, '/');
                         } else {
                             $foto_url = '../uploads/perfil/default-avatar.png';
                         }
