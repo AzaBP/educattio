@@ -38,6 +38,9 @@ if (!empty($datos_usuario['foto_perfil'])) {
         <a href="portal_cursos.php" class="nav-item <?php echo ($pagina_actual == 'portal_cursos.php') ? 'active' : ''; ?>">
             <i class="fas fa-book"></i> <span>Mis Cursos</span>
         </a>
+        <a href="incidencias.php" class="nav-item <?php echo ($pagina_actual == 'incidencias.php') ? 'active' : ''; ?>">
+            <i class="fas fa-file-alt"></i> <span>Incidencias</span>
+        </a>
         
         <a href="ajustes.php" class="nav-item <?php echo ($pagina_actual == 'ajustes.php') ? 'active' : ''; ?>">
             <i class="fas fa-cog"></i> <span>Ajustes</span>

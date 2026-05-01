@@ -23,8 +23,8 @@ try {
         $asig['periodos'] = $stmt_per->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // 2. Obtener Alumnos (con foto y observaciones)
-    $sql_alumnos = "SELECT id, nombre_alumno, foto, observaciones FROM alumnos WHERE clase_id = :id ORDER BY nombre_alumno ASC";
+    // 2. Obtener Alumnos (con foto, observaciones y datos personales)
+    $sql_alumnos = "SELECT id, nombre_alumno, foto, observaciones, datos_personales FROM alumnos WHERE clase_id = :id ORDER BY nombre_alumno ASC";
     $stmt_al = $conexion->prepare($sql_alumnos);
     $stmt_al->execute([':id' => $clase_id]);
     $alumnos = $stmt_al->fetchAll(PDO::FETCH_ASSOC);

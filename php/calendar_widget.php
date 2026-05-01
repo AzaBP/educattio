@@ -91,6 +91,21 @@ $today = date('Y-m-d');
     </div>
 </div>
 
+<div id="eventDetailModal" class="modal-overlay" style="display:none;">
+    <div class="modal-window" style="max-width: 520px;">
+        <div class="modal-header">
+            <h3>Eventos del día</h3>
+            <button class="close-btn" onclick="hideEventDetailModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="eventDetailContent">
+            <p class="text-muted">Selecciona una fecha con eventos para ver más detalles.</p>
+        </div>
+        <div class="modal-footer" style="justify-content:flex-end;">
+            <button type="button" class="btn btn-secondary" onclick="hideEventDetailModal()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
 <style>
 .custom-calendar-widget {
     background: white;
@@ -210,7 +225,6 @@ document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
     day.addEventListener('click', function() {
         const fecha = this.dataset.fecha;
         if (fecha) {
-            // Llamar a función global para mostrar modal de eventos (definir en main page)
             if (typeof window.showEventModal === 'function') {
                 window.showEventModal(fecha);
             } else {
@@ -219,4 +233,49 @@ document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
         }
     });
 });
+
+window.showEventModal = async function(fecha) {
+    const modal = document.getElementById('eventDetailModal');
+    const content = document.getElementById('eventDetailContent');
+    content.innerHTML = '<div class="p-3 text-center">Cargando eventos...</div>';
+    modal.style.display = 'flex';
+
+    try {
+        const res = await fetch('obtener_eventos_fecha.php?fecha=' + encodeURIComponent(fecha));
+        const eventos = await res.json();
+        if (!eventos.length) {
+            content.innerHTML = '<p class="text-muted">No hay eventos para esta fecha.</p>';
+            return;
+        }
+
+        content.innerHTML = eventos.map(evento => {
+            return `
+                <div class="event-detail-card" style="border:1px solid #e2e8f0;border-radius:14px;padding:16px;margin-bottom:12px;">
+                    <h4 style="margin:0 0 8px;">${escapeHtml(evento.titulo)}</h4>
+                    <p style="margin:0 6px 10px; color:#4b5563; font-size:0.95rem;"><strong>Tipo:</strong> ${escapeHtml(evento.tipo_evento)}</p>
+                    <p style="margin:0 6px 10px; color:#4b5563; font-size:0.95rem;"><strong>Centro:</strong> ${escapeHtml(evento.nombre_centro || 'General')}<br>
+                        <strong>Curso:</strong> ${escapeHtml(evento.anio_academico || 'N/A')}<br>
+                        <strong>Clase:</strong> ${escapeHtml(evento.nombre_clase || 'General')}<br>
+                        <strong>Asignatura:</strong> ${escapeHtml(evento.materia_principal || 'N/D')}</p>
+                    <p style="margin:0 6px 0; color:#334155; font-size:0.95rem;"><strong>Descripción:</strong><br>${escapeHtml(evento.descripcion || 'Sin descripción')}</p>
+                </div>
+            `;
+        }).join('');
+    } catch (err) {
+        content.innerHTML = '<p class="text-danger">Error cargando eventos.</p>';
+        console.error(err);
+    }
+};
+
+window.hideEventDetailModal = function() {
+    document.getElementById('eventDetailModal').style.display = 'none';
+};
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.toString().replace(/[&<>"]+/g, function(match) {
+        const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
+        return escape[match];
+    });
+}
 </script>

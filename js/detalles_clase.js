@@ -1,12 +1,24 @@
 // --- EDICIÓN DE ALUMNO ---
+function parseDatosPersonales(datos) {
+    if (!datos) return { telefono: '', contacto: '', alergias: '', enfermedades: '' };
+    try {
+        return typeof datos === 'string' ? JSON.parse(datos) : datos;
+    } catch (e) {
+        return { telefono: '', contacto: '', alergias: '', enfermedades: '' };
+    }
+}
+
 async function abrirEditarAlumno(id) {
-    // Buscar datos del alumno en la lista ya cargada
     const alumno = window.ULTIMOS_ALUMNOS?.find(a => a.id == id);
     if (!alumno) return;
+    const datos = parseDatosPersonales(alumno.datos_personales);
     document.getElementById('editAlumnoId').value = alumno.id;
     document.getElementById('editNombreAlumno').value = alumno.nombre_alumno;
-    document.getElementById('editObsAlumno').value = alumno.observaciones || '';
+    document.getElementById('editTelefonoAlumno').value = datos.telefono || '';
+    document.getElementById('editContactoAlumno').value = datos.contacto || '';
+    document.getElementById('editAlergiasAlumno').value = datos.alergias || '';
     document.getElementById('editFotoAlumno').value = alumno.foto || '';
+    document.getElementById('editObsAlumno').value = alumno.observaciones || '';
     renderizarIconosEditar();
     document.getElementById('modalEditarAlumno').style.display = 'flex';
 }
@@ -35,11 +47,14 @@ async function guardarEdicionAlumno(e) {
     const nombre = document.getElementById('editNombreAlumno').value;
     const obs = document.getElementById('editObsAlumno').value;
     const foto = document.getElementById('editFotoAlumno').value;
+    const telefono = document.getElementById('editTelefonoAlumno').value;
+    const contacto = document.getElementById('editContactoAlumno').value;
+    const alergias = document.getElementById('editAlergiasAlumno').value;
     try {
         const response = await fetch('controllers/editar_alumno.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, nombre_alumno: nombre, observaciones: obs, foto })
+            body: JSON.stringify({ id, nombre_alumno: nombre, observaciones: obs, foto, telefono, contacto, alergias })
         });
         const res = await response.json();
         if (res.status === 'success') {
@@ -69,14 +84,11 @@ async function cargarDatosClase() {
 
 function renderizarAsignaturas(asignaturas) {
     const contenedor = document.getElementById('contenedor-asignaturas');
-    // Mantenemos el botón de añadir que ya estaba en el HTML (primer hijo col-md-4)
-    const botonAdd = contenedor.querySelector('.col-md-4').outerHTML; 
+    const botonAdd = contenedor.querySelector('.col-md-4').outerHTML;
     contenedor.innerHTML = botonAdd;
 
     asignaturas.forEach(asig => {
         let htmlPeriodos = '';
-        
-        // 1. Generar botones de periodos existentes con su botón de eliminar (la "X")
         asig.periodos.forEach(p => {
             htmlPeriodos += `
                 <div class="btn-group m-1 shadow-sm" role="group">
@@ -85,48 +97,47 @@ function renderizarAsignaturas(asignaturas) {
                        ${p.nombre_periodo}
                     </a>
                     <button type="button" class="btn btn-outline-danger btn-sm" 
-                            onclick="eliminarPeriodo(${p.id}, '${p.nombre_periodo}')">
+                            onclick="event.stopPropagation(); eliminarPeriodo(${p.id}, '${p.nombre_periodo}')">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>`;
         });
 
-        // 2. Lógica de Sugerencias (Trimestres / Cuatrimestres)
-        // Se muestran si no hay periodos o si solo está el periodo "Final" por defecto
         let puedeSugerir = asig.periodos.length === 0 || (asig.periodos.length === 1 && asig.periodos[0].nombre_periodo === 'Final');
-        
         let htmlSugerencias = '';
         if (puedeSugerir) {
             htmlSugerencias = `
                 <div class="mt-3 text-end d-flex justify-content-end align-items-center flex-wrap gap-2" style="font-size: 0.85rem;">
                     <span class="text-muted me-1"><i class="fas fa-magic"></i> Añadir:</span>
-                    <button class="btn btn-sm btn-link text-decoration-none text-muted p-0 hover-primary" onclick="enviarPeriodos(${asig.id}, ['1ª Evaluación', '2ª Evaluación', '3ª Evaluación'])">3 Trimestres</button>
+                    <button class="btn btn-sm btn-link text-decoration-none text-muted p-0 hover-primary" onclick="event.stopPropagation(); enviarPeriodos(${asig.id}, ['1ª Evaluación', '2ª Evaluación', '3ª Evaluación'])">3 Trimestres</button>
                     <span class="text-muted" style="opacity: 0.5;">|</span>
-                    <button class="btn btn-sm btn-link text-decoration-none text-muted p-0 hover-primary" onclick="enviarPeriodos(${asig.id}, ['1er Cuatrimestre', '2º Cuatrimestre'])">2 Cuatrimestres</button>
+                    <button class="btn btn-sm btn-link text-decoration-none text-muted p-0 hover-primary" onclick="event.stopPropagation(); enviarPeriodos(${asig.id}, ['1er Cuatrimestre', '2º Cuatrimestre'])">2 Cuatrimestres</button>
                     <span class="text-muted" style="opacity: 0.5;">|</span>
-                    <button class="btn btn-sm btn-link text-decoration-none text-primary p-0 fw-bold" onclick="crearPeriodoPersonalizado(${asig.id})">Personalizado <i class="fas fa-plus"></i></button>
+                    <button class="btn btn-sm btn-link text-decoration-none text-primary p-0 fw-bold" onclick="event.stopPropagation(); crearPeriodoPersonalizado(${asig.id})">Personalizado <i class="fas fa-plus"></i></button>
                 </div>`;
         } else {
-            // Botón simple de añadir si ya tiene una estructura definida
             htmlSugerencias = `
                 <div class="mt-3 text-end">
-                    <button class="btn btn-sm btn-link text-decoration-none text-muted p-0" style="font-size: 0.85rem;" onclick="crearPeriodoPersonalizado(${asig.id})">
+                    <button class="btn btn-sm btn-link text-decoration-none text-muted p-0" style="font-size: 0.85rem;" onclick="event.stopPropagation(); crearPeriodoPersonalizado(${asig.id})">
                         <i class="fas fa-plus"></i> Añadir otro periodo
                     </button>
                 </div>`;
         }
 
-        // 3. Crear la tarjeta final
         const card = document.createElement('div');
         card.className = 'col-md-4 mb-4';
         card.innerHTML = `
-            <div class="card h-100 shadow-sm border-0" style="border-radius: 15px;">
+            <div class="card card-clickable h-100 shadow-sm border-0" style="border-radius: 18px; cursor: pointer;">
                 <div class="card-body d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-start mb-3">
-                        <h5 class="card-title fw-bold m-0" style="font-family: 'Georgia', serif; color: #1f2937;">${asig.nombre_asignatura}</h5>
+                        <div>
+                            <h5 class="card-title fw-bold m-0" style="font-family: 'Georgia', serif; color: #1f2937;">${asig.nombre_asignatura}</h5>
+                            <p class="text-muted mb-0" style="font-size: 0.95rem;">Ver temas y evaluaciones</p>
+                        </div>
+                        <span class="badge bg-primary">Asignatura</span>
                     </div>
-                    
-                    <div class="d-flex flex-wrap mb-2">
+
+                    <div class="d-flex flex-wrap mb-3">
                         ${htmlPeriodos}
                     </div>
 
@@ -134,13 +145,17 @@ function renderizarAsignaturas(asignaturas) {
                         ${htmlSugerencias}
                         <hr class="my-2 opacity-25">
                         <div class="text-start">
-                            <button class="btn btn-sm btn-link text-decoration-none p-0 text-secondary" onclick="abrirMatriculaAsig(${asig.id}, '${asig.nombre_asignatura.replace(/'/g, "\\'")}')">
+                            <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 text-secondary" onclick="event.stopPropagation(); abrirMatriculaAsig(${asig.id}, '${asig.nombre_asignatura.replace(/'/g, "\\'")}')">
                                 <i class="fas fa-users-cog"></i> Gestionar Alumnos
                             </button>
                         </div>
                     </div>
                 </div>
             </div>`;
+
+        card.querySelector('.card-clickable').addEventListener('click', () => {
+            window.location.href = `detalles_asignatura.php?id=${asig.id}`;
+        });
         contenedor.appendChild(card);
     });
 }
@@ -149,20 +164,36 @@ function renderizarAlumnos(alumnos) {
     const cuerpo = document.getElementById('cuerpo-tabla-alumnos');
     cuerpo.innerHTML = '';
     alumnos.forEach((alum, index) => {
+        const datos = parseDatosPersonales(alum.datos_personales);
+        const contactoHtml = datos.contacto || datos.telefono ? `
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                ${datos.contacto ? `<span class="fw-bold">${escapeHtml(datos.contacto)}</span>` : ''}
+                ${datos.telefono ? `<span class="text-muted" style="font-size:0.92rem;">${escapeHtml(datos.telefono)}</span>` : ''}
+            </div>` : '<span class="text-muted">Sin datos</span>';
+        const saludHtml = datos.alergias || datos.enfermedades ? `
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                ${datos.alergias ? `<span><strong>Alergias:</strong> ${escapeHtml(datos.alergias)}</span>` : ''}
+                ${datos.enfermedades ? `<span><strong>Enf.:</strong> ${escapeHtml(datos.enfermedades)}</span>` : ''}
+            </div>` : '<span class="text-muted">Ninguna información</span>';
+
         const tr = document.createElement('tr');
-            tr.innerHTML = `
+        tr.innerHTML = `
                 <td>${index + 1}</td>
                 <td>
                     <div style="display:flex;align-items:center;gap:10px;">
                         <div style="width:38px;height:38px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;overflow:hidden;">
                             ${alum.foto ? `<img src="../icons/${alum.foto}" alt="${alum.nombre_alumno}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : `<span style='font-weight:bold;color:#888;'>${alum.nombre_alumno.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase()}</span>`}
                         </div>
-                        <span class="fw-bold">${alum.nombre_alumno}</span>
+                        <div>
+                            <div class="fw-bold">${escapeHtml(alum.nombre_alumno)}</div>
+                            <div class="text-muted" style="font-size:0.9rem;">${alum.observaciones ? escapeHtml(alum.observaciones) : 'Sin observaciones'}</div>
+                        </div>
                     </div>
                 </td>
-                <td>${alum.observaciones ? alum.observaciones : '-'}</td>
+                <td>${contactoHtml}</td>
+                <td>${saludHtml}</td>
                 <td class="text-end">
-                    <button class="btn btn-sm btn-outline-primary" onclick="abrirMatriculaAlum(${alum.id}, '${alum.nombre_alumno}')">
+                    <button class="btn btn-sm btn-outline-primary" onclick="abrirMatriculaAlum(${alum.id}, '${alum.nombre_alumno.replace(/'/g, "\\'")}')">
                         <i class="fas fa-book"></i> Asignaturas
                     </button>
                     <button class="btn btn-sm btn-outline-secondary ms-1" onclick="abrirEditarAlumno(${alum.id})">
@@ -170,6 +201,14 @@ function renderizarAlumnos(alumnos) {
                     </button>
                 </td>`;
         cuerpo.appendChild(tr);
+    });
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.toString().replace(/[&<>"]+/g, function(match) {
+        const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
+        return escape[match];
     });
 }
 
@@ -198,11 +237,14 @@ async function guardarAlumno(e) {
     const nombre = document.getElementById('nombreAlumno').value;
     const obs = document.getElementById('obsAlumno').value;
     const foto = document.getElementById('fotoNuevoAlumno').value;
+    const telefono = document.getElementById('telefonoAlumno').value;
+    const contacto = document.getElementById('contactoAlumno').value;
+    const alergias = document.getElementById('alergiasAlumno').value;
     try {
         const response = await fetch('controllers/crear_alumno.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre_alumno: nombre, observaciones: obs, foto: foto, clase_id: CLASE_ACTUAL_ID })
+            body: JSON.stringify({ nombre_alumno: nombre, observaciones: obs, foto: foto, clase_id: CLASE_ACTUAL_ID, telefono, contacto, alergias })
         });
         const res = await response.json();
         if (res.status === 'success') {

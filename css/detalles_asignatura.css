@@ -1,0 +1,212 @@
+.subject-detail-page {
+    padding: 24px 24px 32px;
+}
+
+.subject-header {
+    margin-bottom: 24px;
+}
+
+.subject-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.subject-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.subject-top h1 {
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+}
+
+.subject-meta {
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+.subject-actions .btn {
+    min-width: 220px;
+}
+
+.subject-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 28px;
+}
+
+.summary-card {
+    padding: 22px;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+.summary-card h4 {
+    margin-bottom: 12px;
+    font-size: 1rem;
+    color: #334155;
+}
+
+.summary-card strong {
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.summary-card.blue {
+    border-left: 5px solid #3b82f6;
+}
+
+.summary-card.green {
+    border-left: 5px solid #10b981;
+}
+
+.summary-card.orange {
+    border-left: 5px solid #f59e0b;
+}
+
+.subject-detail-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1.5fr 1.2fr;
+    gap: 20px;
+}
+
+.box {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 22px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.box-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.box-header h2 {
+    margin-bottom: 6px;
+    font-size: 1.15rem;
+}
+
+.box-header p {
+    color: #64748b;
+    font-size: 0.95rem;
+}
+
+.events-list,
+.temas-list,
+#periodosList {
+    display: grid;
+    gap: 12px;
+}
+
+.event-card,
+.tema-card,
+.periodo-item,
+.evaluation-card {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.event-card-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.event-card-header strong {
+    font-size: 1rem;
+}
+
+.event-card-body p,
+.tema-card p {
+    color: #475569;
+    margin-bottom: 10px;
+}
+
+.event-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: #64748b;
+    font-size: 0.92rem;
+}
+
+.event-meta i,
+.periodo-item i {
+    margin-right: 6px;
+}
+
+.tema-card strong {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 6px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.new-item-card {
+    margin-top: 18px;
+    background: #f8fafc;
+    border-radius: 18px;
+    padding: 18px;
+}
+
+.periodos-card {
+    display: grid;
+    gap: 12px;
+}
+
+.periodo-item {
+    border-left: 3px solid #3b82f6;
+    padding: 12px 16px;
+    color: #334155;
+}
+
+.evaluation-panel {
+    display: grid;
+    gap: 18px;
+}
+
+.evaluation-card {
+    display: grid;
+    gap: 10px;
+}
+
+.evaluation-card h3 {
+    margin-bottom: 0;
+}
+
+@media (max-width: 1120px) {
+    .subject-detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .subject-top {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .subject-title-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

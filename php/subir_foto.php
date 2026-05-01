@@ -62,7 +62,4 @@ if (move_uploaded_file($archivo['tmp_name'], $rutaDestino)) {
     header("Location: perfil_usuario.php?foto_error=1");
     exit();
 }
-} else {
-    die("Error al mover el archivo a: " . $rutaDestino);
-}
 ?>

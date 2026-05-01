@@ -9,11 +9,19 @@ if (!isset($data['nombre_alumno'], $data['clase_id'])) {
 }
 
 try {
-    // Recoge la foto, o si viene vacía le pone null
     $foto = !empty($data['foto']) ? $data['foto'] : null;
-    $stmt = $conexion->prepare("INSERT INTO alumnos (nombre_alumno, observaciones, foto, clase_id) VALUES (?, ?, ?, ?)");
+    $datosPersonales = [
+        'telefono' => trim($data['telefono'] ?? ''),
+        'contacto' => trim($data['contacto'] ?? ''),
+        'alergias' => trim($data['alergias'] ?? ''),
+        'enfermedades' => trim($data['enfermedades'] ?? '')
+    ];
+    $datosPersonalesJson = json_encode($datosPersonales, JSON_UNESCAPED_UNICODE);
+
+    $stmt = $conexion->prepare("INSERT INTO alumnos (nombre_alumno, datos_personales, observaciones, foto, clase_id) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute([
         trim($data['nombre_alumno']),
+        $datosPersonalesJson,
         $data['observaciones'] ?? '',
         $foto,
         $data['clase_id']

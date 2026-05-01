@@ -56,21 +56,21 @@ try {
                         <li>
                             <div class="icon-box blue"><i class="fas fa-chalkboard-teacher"></i></div>
                             <div>
-                                <strong>5 Clases</strong>
+                                <strong id="numClases">0 Clases</strong>
                                 <span>Asignadas a tu perfil</span>
                             </div>
                         </li>
                         <li>
                             <div class="icon-box green"><i class="fas fa-users"></i></div>
                             <div>
-                                <strong>124 Alumnos</strong>
+                                <strong id="numAlumnos">0 Alumnos</strong>
                                 <span>Total en tus clases</span>
                             </div>
                         </li>
                         <li>
                             <div class="icon-box red"><i class="fas fa-tasks"></i></div>
                             <div>
-                                <strong>3 Evaluaciones</strong>
+                                <strong id="numEvaluaciones">0 Evaluaciones</strong>
                                 <span>Programadas este año</span>
                             </div>
                         </li>

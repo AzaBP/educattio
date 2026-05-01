@@ -1,0 +1,43 @@
+.incidencias-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.incidencias-form-card,
+.incidencias-list-card {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 16px 35px rgba(15, 23, 42, 0.08);
+}
+
+.card-header h2 {
+    margin-bottom: 0.5rem;
+    font-size: 1.35rem;
+}
+
+.card-header p {
+    margin-bottom: 0;
+    color: #64748b;
+}
+
+.table-responsive {
+    max-height: 620px;
+    overflow-y: auto;
+}
+
+.table thead th {
+    white-space: nowrap;
+}
+
+#btnExportarPDF {
+    min-width: 170px;
+}
+
+@media (max-width: 1024px) {
+    .incidencias-grid {
+        grid-template-columns: 1fr;
+    }
+}

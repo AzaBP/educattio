@@ -69,7 +69,7 @@
 }
 
 /* --- GRID DE CURSOS --- */
-.courses-grid {
+.classes-grid {
     display: grid;
     /* Responsive: columnas automáticas de mínimo 320px */
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));

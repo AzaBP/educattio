@@ -15,13 +15,16 @@ if ($method === 'GET') {
     $start = $_GET['start'] ?? null;
     $end = $_GET['end'] ?? null;
     
-    $sql = "SELECT id, titulo, descripcion, fecha, tipo_evento, clase_id 
-            FROM eventos 
-            WHERE usuario_id = :user_id";
+    $sql = "SELECT e.id, e.titulo, e.descripcion, e.fecha, e.tipo_evento, e.clase_id,
+                   c.nombre_clase, c.materia_principal, cu.id AS curso_id, cu.nombre_centro, cu.anio_academico, cu.poblacion, cu.provincia
+            FROM eventos e
+            LEFT JOIN clases c ON e.clase_id = c.id
+            LEFT JOIN cursos cu ON c.curso_id = cu.id
+            WHERE e.usuario_id = :user_id";
     $params = [':user_id' => $userId];
     
     if ($start && $end) {
-        $sql .= " AND fecha BETWEEN :start AND :end";
+        $sql .= " AND e.fecha BETWEEN :start AND :end";
         $params[':start'] = $start;
         $params[':end'] = $end;
     }
@@ -40,6 +43,12 @@ if ($method === 'GET') {
             'description' => $ev['descripcion'],
             'tipo' => $ev['tipo_evento'],
             'clase_id' => $ev['clase_id'],
+            'class_name' => $ev['nombre_clase'],
+            'subject' => $ev['materia_principal'],
+            'course_id' => $ev['curso_id'],
+            'center_name' => $ev['nombre_centro'],
+            'course_year' => $ev['anio_academico'],
+            'location' => trim(($ev['poblacion'] ?? '') . ' ' . ($ev['provincia'] ?? '')),
             'color' => getColorByTipo($ev['tipo_evento'])
         ];
     }

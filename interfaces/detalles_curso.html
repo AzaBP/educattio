@@ -7,7 +7,10 @@
     
     <link rel="icon" type="image/png" href="../imagenes/dolphin.png">
     <link rel="stylesheet" href="../css/global.css">
-    <link rel="stylesheet" href="../css/portal_inicio_usuario.css"> <link rel="stylesheet" href="../css/detalles_curso.css"> <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/portal_inicio_usuario.css"> 
+    <link rel="stylesheet" href="../css/detalles_curso.css"> 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
 </head>
 <body>
 
@@ -85,19 +88,7 @@
                 </div>
 
                 <div class="course-calendar">
-                    <div class="cal-header-small">
-                        <span>Noviembre 2025</span>
-                        <div class="cal-arrows">
-                            <i class="fas fa-chevron-left"></i>
-                            <i class="fas fa-chevron-right"></i>
-                        </div>
-                    </div>
-                    <div class="cal-grid-small">
-                        <div class="day-head">L</div><div class="day-head">M</div><div class="day-head">X</div><div class="day-head">J</div><div class="day-head">V</div><div class="day-head">S</div><div class="day-head">D</div>
-                        <div class="empty"></div><div class="empty"></div><div>1</div><div>2</div><div>3</div><div class="weekend">4</div><div class="weekend">5</div>
-                        <div>6</div><div>7</div><div class="today">8</div><div>9</div><div>10</div><div class="weekend">11</div><div class="weekend">12</div>
-                        <div>13</div><div>14</div><div>15</div><div>16</div><div>17</div><div class="weekend">18</div><div class="weekend">19</div>
-                    </div>
+                    <div id="calendar"></div>
                 </div>
             </section>
 
@@ -198,20 +189,31 @@
                 </button>
             </div>
 
-            <form class="modal-form">
+            <form id="formAjustesCurso" class="modal-form">
+                <input type="hidden" id="ajustesCursoId">
                 <div class="form-group">
                     <label>Nombre del Centro</label>
-                    <input type="text" value="CEIP CERVANTES" required>
+                    <input type="text" id="ajustesNombreCentro" required>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label>Año Académico</label>
-                        <input type="text" value="2025 - 2026">
+                        <input type="text" id="ajustesAnio" required>
                     </div>
                     <div class="form-group">
-                        <label>Ubicación</label>
-                        <input type="text" value="Pedrola, Zaragoza">
+                        <label>Población</label>
+                        <input type="text" id="ajustesPoblacion" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Provincia</label>
+                        <input type="text" id="ajustesProvincia" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Color</label>
+                        <input type="color" id="ajustesColor">
                     </div>
                 </div>
 
@@ -220,7 +222,7 @@
                         <h4>Eliminar este curso</h4>
                         <p>Se borrarán todas las clases y alumnos asociados.</p>
                     </div>
-                    <button type="button" class="btn-delete-course">
+                    <button type="button" class="btn-delete-course" onclick="eliminarCurso()">
                         <i class="fas fa-trash"></i> Eliminar
                     </button>
                 </div>
@@ -234,6 +236,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="../js/detalles_curso.js"></script>
 </body>
 </html>

@@ -43,6 +43,14 @@ try {
 } catch (PDOException $e) {
     $total_cursos_activos = 0;
 }
+
+try {
+    $stmt = $conexion->prepare("SELECT id, nombre_centro, poblacion, provincia, anio_academico, color FROM cursos WHERE usuario_id = :usuario_id AND anio_academico = :anio_academico ORDER BY id DESC LIMIT 6");
+    $stmt->execute([':usuario_id' => $usuario_id, ':anio_academico' => $anio_academico]);
+    $cursos_activos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $cursos_activos = [];
+}
 ?>
 
 <!DOCTYPE html>
@@ -55,8 +63,6 @@ try {
     <link rel="icon" type="image/png" href="../imagenes/dolphin.png">
     <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/portal_inicio_usuario.css">
-    <!-- Añadimos el CSS del modal de cursos (para que se vea igual que en portal_cursos) -->
-    <link rel="stylesheet" href="../css/portal_cursos.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -88,27 +94,87 @@ try {
         </header>
 
         <section class="dashboard-overview">
-            <div class="stats-container">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: #e1f5fe; color: #039be5;">
-                        <i class="fas fa-chalkboard"></i>
+            <div class="overview-card courses-card">
+                <div class="overview-card-header">
+                    <div>
+                        <span class="small-label">Cursos activos</span>
+                        <h2><?php echo $total_cursos_activos; ?></h2>
                     </div>
-                    <div class="stat-info">
-                        <h3><?php echo $total_cursos_activos; ?></h3>
-                        <p>Cursos Activos</p>
-                    </div>
+                    <button class="btn-add-class" onclick="openModalCurso()"><i class="fas fa-plus"></i> Nuevo curso</button>
+                </div>
+
+                <div class="courses-list">
+                    <?php if (empty($cursos_activos)): ?>
+                        <p class="empty-state">No tienes cursos activos para este año académico.</p>
+                    <?php else: ?>
+                        <?php foreach ($cursos_activos as $curso): ?>
+                            <a href="detalles_curso.php?id=<?php echo $curso['id']; ?>" class="small-course-card">
+                                <span class="course-dot" style="background: <?php echo htmlspecialchars($curso['color'] ?: '#ff7a59'); ?>;"></span>
+                                <div class="course-info">
+                                    <strong><?php echo htmlspecialchars($curso['nombre_centro']); ?></strong>
+                                    <span><?php echo htmlspecialchars($curso['poblacion'] . ', ' . $curso['provincia']); ?></span>
+                                </div>
+                                <span class="course-badge"><?php echo htmlspecialchars($curso['anio_academico']); ?></span>
+                            </a>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
             </div>
 
-            <div class="calendar-widget">
-                <?php include 'calendar_widget.php'; ?>
+            <div class="overview-card calendar-card">
+                <div class="calendar-header-row">
+                    <button class="calendar-nav" id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                    <div class="calendar-title">
+                        <span id="bigCalendarMonth">-- --</span>
+                    </div>
+                    <button class="calendar-nav" id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="small-calendar-grid" id="calendarGrid">
+                    <div class="day-name">Lun</div>
+                    <div class="day-name">Mar</div>
+                    <div class="day-name">Mié</div>
+                    <div class="day-name">Jue</div>
+                    <div class="day-name">Vie</div>
+                    <div class="day-name">Sáb</div>
+                    <div class="day-name">Dom</div>
+                </div>
+            </div>
+
+            <div class="overview-card today-card">
+                <div class="today-label">Hoy</div>
+                <div class="today-day-name" id="current-day-name">--</div>
+                <div class="today-number" id="current-day-number">--</div>
+                <div class="today-month-year" id="current-month-year">--</div>
+                <div class="today-clock" id="real-time-clock">--:--:--</div>
             </div>
         </section>
 
         <section class="classes-section">
-            <!-- Aquí podrías listar los cursos reales del usuario (similar a portal_cursos.php) -->
-            <div class="classes-grid" id="cursos-grid">
-                <!-- Se llenará dinámicamente con JS o con PHP, pero por ahora vacío -->
+            <div class="section-header">
+                <h2>Mis cursos</h2>
+                <button class="btn-add-class" onclick="openModalCurso()"><i class="fas fa-plus"></i> Añadir curso</button>
+            </div>
+            <div class="classes-grid">
+                <?php if (empty($cursos_activos)): ?>
+                    <div class="empty-state">Aún no has creado ningún curso. Pulsa "Añadir curso" para empezar.</div>
+                <?php else: ?>
+                    <?php foreach ($cursos_activos as $curso): ?>
+                        <a href="detalles_curso.php?id=<?php echo $curso['id']; ?>" class="class-card">
+                            <div class="card-banner" style="background: linear-gradient(135deg, <?php echo htmlspecialchars($curso['color'] ?: '#ff7a59'); ?> 0%, rgba(255,255,255,0.14) 100%);">
+                                <span class="subject-tag"><?php echo htmlspecialchars($curso['nombre_centro']); ?></span>
+                                <span class="course-badge"><?php echo htmlspecialchars($curso['anio_academico']); ?></span>
+                            </div>
+                            <div class="card-body">
+                                <h3><?php echo htmlspecialchars($curso['poblacion'] . ', ' . $curso['provincia']); ?></h3>
+                                <p class="teacher-name">Curso activo en el año académico</p>
+                                <div class="card-footer">
+                                    <span class="tasks-pending">Ver detalles</span>
+                                    <i class="fas fa-arrow-right folder-icon"></i>
+                                </div>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </section>
     </main>
@@ -176,10 +242,8 @@ try {
     </div>
 </div>
 
-<script src="../js/portal_cursos.js"></script>
 <script src="../js/portal_inicio_usuario.js"></script>
 <script src="../js/notificaciones.js"></script>
-<script src="../js/calendario.js"></script>
 
 <script>
     // ========================

@@ -114,6 +114,33 @@ CREATE TABLE IF NOT EXISTS periodos_evaluacion (
     FOREIGN KEY (asignatura_id) REFERENCES asignaturas(id) ON DELETE CASCADE
 );
 
+-- Tabla de temas de la asignatura / temario
+CREATE TABLE IF NOT EXISTS temas_asignatura (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    asignatura_id INT NOT NULL,
+    titulo VARCHAR(150) NOT NULL,
+    descripcion TEXT,
+    orden INT NOT NULL DEFAULT 0,
+    FOREIGN KEY (asignatura_id) REFERENCES asignaturas(id) ON DELETE CASCADE
+);
+
+-- Tabla de incidencias para registrar y exportar reportes
+CREATE TABLE IF NOT EXISTS incidencias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    curso_id INT NOT NULL,
+    clase_id INT NOT NULL,
+    alumno_id INT NULL,
+    tipo VARCHAR(50) NOT NULL DEFAULT 'General',
+    descripcion TEXT NOT NULL,
+    fecha_incidencia DATETIME NOT NULL,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (curso_id) REFERENCES cursos(id) ON DELETE CASCADE,
+    FOREIGN KEY (clase_id) REFERENCES clases(id) ON DELETE CASCADE,
+    FOREIGN KEY (alumno_id) REFERENCES alumnos(id) ON DELETE SET NULL
+);
+
 -- Asegurarnos de que la tabla items_evaluacion apunte a este nuevo periodo
 -- (Si ya tenías la tabla items_evaluacion creada, borramos la columna vieja y añadimos la nueva)
 ALTER TABLE items_evaluacion DROP COLUMN IF EXISTS periodo_evaluacion;
@@ -131,7 +158,7 @@ CREATE TABLE alumnos_asignaturas (
 );
 
 
---Para recuperar la contraseña
+-- Para recuperar la contraseña
 CREATE TABLE IF NOT EXISTS password_resets (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     email VARCHAR(100) NOT NULL UNIQUE,        

@@ -10,6 +10,20 @@
                 <label>Nombre Completo</label>
                 <input type="text" id="editNombreAlumno" class="form-control" required>
             </div>
+            <div class="form-row row gx-3">
+                <div class="col-12 col-md-6 mb-3">
+                    <label>Teléfono de contacto</label>
+                    <input type="tel" id="editTelefonoAlumno" class="form-control" placeholder="+34 600 000 000">
+                </div>
+                <div class="col-12 col-md-6 mb-3">
+                    <label>Persona de contacto</label>
+                    <input type="text" id="editContactoAlumno" class="form-control" placeholder="Ej: Madre / Tutor">
+                </div>
+            </div>
+            <div class="form-group mb-3">
+                <label>Enfermedades / Alergias</label>
+                <textarea id="editAlergiasAlumno" class="form-control" rows="2" placeholder="Ej: Asma, intolerancia a la lactosa..."></textarea>
+            </div>
             <div class="form-group mb-3">
                 <label>Observaciones</label>
                 <textarea id="editObsAlumno" class="form-control" rows="2"></textarea>
@@ -87,6 +101,9 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
         .tab-content { padding: 30px 0; }
         .btn-add-element { border: 2px dashed #cbd5e1; background: transparent; color: #64748b; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: 0.2s; }
         .btn-add-element:hover { border-color: #3b82f6; color: #3b82f6; background: #eff6ff; }
+        .card-clickable:hover { transform: translateY(-2px); transition: transform 0.2s ease; }
+        .card-clickable .badge { font-size: 0.8rem; padding: 0.35em 0.75em; }
+        .card-clickable .btn-link { color: #2563eb; }
     </style>
 </head>
 <body>
@@ -138,8 +155,9 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
                             <thead class="table-light">
                                 <tr>
                                     <th style="width: 50px;">#</th>
-                                    <th>Nombre del Alumno</th>
-                                    <th>Observaciones</th>
+                                    <th>Alumno</th>
+                                    <th>Contacto</th>
+                                    <th>Salud / Alergias</th>
                                     <th class="text-end">Acciones</th>
                                 </tr>
                             </thead>
@@ -188,6 +206,20 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
             <div class="form-group mb-3">
                 <label>Nombre Completo</label>
                 <input type="text" id="nombreAlumno" class="form-control" placeholder="Apellidos, Nombre" required>
+            </div>
+            <div class="form-row row gx-3">
+                <div class="col-12 col-md-6 mb-3">
+                    <label>Teléfono de contacto</label>
+                    <input type="tel" id="telefonoAlumno" class="form-control" placeholder="+34 600 000 000">
+                </div>
+                <div class="col-12 col-md-6 mb-3">
+                    <label>Persona de contacto</label>
+                    <input type="text" id="contactoAlumno" class="form-control" placeholder="Ej: Madre / Tutor">
+                </div>
+            </div>
+            <div class="form-group mb-3">
+                <label>Enfermedades / Alergias</label>
+                <textarea id="alergiasAlumno" class="form-control" rows="2" placeholder="Ej: Asma, intolerancia a la lactosa..."></textarea>
             </div>
             <div class="form-group mb-3">
                 <label>Observaciones iniciales (opcional)</label>

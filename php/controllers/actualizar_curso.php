@@ -24,8 +24,8 @@ try {
     // ($id, $nombre_centro, $anio_academico, $poblacion, $provincia, $usuario_id, $color)
     $curso = new CursoVO(
         $data['id'],
-        $data['centro'],
-        $data['anio'],
+        $data['nombre_centro'],
+        $data['anio_academico'],
         $data['poblacion'],
         $data['provincia'],
         $_SESSION['usuario_id'],

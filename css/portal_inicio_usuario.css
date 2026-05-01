@@ -182,12 +182,13 @@ body {
 }
 
 /* --- SECCIÓN 1: OVERVIEW (Stats + Widget Pequeño) --- */
-.dashboard-overview {
+ .dashboard-overview {
     display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
-    gap: 30px;
+    grid-template-columns: minmax(280px, 1.35fr) minmax(240px, 0.95fr) minmax(220px, 0.85fr);
+    gap: 24px;
     margin-bottom: 3rem;
     animation: fadeInUp 0.8s ease-out 0.2s both;
+    align-items: start;
 }
 
 .stats-container {
@@ -200,7 +201,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    max-width: 320px;
+    max-width: 100%;
 }
 
 .stat-card {
@@ -236,40 +237,224 @@ body {
 .stat-info p { color: #888; font-size: 0.8rem; margin: 5px 0 0 0; }
 
 /* Widget Calendario Pequeño */
-.calendar-widget {
-    background: linear-gradient(135deg, var(--accent-color), #ff8e8e);
-    border-radius: 20px;
+.overview-card {
+    background: white;
+    border-radius: 24px;
     padding: 1.5rem;
-    color: white;
-    text-align: center;
-    box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+    border: 1px solid #eef1f5;
     display: flex;
     flex-direction: column;
+    gap: 1rem;
+}
+
+.overview-card-header {
+    display: flex;
     justify-content: space-between;
-    position: relative;
-    overflow: hidden;
+    align-items: center;
+    gap: 1rem;
 }
 
-.calendar-widget::before {
-    content: '';
-    position: absolute;
-    top: -20px;
-    right: -20px;
-    width: 100px;
-    height: 100px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 50%;
-}
-
-.calendar-header {
-    font-size: 1.1rem;
-    font-weight: 500;
+.small-label {
+    display: inline-block;
+    font-size: 0.75rem;
+    color: #6b7280;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    opacity: 0.9;
-    border-bottom: 1px solid rgba(255,255,255,0.3);
-    padding-bottom: 10px;
-    margin-bottom: 10px;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
+}
+
+.courses-card .courses-list {
+    display: grid;
+    gap: 0.9rem;
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+}
+
+.small-course-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.9rem;
+    align-items: center;
+    padding: 0.95rem 1rem;
+    border-radius: 16px;
+    background: #fafbfc;
+    text-decoration: none;
+    color: #1f2937;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.small-course-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.06);
+}
+
+.course-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: block;
+    margin-top: 4px;
+}
+
+.course-info strong {
+    display: block;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+}
+
+.course-info span {
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+.course-badge {
+    background: #eff6ff;
+    color: #2563eb;
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.calendar-card {
+    gap: 0.85rem;
+    padding: 1.25rem;
+}
+
+.calendar-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.calendar-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-align: center;
+    color: #111827;
+}
+
+.calendar-nav {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: white;
+    color: #374151;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.calendar-nav:hover {
+    border-color: #d1d5db;
+    background: #f9fafb;
+}
+
+.small-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+}
+
+.day-name {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 700;
+}
+
+.day-cell {
+    min-height: 48px;
+    border-radius: 14px;
+    background: #f8fafc;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 0.6rem;
+    border: 1px solid #f1f5f9;
+    transition: transform 0.18s, border-color 0.18s;
+}
+
+.day-cell:hover {
+    background: #ffffff;
+    border-color: #d1d5db;
+    transform: translateY(-1px);
+}
+
+.day-cell.empty {
+    background: transparent;
+    border-color: transparent;
+    cursor: default;
+}
+
+.day-number {
+    font-weight: 700;
+    color: #111827;
+    font-size: 0.95rem;
+}
+
+.day-cell.today {
+    border-color: #f97316;
+    background: rgba(249, 115, 22, 0.12);
+}
+
+.today-card {
+    justify-content: center;
+    text-align: center;
+    gap: 0.85rem;
+    background: linear-gradient(145deg, #fff5e8 0%, #fff7f0 100%);
+    border: 1px solid rgba(251, 146, 60, 0.18);
+}
+
+.today-label {
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #d97706;
+    font-size: 0.76rem;
+    font-weight: 700;
+}
+
+.today-day-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.today-number {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #d97706;
+    letter-spacing: -0.04em;
+}
+
+.today-month-year {
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+.today-clock {
+    margin-top: 0.75rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #111827;
+    background: rgba(255,255,255,0.7);
+    padding: 0.6rem 0.85rem;
+    border-radius: 999px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.empty-state {
+    color: #6b7280;
+    font-size: 0.95rem;
+    background: #f8fafc;
+    padding: 1rem;
+    border-radius: 16px;
 }
 
 .calendar-body {

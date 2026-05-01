@@ -195,10 +195,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (cursoId) {
         cargarDatosPantalla(cursoId);
+        // Inicializar calendario
+        inicializarCalendario(cursoId);
         // Escuchador para el formulario de crear clase
         const formClase = document.getElementById('formCrearClase');
         if(formClase) {
             formClase.addEventListener('submit', guardarNuevaClase);
+        }
+        
+        // Escuchador para el formulario de ajustes del curso
+        const formAjustes = document.getElementById('formAjustesCurso');
+        if(formAjustes) {
+            formAjustes.addEventListener('submit', guardarAjustesCurso);
         }
     } else {
         console.error("No se encontró el ID del curso en la URL");
@@ -235,6 +243,9 @@ async function cargarDatosPantalla(id) {
             document.querySelector('.badge.year').textContent = data.curso.anio_academico;
             document.querySelector('.badge.location').innerHTML = 
                 `<i class="fas fa-map-marker-alt"></i> ${data.curso.poblacion}, ${data.curso.provincia}`;
+            document.getElementById('numClases').textContent = `${data.num_clases} Clases`;
+            document.getElementById('numAlumnos').textContent = `${data.num_alumnos} Alumnos`;
+            document.getElementById('numEvaluaciones').textContent = `${data.num_evaluaciones} Evaluaciones`;
 
             renderizarTarjetasClases(data.clases);
         }
@@ -407,5 +418,220 @@ async function eliminarClase(idClase) {
         }
     } catch (error) {
         console.error("Error:", error);
+    }
+}
+
+function openSettingsModal() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const cursoId = urlParams.get('id');
+    
+    if (cursoId) {
+        cargarDatosAjustes(cursoId);
+        document.getElementById('modalAjustes').classList.add('active');
+    }
+}
+
+function closeSettingsModal() {
+    document.getElementById('modalAjustes').classList.remove('active');
+}
+
+async function cargarDatosAjustes(cursoId) {
+    try {
+        const response = await fetch(`controllers/get_detalles_curso.php?id=${cursoId}`);
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            const curso = data.curso;
+            document.getElementById('ajustesCursoId').value = curso.id;
+            document.getElementById('ajustesNombreCentro').value = curso.nombre_centro;
+            document.getElementById('ajustesAnio').value = curso.anio_academico;
+            document.getElementById('ajustesPoblacion').value = curso.poblacion;
+            document.getElementById('ajustesProvincia').value = curso.provincia;
+            document.getElementById('ajustesColor').value = curso.color || '#ff7a59';
+        }
+    } catch (error) {
+        console.error('Error cargando datos del curso:', error);
+    }
+}
+
+async function guardarAjustesCurso(e) {
+    e.preventDefault();
+    
+    const cursoId = document.getElementById('ajustesCursoId').value;
+    const datos = {
+        id: cursoId,
+        nombre_centro: document.getElementById('ajustesNombreCentro').value,
+        anio_academico: document.getElementById('ajustesAnio').value,
+        poblacion: document.getElementById('ajustesPoblacion').value,
+        provincia: document.getElementById('ajustesProvincia').value,
+        color: document.getElementById('ajustesColor').value
+    };
+    
+    try {
+        const response = await fetch('controllers/actualizar_curso.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        });
+        
+        const result = await response.json();
+        if (result.status === 'success') {
+            closeSettingsModal();
+            // Recargar la página para mostrar cambios
+            location.reload();
+        } else {
+            alert('Error al guardar cambios: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al guardar cambios');
+    }
+}
+
+async function eliminarCurso() {
+    if (!confirm('¿Estás seguro de que quieres eliminar este curso? Se borrarán todas las clases y alumnos asociados. Esta acción no se puede deshacer.')) {
+        return;
+    }
+    
+    const cursoId = document.getElementById('ajustesCursoId').value;
+    
+    try {
+        const response = await fetch('controllers/eliminar_curso.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: cursoId })
+        });
+        
+        const result = await response.json();
+        if (result.status === 'success') {
+            // Redirigir a la lista de cursos
+            window.location.href = 'portal_cursos.html';
+        } else {
+            alert('Error al eliminar curso: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al eliminar curso');
+    }
+}
+function inicializarCalendario(cursoId) {
+    const calendarEl = document.getElementById('calendar');
+    if (!calendarEl) return;
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: function(fetchInfo, successCallback, failureCallback) {
+            // Cargar eventos desde el servidor
+            fetch(`controllers/get_eventos_curso.php?curso_id=${cursoId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        successCallback(data.events);
+                    } else {
+                        successCallback([]);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error cargando eventos:', error);
+                    failureCallback(error);
+                });
+        },
+        dateClick: function(info) {
+            // Abrir modal para añadir evento
+            abrirModalEvento(info.dateStr, cursoId);
+        },
+        eventClick: function(info) {
+            // Editar o eliminar evento
+            editarEvento(info.event);
+        },
+        editable: true,
+        eventDrop: function(info) {
+            // Actualizar fecha del evento
+            actualizarFechaEvento(info.event);
+        }
+    });
+
+    calendar.render();
+}
+
+function abrirModalEvento(dateStr, cursoId) {
+    // Crear modal para añadir evento
+    const modalHtml = `
+        <div id="modalEvento" class="modal-overlay active">
+            <div class="modal-window">
+                <div class="modal-header">
+                    <h3>Añadir Evento</h3>
+                    <button class="close-btn" onclick="cerrarModalEvento()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="formEvento" class="modal-form">
+                    <input type="hidden" id="eventoFecha" value="${dateStr}">
+                    <input type="hidden" id="eventoCursoId" value="${cursoId}">
+                    <div class="form-group">
+                        <label>Título del Evento</label>
+                        <input type="text" id="eventoTitulo" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <textarea id="eventoDescripcion"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-cancel" onclick="cerrarModalEvento()">Cancelar</button>
+                        <button type="submit" class="btn-save">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    document.getElementById('formEvento').addEventListener('submit', guardarEvento);
+}
+
+function cerrarModalEvento() {
+    const modal = document.getElementById('modalEvento');
+    if (modal) modal.remove();
+}
+
+async function guardarEvento(e) {
+    e.preventDefault();
+    
+    const titulo = document.getElementById('eventoTitulo').value;
+    const descripcion = document.getElementById('eventoDescripcion').value;
+    const fecha = document.getElementById('eventoFecha').value;
+    const cursoId = document.getElementById('eventoCursoId').value;
+    
+    try {
+        const response = await fetch('controllers/guardar_evento.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                titulo,
+                descripcion,
+                fecha,
+                curso_id: cursoId
+            })
+        });
+        
+        const data = await response.json();
+        if (data.status === 'success') {
+            cerrarModalEvento();
+            // Recargar calendario
+            location.reload();
+        } else {
+            alert('Error al guardar el evento');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al guardar el evento');
     }
 }
