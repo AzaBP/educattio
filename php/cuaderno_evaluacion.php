@@ -185,7 +185,9 @@ function obtenerNotaActual($alumno_id, $item_id, $matriz_notas) {
                     <p><?php echo htmlspecialchars($info_asig['nombre_asignatura']); ?> - <?php echo htmlspecialchars($info_asig['nombre_clase']); ?></p>
                 </div>
                 <div class="header-actions">
-                    <button class="btn btn-secondary"><i class="fas fa-file-excel"></i> Exportar</button>
+                    <button class="btn btn-secondary" onclick="descargarCSV(); return false;">
+                        <i class="fas fa-file-excel"></i> Exportar
+                    </button>
                     <button class="btn btn-primary" onclick="abrirModalColumna()"><i class="fas fa-plus"></i> Añadir Prueba</button>
                 </div>
             </div>
@@ -475,7 +477,17 @@ function obtenerNotaActual($alumno_id, $item_id, $matriz_notas) {
             // Escribimos la nota final con 2 decimales en su respectiva celda
             const celdaMedia = document.getElementById(`media-${alumnoId}`);
             if (celdaMedia) {
-                celdaMedia.textContent = notaFinal.toFixed(2);
+                const notaRedondeada = notaFinal.toFixed(2);
+                celdaMedia.textContent = notaRedondeada;
+                
+                // Lógica de colores (Verde si es >= 5, Rojo si es < 5)
+                if (parseFloat(notaRedondeada) >= 5.00) {
+                    celdaMedia.classList.add('nota-aprobada');
+                    celdaMedia.classList.remove('nota-suspensa');
+                } else {
+                    celdaMedia.classList.add('nota-suspensa');
+                    celdaMedia.classList.remove('nota-aprobada');
+                }
             }
         };
 
@@ -492,6 +504,55 @@ function obtenerNotaActual($alumno_id, $item_id, $matriz_notas) {
                 window.calcularMedia(this.dataset.alumno);
             });
         });
+
+        // --- FUNCIÓN PARA EXPORTAR A CSV ---
+        window.descargarCSV = function() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            const table = document.querySelector('.gradebook-table');
+            const rows = table.querySelectorAll('tr');
+
+            rows.forEach((row, index) => {
+                let rowData = [];
+                
+                if (index === 0) { // Fila de Cabeceras
+                    const cols = row.querySelectorAll('th');
+                    cols.forEach(col => {
+                        // Limpiamos el texto (quitamos saltos de línea y el texto de los botones ocultos)
+                        let text = col.innerText.replace(/(\r\n|\n|\r)/gm, " ").trim();
+                        text = text.replace("Editar Eliminar", "").trim(); 
+                        rowData.push('"' + text + '"');
+                    });
+                } else { // Filas de Alumnos
+                    const studentCell = row.querySelector('.student-name');
+                    if (studentCell) {
+                        rowData.push('"' + studentCell.innerText.trim() + '"'); // Nombre alumno
+                        
+                        const inputs = row.querySelectorAll('.grade-input');
+                        inputs.forEach(input => {
+                            rowData.push('"' + input.value + '"'); // Notas de cada columna
+                        });
+                        
+                        const finalGrade = row.querySelector('.final-grade');
+                        if (finalGrade) {
+                            rowData.push('"' + finalGrade.innerText.trim() + '"'); // Media final
+                        }
+                    }
+                }
+                if (rowData.length > 0) {
+                    // Separamos por punto y coma (;) para que Excel en español lo abra bien por defecto en columnas
+                    csvContent += rowData.join(";") + "\r\n"; 
+                }
+            });
+
+            // Crear enlace invisible y simular clic para descargar
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "notas_evaluacion.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
     });
     </script>
 

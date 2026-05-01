@@ -476,4 +476,14 @@
 
 .weight-ok {
     color: #94a3b8 !important;
+    font-weight: normal;
+}
+
+/* Colores dinámicos para la Media Final */
+.nota-aprobada {
+    color: #10b981 !important; /* Verde */
+}
+
+.nota-suspensa {
+    color: #ef4444 !important; /* Rojo */
 }
