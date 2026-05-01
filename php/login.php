@@ -32,13 +32,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
         } else {
             // Credenciales incorrectas
             $error_login = 'Usuario/email o contraseña incorrectos.';
-            exit();
         }
     } catch (PDOException $e) {
         // Error de base de datos - puedes logearlo internamente
         error_log("Error en login: " . $e->getMessage());
-        $error_login = 'Error en la bd';
-        exit();
+        $error_login = 'Error en la base de datos. Inténtalo más tarde.';
     }
 }
 
@@ -109,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
                         <label for="email">Correo electrónico</label>
                         <input type="email" name="email" id="email" placeholder="usuario@ejemplo.com" required>
                     </div>
-                    <button type="submit" name="reset_request" class="btn-forgot">Enviar enlace de recuperación</button>
+                    <button type="submit" name="reset_request" >Enviar enlace de recuperación</button>
                 </form>
             </div>
             

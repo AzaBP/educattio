@@ -19,10 +19,15 @@
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
     text-align: center;
     width: 100%;
-    max-height: 85vh;
+    max-height: 90vh;
     overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent-color) #eee;
+    /* Ocultar barra de desplazamiento */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.login-card::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
 }
 
 /* Títulos */

@@ -172,9 +172,9 @@ function renderizarCursos(cursos) {
         const bgColor = curso.color || '#ff7a59';
         const textColor = getContrasteYIQ(bgColor);
         htmlCursos += `
-            <article class="class-card" onclick="window.location.href='detalles_curso.php?id=${curso.id}'">
-                <div class="card-banner" style="background-color: ${bgColor}; color: ${textColor};">
-                    <span class="subject-tag" style="color: ${textColor}; border-color: ${textColor}44;">${curso.nombre_centro}</span>
+            <article class="course-card" onclick="window.location.href='detalles_curso.php?id=${curso.id}'">
+                <div class="course-header" style="background: linear-gradient(135deg, ${bgColor} 0%, rgba(255,255,255,0.2) 100%); color: ${textColor};">
+                    <span class="subject-tag" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(5px);">${curso.nombre_centro}</span>
                     <div class="card-menu">
                         <button class="menu-btn" style="color: ${textColor};" onclick="event.stopPropagation(); toggleMenuCurso(event, ${curso.id})">
                             <i class="fas fa-ellipsis-v"></i>
@@ -185,7 +185,7 @@ function renderizarCursos(cursos) {
                         </div>
                     </div>
                 </div>
-                <div class="card-body">
+                <div class="course-body">
                     <h3>CURSO ${curso.anio_academico}</h3>
                     <p class="teacher-name">${curso.poblacion}, ${curso.provincia}</p>
                     <div class="card-footer">

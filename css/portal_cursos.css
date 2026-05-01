@@ -84,7 +84,7 @@
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    text-decoration: none; /* Quitar subrayado del enlace */
+    text-decoration: none !important; /* Quitar subrayado del enlace */
     color: inherit;
     display: flex;
     flex-direction: column;
@@ -93,6 +93,7 @@
 }
 
 .course-card:hover {
+    text-decoration: none !important;
     transform: translateY(-8px);
     box-shadow: 0 15px 30px rgba(0,0,0,0.1);
     border-color: rgba(0,0,0,0.05);

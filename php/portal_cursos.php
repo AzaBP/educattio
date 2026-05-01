@@ -25,8 +25,8 @@ try {
     
     <link rel="icon" type="image/png" href="../imagenes/dolphin.png">
     <link rel="stylesheet" href="../css/global.css">
-    <link rel="stylesheet" href="../css/portal_inicio_usuario.css"> 
-    <link rel="stylesheet" href="../css/portal_cursos.css">
+    <link rel="stylesheet" href="../css/portal_inicio_usuario.css?v=1.1"> 
+    <link rel="stylesheet" href="../css/portal_cursos.css?v=1.1">
     <link rel="stylesheet" href="../css/calendario.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -37,9 +37,6 @@ try {
         
         <?php include 'sidebar.php'; ?>
 
-        <div class="sidebar-footer">
-            <a href="logout.php" class="nav-item logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
-        </div>
 
         <main class="main-content">
             <header class="page-header-flex">
@@ -115,6 +112,6 @@ try {
         </div>
     </div>
 
-    <script src="../js/portal_cursos.js"></script>
+    <script src="../js/portal_cursos.js?v=1.2"></script>
 </body>
 </html>

@@ -1,16 +1,35 @@
 <?php
 require_once __DIR__ . '/controllers/auth_check.php';
+require_once 'conexion.php';
 
-// Obtener datos completos del usuario para el sidebar
 $usuario_id = $_SESSION['usuario_id'];
+$curso_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+if ($curso_id <= 0) {
+    header('Location: portal_cursos.php');
+    exit();
+}
+
 try {
-    require_once 'conexion.php';
+    // 1. Datos del usuario
     $sql = "SELECT nombre_completo, nombre_usuario, foto_perfil FROM usuarios WHERE id = :id";
     $stmt = $conexion->prepare($sql);
     $stmt->execute([':id' => $usuario_id]);
     $datos_usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+    $nombre_usuario = $datos_usuario['nombre_completo'] ?: ($datos_usuario['nombre_usuario'] ?: 'Usuario');
+
+    // 2. Datos del curso
+    $sql_curso = "SELECT * FROM cursos WHERE id = :curso_id AND id_usuario = :usuario_id";
+    $stmt_curso = $conexion->prepare($sql_curso);
+    $stmt_curso->execute([':curso_id' => $curso_id, ':usuario_id' => $usuario_id]);
+    $curso = $stmt_curso->fetch(PDO::FETCH_ASSOC);
+
+    if (!$curso) {
+        header('Location: portal_cursos.php');
+        exit();
+    }
 } catch (PDOException $e) {
-    $datos_usuario = null;
+    die("Error de base de datos: " . $e->getMessage());
 }
 ?>
 <!DOCTYPE html>
@@ -18,14 +37,14 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Educattio - Detalles del Curso</title>
+    <title>Educattio - <?php echo htmlspecialchars($curso['nombre_centro']); ?></title>
     
     <link rel="icon" type="image/png" href="../imagenes/dolphin.png">
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/global.css">
-    <link rel="stylesheet" href="../css/portal_inicio_usuario.css">
-    <link rel="stylesheet" href="../css/detalles_curso.css">
+    <link rel="stylesheet" href="../css/portal_inicio_usuario.css?v=1.3">
+    <link rel="stylesheet" href="../css/detalles_curso.css?v=1.1">
     <link rel="stylesheet" href="../css/calendario.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -33,20 +52,24 @@ try {
     <div class="dashboard-layout">
         <?php include 'sidebar.php'; ?>
         <main class="main-content">
-            <header class="course-page-header">
+            <header class="course-header-modern">
+                <div class="header-background" style="background: linear-gradient(135deg, <?php echo $curso['color'] ?: '#ff7a59'; ?> 0%, rgba(255,255,255,0.1) 100%);"></div>
                 <div class="header-top-row">
-                    <a href="portal_cursos.php" class="back-link">
-                        <i class="fas fa-arrow-left"></i> Volver a mis cursos
+                    <a href="portal_cursos.php" class="back-pill">
+                        <i class="fas fa-arrow-left"></i> Volver
                     </a>
-                    <button class="btn-settings" onclick="openSettingsModal()">
-                        <i class="fas fa-cog"></i> Ajustes del Curso
+                    <button class="settings-pill" onclick="openSettingsModal()">
+                        <i class="fas fa-cog"></i> Ajustes
                     </button>
                 </div>
-                <div class="header-content">
-                    <h1>CEIP CERVANTES</h1>
-                    <div class="course-badges">
-                        <span class="badge year">2025 - 2026</span>
-                        <span class="badge location"><i class="fas fa-map-marker-alt"></i> Pedrola, Zaragoza</span>
+                <div class="header-main-content">
+                    <div class="course-title-group">
+                        <span class="center-type">Centro Educativo</span>
+                        <h1><?php echo htmlspecialchars($curso['nombre_centro']); ?></h1>
+                    </div>
+                    <div class="course-meta-pills">
+                        <span class="meta-pill"><i class="fas fa-calendar-alt"></i> <?php echo htmlspecialchars($curso['anio_academico']); ?></span>
+                        <span class="meta-pill"><i class="fas fa-map-marker-alt"></i> <?php echo htmlspecialchars($curso['poblacion'] . ', ' . $curso['provincia']); ?></span>
                     </div>
                 </div>
             </header>
@@ -103,48 +126,64 @@ try {
             <section class="classes-grid-section">
                 <div class="section-title-row">
                     <h2>Mis Clases</h2>
-                    <p>Selecciona un grupo para ver sus alumnos y notas</p>
+                    <p>Gestiona los grupos y materias de este centro</p>
                 </div>
                 <div class="groups-grid">
-                    <a href="detalles_clase.html" class="group-card">
-                        <div class="group-header color-1">
-                            <span class="group-icon"><i class="fas fa-book-reader"></i></span>
-                            <div class="menu-dots"><i class="fas fa-ellipsis-v"></i></div>
-                        </div>
-                        <div class="group-body">
-                            <h3>4º Primaria A</h3>
-                            <p class="subtitle">Tutoría</p>
-                        </div>
-                    </a>
-                    <a href="detalles_clase.html" class="group-card">
-                        <div class="group-header color-2">
-                            <span class="group-icon"><i class="fas fa-shapes"></i></span>
-                            <div class="menu-dots"><i class="fas fa-ellipsis-v"></i></div>
-                        </div>
-                        <div class="group-body">
-                            <h3>1º Primaria B</h3>
-                            <p class="subtitle">Matemáticas</p>
-                        </div>
-                    </a>
-                    <a href="detalles_clase.html" class="group-card">
-                        <div class="group-header color-3">
-                            <span class="group-icon"><i class="fas fa-puzzle-piece"></i></span>
-                            <div class="menu-dots"><i class="fas fa-ellipsis-v"></i></div>
-                        </div>
-                        <div class="group-body">
-                            <h3>Aula PT</h3>
-                            <p class="subtitle">Pedagogía Terapéutica</p>
-                        </div>
-                    </a>
-                    <div class="add-card-dashed" onclick="openModalClase()">
-                        <div class="add-icon">
-                            <i class="fas fa-plus"></i>
-                        </div>
-                        <h3>Añadir Nueva Clase</h3>
-                    </div>
+                    <!-- Las clases se cargarán dinámicamente aquí -->
+                    <div class="loading-placeholder">Cargando clases...</div>
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- MODAL AJUSTES DEL CURSO -->
+    <div id="modalAjustes" class="modal-overlay">
+        <div class="modal-window">
+            <div class="modal-header">
+                <h3>Ajustes del Curso</h3>
+                <button class="close-btn" onclick="closeSettingsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="formAjustesCurso" class="modal-form">
+                <input type="hidden" id="ajustesCursoId" value="<?php echo $curso_id; ?>">
+                
+                <div class="form-group">
+                    <label for="ajustesNombreCentro">Nombre del Centro</label>
+                    <input type="text" id="ajustesNombreCentro" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ajustesAnio">Año Académico</label>
+                        <input type="text" id="ajustesAnio" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ajustesColor">Color Distintivo</label>
+                        <input type="color" id="ajustesColor" style="height: 45px;">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ajustesPoblacion">Población</label>
+                        <input type="text" id="ajustesPoblacion" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ajustesProvincia">Provincia</label>
+                        <input type="text" id="ajustesProvincia" required>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-danger-outline" onclick="eliminarCurso()">Eliminar Curso</button>
+                    <div class="footer-right">
+                        <button type="button" class="btn-cancel" onclick="closeSettingsModal()">Cancelar</button>
+                        <button type="submit" class="btn-save">Guardar Cambios</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
     <div id="modalClase" class="modal fade" tabindex="-1" aria-labelledby="modalClaseLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -237,3 +276,33 @@ try {
     <script src="../js/detalles_curso.js"></script>
 </body>
 </html>
+
+<style>
+.btn-danger-outline {
+    background: transparent;
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-danger-outline:hover {
+    background: #ef4444;
+    color: white;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.footer-right {
+    display: flex;
+    gap: 12px;
+}
+</style>

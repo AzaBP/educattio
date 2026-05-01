@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // --- 1. RELOJ Y FECHA DEL WIDGET SUPERIOR ---
     function updateWidget() {
         const now = new Date();
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateWidget();
     setInterval(updateWidget, 1000);
 
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', function (event) {
         if (!event.target.closest('.menu-btn') && !event.target.closest('.dropdown-menu')) {
             document.querySelectorAll('.dropdown-menu.show').forEach(menu => menu.classList.remove('show'));
         }

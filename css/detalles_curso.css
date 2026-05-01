@@ -1,5 +1,7 @@
 /* Estilo para el título del modal (serif, grande, elegante) */
-#modalClase .modal-header h3, #modalClase .modal-header .modal-title, #modalClaseLabel {
+#modalClase .modal-header h3,
+#modalClase .modal-header .modal-title,
+#modalClaseLabel {
     font-family: 'Georgia', serif;
     font-size: 1.4rem;
     font-weight: bold;
@@ -9,22 +11,26 @@
     text-align: left;
     width: 100%;
 }
+
 /* --- FIX: Centrado absoluto del modal de Bootstrap --- */
 .modal.show {
     display: flex !important;
     justify-content: center;
     align-items: center;
 }
+
 .modal-dialog {
     margin: auto !important;
     width: 100%;
-    max-width: 600px; 
+    max-width: 600px;
 }
+
 /* --- FIX: Evitar que la pantalla salte o se reduzca al abrir modales en Bootstrap --- */
 body.modal-open {
     padding-right: 0 !important;
     overflow-y: scroll !important;
 }
+
 /* =========================================
    ESTILOS DE SELECCIÓN (COLORES E ICONOS)
    ========================================= */
@@ -83,6 +89,7 @@ body.modal-open {
     color: #3b82f6;
     border-color: #3b82f6;
 }
+
 /* --- FIX: Forzar opacidad y blend normal en el contenedor del menú de opciones para evitar transparencia heredada --- */
 .card-options {
     opacity: 1 !important;
@@ -95,21 +102,25 @@ body.modal-open {
     background-color: #fff !important;
     opacity: 1 !important;
     mix-blend-mode: normal !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
 }
+
 /* --- FIX: Forzar opacidad y blend normal en tarjetas y cabeceras para evitar transparencia heredada en el menú --- */
-.group-card-wrapper, .group-card, .group-header {
+.group-card-wrapper,
+.group-card,
+.group-header {
     opacity: 1 !important;
     mix-blend-mode: normal !important;
 }
 
 /* --- FIX: Fondo blanco sólido y sin blend en el menú de opciones --- */
 .menu-opciones-aislado {
-    background: rgb(255,255,255) !important;
-    background-color: rgb(255,255,255) !important;
+    background: rgb(255, 255, 255) !important;
+    background-color: rgb(255, 255, 255) !important;
     opacity: 1 !important;
     mix-blend-mode: normal !important;
 }
+
 /* 1. ESQUINAS SUPERIORES REDONDEADAS */
 /* Como la tarjeta tiene overflow visible, debemos redondear directamente la cabecera */
 .group-header {
@@ -119,8 +130,10 @@ body.modal-open {
 
 /* 2. ÁREA DE CLIC DE LOS TRES PUNTOS MÁS GRANDE */
 .menu-dots {
-    padding: 15px !important; /* Expande el área pulsable */
-    margin: -15px !important; /* Compensa la expansión para que el icono no se mueva visualmente */
+    padding: 15px !important;
+    /* Expande el área pulsable */
+    margin: -15px !important;
+    /* Compensa la expansión para que el icono no se mueva visualmente */
     background: transparent !important;
 }
 
@@ -130,7 +143,7 @@ body.modal-open {
     background: #ffffff !important;
     opacity: 1 !important;
     border: 1px solid #e0e0e0 !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
 }
 
 /* =========================================
@@ -160,7 +173,11 @@ body.modal-open {
 
 /* Forzar el input de color redondo */
 /* Input de color visible como opción redonda */
-#colorClase, #color_clase, #color_nueva_clase, input[type="color"], .color-input-visible {
+#colorClase,
+#color_clase,
+#color_nueva_clase,
+input[type="color"],
+.color-input-visible {
     -webkit-appearance: none !important;
     -moz-appearance: none !important;
     appearance: none !important;
@@ -171,29 +188,56 @@ body.modal-open {
     padding: 0 !important;
     overflow: hidden !important;
     background-color: transparent !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     cursor: pointer;
     margin: 0;
 }
-input[type="color"].color-input-visible::-webkit-color-swatch-wrapper { padding: 0 !important; }
-input[type="color"].color-input-visible::-webkit-color-swatch { border: none !important; border-radius: 50% !important; }
-input[type="color"].color-input-visible::-moz-color-swatch { border: none !important; border-radius: 50% !important; }
-input[type="color"]::-webkit-color-swatch-wrapper { padding: 0 !important; }
-input[type="color"]::-webkit-color-swatch { border: none !important; border-radius: 50% !important; }
-input[type="color"]::-moz-color-swatch { border: none !important; border-radius: 50% !important; }
+
+input[type="color"].color-input-visible::-webkit-color-swatch-wrapper {
+    padding: 0 !important;
+}
+
+input[type="color"].color-input-visible::-webkit-color-swatch {
+    border: none !important;
+    border-radius: 50% !important;
+}
+
+input[type="color"].color-input-visible::-moz-color-swatch {
+    border: none !important;
+    border-radius: 50% !important;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0 !important;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: none !important;
+    border-radius: 50% !important;
+}
+
+input[type="color"]::-moz-color-swatch {
+    border: none !important;
+    border-radius: 50% !important;
+}
 
 .modal-content {
-    background: white; width: 90%; max-width: 500px;
-    border-radius: 20px; padding: 2rem;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
     animation: slideUp 0.3s ease forwards;
 }
+
 /* --- DOTS DE COLOR PARA MODAL DE CLASES --- */
 .color-selector {
     display: flex;
     gap: 10px;
     margin: 10px 0;
 }
+
 .color-dot {
     width: 28px;
     height: 28px;
@@ -201,16 +245,18 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
     border: 2px solid #eee;
     cursor: pointer;
     transition: border 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
 }
+
 .color-dot.selected {
     border: 3px solid var(--accent-color, #1976d2);
     box-shadow: 0 0 0 2px #1976d233;
 }
+
 .color-dot .fa-check {
     color: #fff;
     font-size: 1rem;
@@ -228,7 +274,7 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
     overflow: hidden;
     text-decoration: none;
     color: inherit;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s, box-shadow 0.2s;
     display: flex;
     flex-direction: column;
@@ -236,11 +282,13 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
 }
 
 .group-header {
-    height: 60px; /* Reducido para parecerse a cursos */
+    height: 60px;
+    /* Reducido para parecerse a cursos */
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative; /* Necesario para los tres puntos dinámicos */
+    position: relative;
+    /* Necesario para los tres puntos dinámicos */
 }
 
 /* Container for all groups/classes cards */
@@ -248,29 +296,31 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
-    align-items: stretch; /* Esto hace que todas midan lo mismo verticalmente */
+    align-items: stretch;
+    /* Esto hace que todas midan lo mismo verticalmente */
 }
 
 /* Base style for a single class card, restoring look from image_6.png */
-.group-card, .add-card-dashed {
+.group-card,
+.add-card-dashed {
     background: #ffffff;
     border-radius: 15px;
     overflow: hidden;
     text-decoration: none;
     color: inherit;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s, box-shadow 0.2s;
     display: flex;
     flex-direction: column;
     /* Create context for absolute positioning inside the card */
-    position: relative; 
+    position: relative;
     height: 100%;
     margin: 0;
 }
 
 .group-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
 /* Card Header (the solid color banner) */
@@ -279,10 +329,11 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
     display: flex;
     align-items: center;
     justify-content: center;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     background-size: cover;
     background-position: center;
-    position: relative; /* Context for card options */
+    position: relative;
+    /* Context for card options */
 }
 
 /* --- THE KEY FIX for icons and meatball dots style --- */
@@ -290,7 +341,8 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
 /* Correct FontAwesome icons rendering and visibility */
 .group-icon i {
     font-size: 2rem;
-    color: white; /* Make banner icons white on dark, can adjust per JS */
+    color: white;
+    /* Make banner icons white on dark, can adjust per JS */
 }
 
 /* Bottom status icon */
@@ -309,7 +361,8 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
 
 /* The meatball menu button: transparent, discreet, no circle background */
 .menu-dots {
-    color: white; /* Make dots white on dark banners */
+    color: white;
+    /* Make dots white on dark banners */
     background: transparent !important;
     border: none !important;
     cursor: pointer;
@@ -318,26 +371,35 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
     transition: opacity 0.2s;
     padding: 0;
 }
+
 .menu-dots:hover {
     opacity: 1;
 }
 
 /* Style for light colored headers - can be set via JS adding a class */
-.group-header.light-banner .group-icon i { color: #555; }
-.group-header.light-banner .menu-dots { color: #666; }
+.group-header.light-banner .group-icon i {
+    color: #555;
+}
+
+.group-header.light-banner .menu-dots {
+    color: #666;
+}
 
 /* The dropdown menu: solid white, floats above everything, no translucency */
 .menu-opciones-aislado {
     display: none;
     position: absolute;
-    top: 100%; /* Below the dots */
+    top: 100%;
+    /* Below the dots */
     right: 0;
     margin-top: 10px;
-    background-color: #ffffff !important; /* Force solid white */
+    background-color: #ffffff !important;
+    /* Force solid white */
     border-radius: 8px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
     min-width: 140px;
-    z-index: 9999 !important; /* Float above everything */
+    z-index: 9999 !important;
+    /* Float above everything */
     overflow: hidden;
     padding: 0;
     /* Explicitly disable inherited filters */
@@ -366,16 +428,20 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
     transition: background 0.2s;
     border-bottom: 1px solid #f0f0f0;
 }
+
 .menu-opciones-aislado .item-opcion:last-child {
     border-bottom: none;
 }
+
 .menu-opciones-aislado .item-opcion:hover {
     background-color: #f5f5f5 !important;
 }
 
 .menu-opciones-aislado .delete-option {
-    color: #e74c3c !important; /* Standard red delete color */
+    color: #e74c3c !important;
+    /* Standard red delete color */
 }
+
 .menu-opciones-aislado .delete-option:hover {
     background-color: #fbe9e7 !important;
     color: #c0392b !important;
@@ -456,83 +522,126 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
     min-height: 100vh;
 }
 
-/* --- CABECERA --- */
-.course-page-header {
-    margin-bottom: 2rem;
+/* --- CABECERA MODERNA --- */
+.course-header-modern {
+    position: relative;
+    padding: 2.5rem;
+    border-radius: 30px;
+    margin-bottom: 2.5rem;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.header-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.15;
+    z-index: 0;
 }
 
 .header-top-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 2rem;
 }
 
-.back-link {
-    color: #666;
-    text-decoration: none;
-    font-size: 0.9rem;
-    display: inline-flex;
+.back-pill, .settings-pill {
+    display: flex;
     align-items: center;
-    gap: 5px;
-    transition: color 0.2s;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
-.back-link:hover { color: var(--accent-color); }
+.back-pill {
+    background: rgba(255, 255, 255, 0.8);
+    color: #64748b;
+}
 
-/* Nuevo Botón de Ajustes */
-.btn-settings {
+.back-pill:hover {
     background: white;
-    border: 1px solid #ddd;
-    color: #666;
-    padding: 8px 15px;
-    border-radius: 20px;
+    color: var(--accent-color);
+    transform: translateX(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.settings-pill {
+    background: white;
+    color: #1e293b;
     cursor: pointer;
-    font-size: 0.9rem;
+}
+
+.settings-pill:hover {
+    background: #f8fafc;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.settings-pill i {
+    color: var(--accent-color);
+}
+
+.header-main-content {
+    position: relative;
+    z-index: 1;
+}
+
+.course-title-group {
+    margin-bottom: 1.5rem;
+}
+
+.center-type {
+    display: block;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.header-main-content h1 {
+    font-size: 3rem;
+    font-family: var(--font-serif);
+    color: #0f172a;
+    margin: 0;
+    line-height: 1.1;
+}
+
+.course-meta-pills {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.meta-pill {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 0.95rem;
     font-weight: 600;
-    transition: all 0.2s;
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-.btn-settings:hover {
-    background: #f9f9f9;
-    color: var(--text-color);
-    border-color: #ccc;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-
-.btn-settings i {
+.meta-pill i {
     color: var(--accent-color);
+    font-size: 0.9rem;
 }
-
-.header-content h1 {
-    font-family: var(--font-serif);
-    color: #111827;
-    font-size: 2.25rem;
-    margin: 0;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-}
-
-.header-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.badge {
-    padding: 5px 12px;
-    border-radius: 20px;
-     opacity: 1;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-.badge.year { background: #e3f2fd; color: #1976d2; }
-.badge.location { background: #f3e5f5; color: #7b1fa2; }
 
 /* --- SECCIÓN SUPERIOR (Info + Calendario) --- */
 .top-info-section {
@@ -544,11 +653,14 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
 }
 
 /* Tarjetas Blancas Genéricas */
-.info-card, .course-calendar, .calendar-card, .today-card {
+.info-card,
+.course-calendar,
+.calendar-card,
+.today-card {
     background: white;
     border-radius: 20px;
     padding: 1.5rem;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .info-list {
@@ -564,136 +676,213 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
 }
 
 .icon-box {
-    width: 45px; height: 45px;
+    width: 45px;
+    height: 45px;
     border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 1.2rem;
 }
-.icon-box.blue { background: #e3f2fd; color: #1976d2; }
-.icon-box.green { background: #e8f5e9; color: #2e7d32; }
-.icon-box.red { background: #ffebee; color: #c62828; }
 
-    border: none; border-top: 1px solid #eee; margin: 2rem 0;
+.icon-box.blue {
+    background: #e3f2fd;
+    color: #1976d2;
 }
+
+.icon-box.green {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.icon-box.red {
+    background: #ffebee;
+    color: #c62828;
+}
+
 
 /* --- GRID DE CLASES --- */
 .groups-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px;
-    margin-top: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 2rem;
 }
 
-/* Tarjeta de Clase */
+/* Tarjeta de Clase (GUAY) */
 .group-card {
     background: white;
-    border-radius: 15px;
+    border-radius: 24px;
     overflow: hidden;
-    text-decoration: none;
+    text-decoration: none !important;
     color: inherit;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    transition: transform 0.2s, box-shadow 0.2s;
-    display: block;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
     position: relative;
+    border: 1px solid #f1f5f9;
+    height: 100%;
 }
 
 .group-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 }
 
 .group-header {
-    height: 80px;
+    height: 130px;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
 }
 
-/* Colores para las cabeceras */
-.color-1 { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
-.color-2 { background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); }
-.color-3 { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); }
-
 .group-icon {
-    font-size: 2rem;
-    background: rgba(255,255,255,0.2);
-    width: 50px; height: 50px;
-    display: flex; align-items: center; justify-content: center;
-    border-radius: 50%;
+    width: 64px;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
 }
+
 .group-icon i {
-    font-size: 1.5rem;
-    color: inherit; /* Hereda el color calculado por JS para contraste */
+    font-size: 2rem;
+    color: white;
 }
 
-.menu-dots {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    color: inherit; /* Hereda color calculado por JS para contraste */
-    background: transparent !important;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    padding: 0;
-    transition: transform 0.2s;
+.group-body {
+    padding: 1.75rem;
+    text-align: left;
 }
-.menu-dots:hover {
-    transform: scale(1.1);
-}
-
-.group-body { padding: 1rem; text-align: center; }
 
 .group-body h3 {
-    font-size: 1.1rem; margin-bottom: 5px; color: var(--text-color);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
 }
 
 .group-body .subtitle {
-    font-size: 0.85rem; color: #888; margin-bottom: 1rem;
+    font-size: 1rem;
+    color: #64748b;
+    font-weight: 500;
+    margin: 0;
 }
 
-.group-stats {
-    border-top: 1px solid #f0f0f0; padding-top: 10px;
-    font-size: 0.85rem; color: #666;
+/* FOOTER DE LA TARJETA */
+.card-footer {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-/* TARJETA DASHED (Añadir Clase) */
+.tasks-pending {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.folder-icon {
+    color: var(--accent-color);
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.group-card:hover .folder-icon {
+    opacity: 1;
+    transform: translateX(3px);
+}
+
+/* TARJETA DASHED (Añadir Clase) - BONITA */
 .add-card-dashed {
-    min-height: 200px;
-    background-color: rgba(255, 255, 255, 0.3);
-    border: 3px dashed #ccc;
-    border-radius: 20px;
-    display: flex; flex-direction: column;
-    justify-content: center; align-items: center;
-    cursor: pointer; transition: all 0.3s;
-    padding: 20px;
+    min-height: 240px;
+    background: rgba(255, 255, 255, 0.4);
+    border: 3px dashed #e2e8f0;
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #94a3b8;
+    height: 100%;
 }
-.add-card-dashed:hover { background-color: white; border-color: var(--accent-color); }
-.add-card-dashed .add-icon {
-    width: 50px; height: 50px; border: 2px solid #ccc; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center; color: #999; margin-bottom: 10px;
+
+.add-card-dashed:hover {
+    background: white;
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
 }
-.add-card-dashed h3 { font-size: 1rem; color: #999; font-family: var(--font-sans); }
+
+.add-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    transition: all 0.3s ease;
+}
+
+.add-card-dashed:hover .add-icon {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+}
+
+.add-card-dashed h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
 
 /* --- VENTANA MODAL (Estilos base compartidos) --- */
 .modal-overlay {
-    display: none; position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px);
-    z-index: 1000; justify-content: center; align-items: center;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
 }
 
-.modal-overlay.active { display: flex; }
+.modal-overlay.active {
+    display: flex;
+}
 
 .modal-window {
-    background: white; width: 90%; max-width: 500px;
-    border-radius: 20px; padding: 2rem;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
     animation: slideUp 0.3s ease forwards;
 }
 
-@keyframes slideUp { to { transform: translateY(0); } }
+@keyframes slideUp {
+    to {
+        transform: translateY(0);
+    }
+}
 
 .modal-header {
     display: block;
@@ -703,279 +892,579 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
     padding-top: 25px !important;
     border-bottom: none;
 }
-.modal-header h3 { font-family: var(--font-serif); font-size: 1.5rem; color: var(--text-color); }
-.close-btn { background: none; border: none; font-size: 1.2rem; color: #999; cursor: pointer; }
 
-/* Estilos de formulario */
-.form-group { margin-bottom: 1rem; }
-.form-group label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: #666; font-weight: 600; }
-.form-group input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; }
-.form-row { display: flex; gap: 15px; }
-
-.modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 2rem; }
-.btn-cancel { background: none; border: none; color: #888; font-weight: 600; cursor: pointer; }
-.btn-save { background: var(--accent-color); color: white; border: none; padding: 10px 25px; border-radius: 50px; font-weight: 600; cursor: pointer; }
-
-/* --- ZONA DE PELIGRO (MODAL) --- */
-.danger-zone-modal {
-    margin-top: 2rem; padding: 1rem;
-    border: 1px solid #ffcccc; background-color: #fff5f5;
-    border-radius: 10px; display: flex; justify-content: space-between; align-items: center;
-}
-.danger-info h4 { color: #d32f2f; margin-bottom: 0.2rem; font-size: 0.95rem; }
-.danger-info p { font-size: 0.8rem; color: #d32f2f; opacity: 0.8; margin: 0; }
-.btn-delete-course {
-    background-color: white; border: 1px solid #d32f2f; color: #d32f2f;
-    padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem;
-    display: flex; align-items: center; gap: 5px; transition: 0.2s;
-}
-.btn-delete-course:hover { background-color: #d32f2f; color: white; }
-
-/* RESPONSIVE */
-@media (max-width: 900px) {
-    .main-content { margin-left: 80px; padding: 1.5rem; }
-    /* --- GRID DE CLASES --- */
-.groups-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px;
-    margin-top: 1.5rem;
-}
-
-/* Tarjeta de Clase */
-.group-card {
-    background: white;
-    border-radius: 15px;
-    overflow: hidden;
-    text-decoration: none;
-    color: inherit;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    transition: transform 0.2s, box-shadow 0.2s;
-    display: block;
-    position: relative;
-}
-
-.group-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
-
-.group-header {
-    height: 80px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
-
-/* Colores para las cabeceras */
-.color-1 { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
-.color-2 { background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); }
-.color-3 { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); }
-
-.group-icon {
-    font-size: 2rem;
-    background: rgba(255,255,255,0.2);
-    width: 50px; height: 50px;
-    display: flex; align-items: center; justify-content: center;
-    border-radius: 50%;
-}
-.group-icon i {
+.modal-header h3 {
+    font-family: var(--font-serif);
     font-size: 1.5rem;
-    color: inherit; /* Hereda el color calculado por JS para contraste */
+    color: var(--text-color);
 }
 
-.menu-dots {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    color: inherit; /* Hereda color calculado por JS para contraste */
-    background: transparent !important;
+.close-btn {
+    background: none;
     border: none;
+    font-size: 1.2rem;
+    color: #999;
     cursor: pointer;
-    font-size: 1rem;
-    padding: 0;
-    transition: transform 0.2s;
 }
-.menu-dots:hover {
-    transform: scale(1.1);
-}
-
-.group-body { padding: 1rem; text-align: center; }
-
-.group-body h3 {
-    font-size: 1.1rem; margin-bottom: 5px; color: var(--text-color);
-}
-
-.group-body .subtitle {
-    font-size: 0.85rem; color: #888; margin-bottom: 1rem;
-}
-
-.group-stats {
-    border-top: 1px solid #f0f0f0; padding-top: 10px;
-    font-size: 0.85rem; color: #666;
-}
-
-/* TARJETA DASHED (Añadir Clase) */
-.add-card-dashed {
-    min-height: 200px;
-    background-color: rgba(255, 255, 255, 0.3);
-    border: 3px dashed #ccc;
-    border-radius: 20px;
-    display: flex; flex-direction: column;
-    justify-content: center; align-items: center;
-    cursor: pointer; transition: all 0.3s;
-}
-.add-card-dashed:hover { background-color: white; border-color: var(--accent-color); }
-.add-card-dashed .add-icon {
-    width: 50px; height: 50px; border: 2px solid #ccc; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center; color: #999; margin-bottom: 10px;
-}
-.add-card-dashed h3 { font-size: 1rem; color: #999; font-family: var(--font-sans); }
-
-/* --- VENTANA MODAL (Estilos base compartidos) --- */
-.modal-overlay {
-    display: none; position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px);
-    z-index: 1000; justify-content: center; align-items: center;
-}
-
-.modal-overlay.active { display: flex; }
-
-.modal-window {
-    background: white; width: 90%; max-width: 500px;
-    border-radius: 20px; padding: 2rem;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-    animation: slideUp 0.3s ease forwards;
-}
-
-@keyframes slideUp { to { transform: translateY(0); } }
-
-.modal-header { display: flex; justify-content: space-between; margin-bottom: 1.5rem; }
-.modal-header h3 { font-family: var(--font-serif); font-size: 1.5rem; color: var(--text-color); }
-.close-btn { background: none; border: none; font-size: 1.2rem; color: #999; cursor: pointer; }
 
 /* Estilos de formulario */
-.form-group { margin-bottom: 1rem; }
-.form-group label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: #666; font-weight: 600; }
-.form-group input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; }
-.form-row { display: flex; gap: 15px; }
+.form-group {
+    margin-bottom: 1rem;
+}
 
-.modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 2rem; }
-.btn-cancel { background: none; border: none; color: #888; font-weight: 600; cursor: pointer; }
-.btn-save { background: var(--accent-color); color: white; border: none; padding: 10px 25px; border-radius: 50px; font-weight: 600; cursor: pointer; }
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #eee;
+    border-radius: 10px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 2rem;
+}
+
+.btn-cancel {
+    background: none;
+    border: none;
+    color: #888;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-save {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+}
 
 /* --- ZONA DE PELIGRO (MODAL) --- */
 .danger-zone-modal {
-    margin-top: 2rem; padding: 1rem;
-    border: 1px solid #ffcccc; background-color: #fff5f5;
-    border-radius: 10px; display: flex; justify-content: space-between; align-items: center;
-}
-.danger-info h4 { color: #d32f2f; margin-bottom: 0.2rem; font-size: 0.95rem; }
-.danger-info p { font-size: 0.8rem; color: #d32f2f; opacity: 0.8; margin: 0; }
-.btn-delete-course {
-    background-color: white; border: 1px solid #d32f2f; color: #d32f2f;
-    padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem;
-    display: flex; align-items: center; gap: 5px; transition: 0.2s;
-}
-.btn-delete-course:hover { background-color: #d32f2f; color: white; }
-
-/* RESPONSIVE */
-@media (max-width: 900px) {
-    .main-content { margin-left: 80px; padding: 1.5rem; }
-    .top-info-section { grid-template-columns: 1fr; }
-}
-@media (max-width: 600px) {
-    .danger-zone-modal { flex-direction: column; align-items: flex-start; gap: 10px; }
-    .btn-delete-course { width: 100%; justify-content: center; }
-}
-
-/* --- FIX PARA MENÚS DE TRES PUNTOS Y Z-INDEX --- */
-.groups-grid > div:nth-child(1) { z-index: 100; }
-.groups-grid > div:nth-child(2) { z-index: 99; }
-.groups-grid > div:nth-child(3) { z-index: 98; }
-.groups-grid > div:nth-child(4) { z-index: 97; }
-.groups-grid > div:nth-child(5) { z-index: 96; }
-.groups-grid > div:nth-child(6) { z-index: 95; }
-.groups-grid > div.add-card-dashed-container { z-index: 1; }
-
-.card-options { position: absolute; top: 15px; right: 15px; z-index: 10; }
-
-.menu-dots { background: transparent !important; border: none !important; cursor: pointer; font-size: 1.2rem; opacity: 0.7; transition: opacity 0.2s; padding: 0; box-shadow: none !important; }
-.menu-dots:hover { opacity: 1; }
-
-.menu-opciones-aislado {
-    display: none; position: absolute; top: 100%; right: 0; margin-top: 10px;
-    background-color: #ffffff !important; border-radius: 8px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important; min-width: 140px;
-    z-index: 9999 !important; overflow: hidden; padding: 0;
-}
-.menu-opciones-aislado.show { display: flex; flex-direction: column; }
-
-/* Para asegurarnos de que el contenedor de la tarjeta no oculte el menú */
-.group-card { overflow: visible !important; }
-
-/* --- ZONA DE ASIGNATURAS (Opción B) --- */
-.asignaturas-panel {
-    display: none; /* Oculto por defecto */
-    background-color: #f8fafc;
-    border-top: 1px dashed #cbd5e1;
-    padding: 15px;
-    margin-top: 10px;
-    border-radius: 0 0 8px 8px;
-    animation: fadeInDown 0.3s ease;
-}
-
-.asignaturas-panel.active {
-    display: block;
-}
-
-.chips-container {
+    margin-top: 2rem;
+    padding: 1rem;
+    border: 1px solid #ffcccc;
+    background-color: #fff5f5;
+    border-radius: 10px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.chip-asignatura {
-    background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-    color: #475569;
-    padding: 5px 12px;
-    border-radius: 20px;
+.danger-info h4 {
+    color: #d32f2f;
+    margin-bottom: 0.2rem;
+    font-size: 0.95rem;
+}
+
+.danger-info p {
+    font-size: 0.8rem;
+    color: #d32f2f;
+    opacity: 0.8;
+    margin: 0;
+}
+
+.btn-delete-course {
+    background-color: white;
+    border: 1px solid #d32f2f;
+    color: #d32f2f;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
     font-size: 0.85rem;
     display: flex;
     align-items: center;
-    gap: 8px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    transition: all 0.2s;
+    gap: 5px;
+    transition: 0.2s;
 }
 
-.chip-asignatura:hover {
-    border-color: #94a3b8;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.btn-delete-course:hover {
+    background-color: #d32f2f;
+    color: white;
 }
 
-.chip-btn-delete {
-    color: #ef4444;
-    cursor: pointer;
-    font-size: 0.9rem;
-    opacity: 0.7;
-}
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .main-content {
+        margin-left: 80px;
+        padding: 1.5rem;
+    }
 
-.chip-btn-delete:hover {
-    opacity: 1;
-}
+    /* --- GRID DE CLASES --- */
+    .groups-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+        margin-top: 1.5rem;
+    }
 
-.chip-add {
-    background-color: #eff6ff;
-    border: 1px dashed #3b82f6;
-    color: #3b82f6;
-    cursor: pointer;
-    font-weight: bold;
-}
+    /* Tarjeta de Clase */
+    .group-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: block;
+        position: relative;
+    }
 
-.chip-add:hover {
-    background-color: #dbeafe;
+    .group-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .group-header {
+        height: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    /* Colores para las cabeceras */
+    .color-1 {
+        background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+    }
+
+    .color-2 {
+        background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+    }
+
+    .color-3 {
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+    }
+
+    .group-icon {
+        font-size: 2rem;
+        background: rgba(255, 255, 255, 0.2);
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    .group-icon i {
+        font-size: 1.5rem;
+        color: inherit;
+        /* Hereda el color calculado por JS para contraste */
+    }
+
+    .menu-dots {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: inherit;
+        /* Hereda color calculado por JS para contraste */
+        background: transparent !important;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        padding: 0;
+        transition: transform 0.2s;
+    }
+
+    .menu-dots:hover {
+        transform: scale(1.1);
+    }
+
+    .group-body {
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .group-body h3 {
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+        color: var(--text-color);
+    }
+
+    .group-body .subtitle {
+        font-size: 0.85rem;
+        color: #888;
+        margin-bottom: 1rem;
+    }
+
+    .group-stats {
+        border-top: 1px solid #f0f0f0;
+        padding-top: 10px;
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    /* TARJETA DASHED (Añadir Clase) */
+    .add-card-dashed {
+        min-height: 200px;
+        background-color: rgba(255, 255, 255, 0.3);
+        border: 3px dashed #ccc;
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .add-card-dashed:hover {
+        background-color: white;
+        border-color: var(--accent-color);
+    }
+
+    .add-card-dashed .add-icon {
+        width: 50px;
+        height: 50px;
+        border: 2px solid #ccc;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+        margin-bottom: 10px;
+    }
+
+    .add-card-dashed h3 {
+        font-size: 1rem;
+        color: #999;
+        font-family: var(--font-sans);
+    }
+
+    /* --- VENTANA MODAL (Estilos base compartidos) --- */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+    }
+
+    .modal-window {
+        background: white;
+        width: 90%;
+        max-width: 500px;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s ease forwards;
+    }
+
+    @keyframes slideUp {
+        to {
+            transform: translateY(0);
+        }
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+    }
+
+    .modal-header h3 {
+        font-family: var(--font-serif);
+        font-size: 1.5rem;
+        color: var(--text-color);
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        color: #999;
+        cursor: pointer;
+    }
+
+    /* Estilos de formulario */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: #666;
+        font-weight: 600;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #eee;
+        border-radius: 10px;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 15px;
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 2rem;
+    }
+
+    .btn-cancel {
+        background: none;
+        border: none;
+        color: #888;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-save {
+        background: var(--accent-color);
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    /* --- ZONA DE PELIGRO (MODAL) --- */
+    .danger-zone-modal {
+        margin-top: 2rem;
+        padding: 1rem;
+        border: 1px solid #ffcccc;
+        background-color: #fff5f5;
+        border-radius: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .danger-info h4 {
+        color: #d32f2f;
+        margin-bottom: 0.2rem;
+        font-size: 0.95rem;
+    }
+
+    .danger-info p {
+        font-size: 0.8rem;
+        color: #d32f2f;
+        opacity: 0.8;
+        margin: 0;
+    }
+
+    .btn-delete-course {
+        background-color: white;
+        border: 1px solid #d32f2f;
+        color: #d32f2f;
+        padding: 8px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: 0.2s;
+    }
+
+    .btn-delete-course:hover {
+        background-color: #d32f2f;
+        color: white;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+        .main-content {
+            margin-left: 80px;
+            padding: 1.5rem;
+        }
+
+        .top-info-section {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .danger-zone-modal {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .btn-delete-course {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    /* --- FIX PARA MENÚS DE TRES PUNTOS Y Z-INDEX --- */
+    .groups-grid>div:nth-child(1) {
+        z-index: 100;
+    }
+
+    .groups-grid>div:nth-child(2) {
+        z-index: 99;
+    }
+
+    .groups-grid>div:nth-child(3) {
+        z-index: 98;
+    }
+
+    .groups-grid>div:nth-child(4) {
+        z-index: 97;
+    }
+
+    .groups-grid>div:nth-child(5) {
+        z-index: 96;
+    }
+
+    .groups-grid>div:nth-child(6) {
+        z-index: 95;
+    }
+
+    .groups-grid>div.add-card-dashed-container {
+        z-index: 1;
+    }
+
+    .card-options {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 10;
+    }
+
+    .menu-dots {
+        background: transparent !important;
+        border: none !important;
+        cursor: pointer;
+        font-size: 1.2rem;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+        padding: 0;
+        box-shadow: none !important;
+    }
+
+    .menu-dots:hover {
+        opacity: 1;
+    }
+
+    .menu-opciones-aislado {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 10px;
+        background-color: #ffffff !important;
+        border-radius: 8px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+        min-width: 140px;
+        z-index: 9999 !important;
+        overflow: hidden;
+        padding: 0;
+    }
+
+    .menu-opciones-aislado.show {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Para asegurarnos de que el contenedor de la tarjeta no oculte el menú */
+    .group-card {
+        overflow: visible !important;
+    }
+
+    /* --- ZONA DE ASIGNATURAS (Opción B) --- */
+    .asignaturas-panel {
+        display: none;
+        /* Oculto por defecto */
+        background-color: #f8fafc;
+        border-top: 1px dashed #cbd5e1;
+        padding: 15px;
+        margin-top: 10px;
+        border-radius: 0 0 8px 8px;
+        animation: fadeInDown 0.3s ease;
+    }
+
+    .asignaturas-panel.active {
+        display: block;
+    }
+
+    .chips-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .chip-asignatura {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s;
+    }
+
+    .chip-asignatura:hover {
+        border-color: #94a3b8;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .chip-btn-delete {
+        color: #ef4444;
+        cursor: pointer;
+        font-size: 0.9rem;
+        opacity: 0.7;
+    }
+
+    .chip-btn-delete:hover {
+        opacity: 1;
+    }
+
+    .chip-add {
+        background-color: #eff6ff;
+        border: 1px dashed #3b82f6;
+        color: #3b82f6;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .chip-add:hover {
+        background-color: #dbeafe;
+    }
 }

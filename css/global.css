@@ -4,13 +4,13 @@
 
 :root {
     /* Fondo con degradado sutil */
-    --page-bg-start: #FF9F43; 
+    --page-bg-start: #FF9F43;
     --page-bg-end: #ff7e5f;
-    
+
     /* Tipografía y acentos */
     --text-color: #333333;
     --accent-color: #FF6B6B;
-    
+
     /* Fuentes */
     --font-serif: "Times New Roman", Times, serif;
     --font-sans: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -20,6 +20,12 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    text-decoration: none !important;
+}
+
+a {
+    text-decoration: none !important;
+    color: inherit;
 }
 
 body {
@@ -29,7 +35,7 @@ body {
     justify-content: center;
     align-items: center;
     font-family: var(--font-sans);
-    overflow: hidden; 
+    overflow: hidden;
     position: relative;
 }
 
@@ -48,21 +54,28 @@ body {
 
 /* Estilos para el selector de avatares */
 .avatar-option {
-    width: 45px; 
-    height: 45px; 
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
-    cursor: pointer; 
+    cursor: pointer;
     border: 3px solid transparent;
-    transition: all 0.2s ease-in-out; 
+    transition: all 0.2s ease-in-out;
     object-fit: cover;
 }
-.avatar-option:hover { transform: scale(1.15); }
-.avatar-option.selected { 
-    border-color: #0d6efd; 
-    box-shadow: 0 0 10px rgba(13,110,253,0.5); 
+
+.avatar-option:hover {
+    transform: scale(1.15);
+}
+
+.avatar-option.selected {
+    border-color: #0d6efd;
+    box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
     transform: scale(1.1);
 }
-.cursor-pointer { cursor: pointer; }
+
+.cursor-pointer {
+    cursor: pointer;
+}
 
 /* Animación global de la imagen */
 @keyframes fadeInCornerLeft {
@@ -70,6 +83,7 @@ body {
         opacity: 0;
         transform: translate(-20px, 0);
     }
+
     to {
         opacity: 0.8;
         transform: translate(0, 0);

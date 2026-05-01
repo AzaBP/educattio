@@ -62,8 +62,8 @@ try {
     
     <link rel="icon" type="image/png" href="../imagenes/dolphin.png">
     <link rel="stylesheet" href="../css/global.css">
-    <link rel="stylesheet" href="../css/portal_inicio_usuario.css">
-    <link rel="stylesheet" href="../css/calendario.css">
+    <link rel="stylesheet" href="../css/portal_inicio_usuario.css?v=1.2">
+    <link rel="stylesheet" href="../css/calendario.css?v=1.2">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -77,7 +77,7 @@ try {
         <header class="top-bar">
             <div class="welcome-text">
                 <h1>Hola, <?php echo htmlspecialchars($nombre_usuario); ?></h1>
-                <p>Hoy es un buen día para evaluar.</p>
+                <p>Bienvenido de nuevo. ¿Qué vamos a evaluar hoy?</p>
             </div>
             
             <div class="user-profile">
@@ -101,7 +101,6 @@ try {
                         <span class="small-label">Cursos activos</span>
                         <h2><?php echo $total_cursos_activos; ?></h2>
                     </div>
-                    <button class="btn-add-class" onclick="openModalCurso()"><i class="fas fa-plus"></i> Nuevo curso</button>
                 </div>
 
                 <div class="courses-list">
@@ -119,6 +118,7 @@ try {
                             </a>
                         <?php endforeach; ?>
                     <?php endif; ?>
+                    
                 </div>
             </div>
 
@@ -137,8 +137,8 @@ try {
         <section class="classes-section">
             <div class="section-header">
                 <h2>Mis cursos</h2>
-                <button class="btn-add-class" onclick="openModalCurso()"><i class="fas fa-plus"></i> Añadir curso</button>
             </div>
+
             <div class="classes-grid">
                 <?php if (empty($cursos_activos)): ?>
                     <div class="empty-state">Aún no has creado ningún curso. Pulsa "Añadir curso" para empezar.</div>
@@ -160,6 +160,13 @@ try {
                         </a>
                     <?php endforeach; ?>
                 <?php endif; ?>
+                
+                <div class="add-card-dashed" onclick="openModalCurso()">
+                    <div class="add-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <h3>Añadir Nuevo Curso</h3>
+                </div>
             </div>
         </section>
     </main>
@@ -170,7 +177,6 @@ try {
 <!-- ========================================= -->
 <div id="modalCurso" class="modal-overlay">
     <div class="modal-window">
-        
         <div class="modal-header">
             <h3>Crear nuevo curso</h3>
             <button class="close-btn" onclick="closeModalCurso()">
@@ -225,7 +231,10 @@ try {
         </form>
 
     </div>
+    
 </div>
+
+
 
 <script src="../js/portal_inicio_usuario.js"></script>
 <script src="../js/notificaciones.js"></script>
