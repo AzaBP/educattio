@@ -35,17 +35,10 @@ try {
     <div class="dashboard-layout">
         
         <?php include 'sidebar.php'; ?>
-        
-        <nav class="sidebar-nav">
-            <a href="portal_inicio_usuario.php" class="nav-item active"><i class="fas fa-home"></i> Inicio</a>
-            <a href="portal_cursos.php" class="nav-item"><i class="fas fa-chalkboard-teacher"></i> Mis Cursos</a>
-            <a href="ajustes.php" class="nav-item"><i class="fas fa-cog"></i> Ajustes</a>
-        </nav>
 
         <div class="sidebar-footer">
             <a href="logout.php" class="nav-item logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
         </div>
-    </aside>
 
         <main class="main-content">
             <header class="page-header-flex">
