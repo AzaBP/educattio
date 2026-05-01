@@ -178,3 +178,6 @@ ALTER TABLE usuarios ADD COLUMN token_verificacion VARCHAR(64) NULL;
 
 -- Para la foto de perfil
 ALTER TABLE usuarios ADD COLUMN foto_perfil VARCHAR(255) DEFAULT NULL;
+
+--para los documentos de las asignaturas
+ALTER TABLE temas_asignatura ADD COLUMN documento VARCHAR(255) NULL;

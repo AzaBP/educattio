@@ -32,10 +32,10 @@ if (isset($_GET['action']) && ($_GET['action'] === 'events' || $_GET['action'] =
     $params = [':user_id' => $usuario_id];
     
     if ($clase_id) {
-        $sql .= " AND e.clase_id = :clase_id";
+        $sql .= " AND (e.clase_id = :clase_id OR e.clase_id IS NULL)";
         $params[':clase_id'] = $clase_id;
     } elseif ($curso_id) {
-        $sql .= " AND c.curso_id = :curso_id";
+        $sql .= " AND (c.curso_id = :curso_id OR e.clase_id IS NULL)";
         $params[':curso_id'] = $curso_id;
     }
     
@@ -73,14 +73,14 @@ $endDate = date('Y-m-t', strtotime("$startDate"));
 if ($clase_id > 0) {
     $sql = "SELECT e.id, e.titulo, DATE(e.fecha) as fecha, e.tipo_evento 
             FROM eventos e
-            WHERE e.clase_id = :clase_id AND e.usuario_id = :user_id AND e.fecha BETWEEN :start AND :end";
+            WHERE (e.clase_id = :clase_id OR e.clase_id IS NULL) AND e.usuario_id = :user_id AND e.fecha BETWEEN :start AND :end";
     $stmt = $conexion->prepare($sql);
     $stmt->execute([':clase_id' => $clase_id, ':user_id' => $usuario_id, ':start' => $startDate, ':end' => $endDate]);
 } elseif ($curso_id > 0) {
     $sql = "SELECT e.id, e.titulo, DATE(e.fecha) as fecha, e.tipo_evento 
             FROM eventos e
-            JOIN clases c ON e.clase_id = c.id
-            WHERE c.curso_id = :curso_id AND e.usuario_id = :user_id AND e.fecha BETWEEN :start AND :end";
+            LEFT JOIN clases c ON e.clase_id = c.id
+            WHERE (c.curso_id = :curso_id OR e.clase_id IS NULL) AND e.usuario_id = :user_id AND e.fecha BETWEEN :start AND :end";
     $stmt = $conexion->prepare($sql);
     $stmt->execute([':curso_id' => $curso_id, ':user_id' => $usuario_id, ':start' => $startDate, ':end' => $endDate]);
 } else {

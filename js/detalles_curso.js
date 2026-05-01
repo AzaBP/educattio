@@ -248,8 +248,13 @@ async function verificarSesion() {
 
 function abrirMiniEventoCurso() {
     if (!window.miniCalendarCurso) return;
-    const today = new Date().toISOString().split('T')[0];
-    window.miniCalendarCurso.selectedDate = today;
+    if (!window.miniCalendarCurso.selectedDate) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        window.miniCalendarCurso.selectedDate = `${year}-${month}-${day}`;
+    }
     window.miniCalendarCurso.updateEventsList();
     window.miniCalendarCurso.openEventModal();
 }

@@ -78,6 +78,9 @@ class MiniCalendar {
         
         this.container.innerHTML = html;
         this.container.miniCalendarObj = this;
+        // Make the button work by binding the object to the inner div as well
+        const innerDiv = this.container.querySelector('.mini-calendar');
+        if (innerDiv) innerDiv.miniCalendarObj = this;
     }
 
     getDaysOfWeek() {
@@ -126,7 +129,10 @@ class MiniCalendar {
     }
 
     formatDate(date) {
-        return date.toISOString().split('T')[0];
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 
     getMonthYear() {

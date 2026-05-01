@@ -30,8 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function abrirMiniEventoAsignatura() {
     if (!window.miniCalendarAsignatura) return;
-    const today = new Date().toISOString().split('T')[0];
-    window.miniCalendarAsignatura.selectedDate = today;
+    if (!window.miniCalendarAsignatura.selectedDate) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        window.miniCalendarAsignatura.selectedDate = `${year}-${month}-${day}`;
+    }
     window.miniCalendarAsignatura.updateEventsList();
     window.miniCalendarAsignatura.openEventModal();
 }

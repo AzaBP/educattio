@@ -122,23 +122,7 @@ try {
                 </div>
             </div>
 
-            <div class="overview-card calendar-card">
-                <div class="calendar-header-row">
-                    <button class="calendar-nav" id="prevMonth"><i class="fas fa-chevron-left"></i></button>
-                    <div class="calendar-title">
-                        <span id="bigCalendarMonth">-- --</span>
-                    </div>
-                    <button class="calendar-nav" id="nextMonth"><i class="fas fa-chevron-right"></i></button>
-                </div>
-                <div class="small-calendar-grid" id="calendarGrid">
-                    <div class="day-name">Lun</div>
-                    <div class="day-name">Mar</div>
-                    <div class="day-name">Mié</div>
-                    <div class="day-name">Jue</div>
-                    <div class="day-name">Vie</div>
-                    <div class="day-name">Sáb</div>
-                    <div class="day-name">Dom</div>
-                </div>
+            <div class="overview-card calendar-card" id="miniCalendarContainer" style="padding:0; border:none; background:transparent; box-shadow:none;">
             </div>
 
             <div class="overview-card today-card">

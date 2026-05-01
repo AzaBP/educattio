@@ -42,6 +42,12 @@ try {
 // ----------------------------------------------------------
 // 3. Manejo de acciones POST (añadir tema, periodos, editar/eliminar)
 // ----------------------------------------------------------
+// Auto-migración para añadir columna documento si no existe
+try {
+    $conexion->exec("ALTER TABLE temas_asignatura ADD COLUMN documento VARCHAR(255) NULL");
+} catch (PDOException $e) {
+    // Ignorar si la columna ya existe
+}
 // 3.1 Añadir tema
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add_tema') {
     $titulo = trim($_POST['titulo'] ?? '');
@@ -53,8 +59,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $maxOrden = (int)$stmt->fetchColumn();
         $nuevoOrden = $maxOrden + 1;
         
-        $stmt = $conexion->prepare("INSERT INTO temas_asignatura (asignatura_id, titulo, descripcion, orden) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$asignatura_id, $titulo, $descripcion, $nuevoOrden]);
+        $documento_path = null;
+        if (isset($_FILES['documento']) && $_FILES['documento']['error'] === UPLOAD_ERR_OK) {
+            $upload_dir = '../uploads/temarios/';
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
+            $filename = time() . '_' . basename($_FILES['documento']['name']);
+            $target_file = $upload_dir . $filename;
+            if (move_uploaded_file($_FILES['documento']['tmp_name'], $target_file)) {
+                $documento_path = $filename;
+            }
+        }
+        
+        $stmt = $conexion->prepare("INSERT INTO temas_asignatura (asignatura_id, titulo, descripcion, orden, documento) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$asignatura_id, $titulo, $descripcion, $nuevoOrden, $documento_path]);
     }
     header("Location: detalles_asignatura.php?id=" . $asignatura_id);
     exit();
@@ -289,12 +308,19 @@ try {
                             <div class="tema-card">
                                 <h4><?= htmlspecialchars($tema['titulo']) ?></h4>
                                 <p><?= nl2br(htmlspecialchars($tema['descripcion'])) ?></p>
+                                <?php if (!empty($tema['documento'])): ?>
+                                    <div class="mt-2">
+                                        <a href="../uploads/temarios/<?= htmlspecialchars($tema['documento']) ?>" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-paperclip"></i> Ver documento
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
                 <div id="nuevoTemaSection" class="new-item-card hidden">
-                    <form method="POST">
+                    <form method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="action" value="add_tema">
                         <div class="mb-3">
                             <label class="form-label">Título del tema</label>
@@ -303,6 +329,11 @@ try {
                         <div class="mb-3">
                             <label class="form-label">Descripción</label>
                             <textarea name="descripcion" class="form-control" rows="3" placeholder="Describe el contenido del tema"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Documento adjunto (Opcional)</label>
+                            <input type="file" name="documento" class="form-control">
+                            <small class="form-text text-muted">Puedes subir archivos PDF, Word, Excel, imágenes, etc.</small>
                         </div>
                         <div class="d-flex gap-2 justify-content-end">
                             <button type="button" class="btn btn-outline-secondary" onclick="toggleSection('nuevoTemaSection')">Cancelar</button>
@@ -324,9 +355,15 @@ try {
                     <div class="evaluation-card">
                         <h3>Ir al cuaderno</h3>
                         <p>Usa el cuaderno de evaluación para registrar notas y organizar items.</p>
-                        <a id="abrirCuadernoBtn" class="btn btn-primary" href="cuaderno_evaluacion.php?asignatura_id=<?= $asignatura_id ?>">
-                            <i class="fas fa-book-open"></i> Abrir cuaderno
-                        </a>
+                        <?php if (empty($periodos)): ?>
+                            <button id="abrirCuadernoBtn" class="btn btn-primary" onclick="alert('Crea al menos un periodo de evaluación para usar el cuaderno.')">
+                                <i class="fas fa-book-open"></i> Abrir cuaderno
+                            </button>
+                        <?php else: ?>
+                            <a id="abrirCuadernoBtn" class="btn btn-primary" href="cuaderno_evaluacion.php?asig_id=<?= $asignatura_id ?>&periodo_id=<?= $periodos[0]['id'] ?>">
+                                <i class="fas fa-book-open"></i> Abrir cuaderno
+                            </a>
+                        <?php endif; ?>
                     </div>
                     <div class="periodos-card">
                         <div class="d-flex justify-content-between align-items-center mb-3">

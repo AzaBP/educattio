@@ -80,8 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function abrirMiniEventoClase() {
     if (!window.miniCalendarClase) return;
-    const today = new Date().toISOString().split('T')[0];
-    window.miniCalendarClase.selectedDate = today;
+    if (!window.miniCalendarClase.selectedDate) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        window.miniCalendarClase.selectedDate = `${year}-${month}-${day}`;
+    }
     window.miniCalendarClase.updateEventsList();
     window.miniCalendarClase.openEventModal();
 }
