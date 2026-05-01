@@ -1,7 +1,7 @@
 <?php
-// Este archivo NO debe llamar a session_start().
-// Se espera que $usuario_id ya esté definido desde la página principal.
-// Si se accede directamente sin variable, se intenta obtener de la sesión global (pero mejor pasar parámetro).
+// calendar_widget.php - Versión modificada para filtrar por curso (si $widget_curso_id está definido)
+
+// No iniciar sesión aquí; se espera que la página principal ya tenga la sesión iniciada.
 if (!isset($usuario_id) && isset($_SESSION['usuario_id'])) {
     $usuario_id = $_SESSION['usuario_id'];
 }
@@ -10,16 +10,13 @@ if (!isset($usuario_id)) {
     return;
 }
 
-// Guardamos el nombre en una variable para usarlo abajo
-$nombre_usuario = $_SESSION['nombre_usuario'];
+// Determinar si se debe filtrar por un curso específico (variable pasada antes de incluir)
+$curso_id = isset($widget_curso_id) ? (int)$widget_curso_id : 0;
 
-// Guardamos el nombre en una variable para usarlo abajo
-$usuario_id = $_SESSION['usuario_id'];
 // Obtener mes y año desde parámetros GET (para navegación)
 $currentMonth = isset($_GET['month']) ? (int)$_GET['month'] : (int)date('n');
 $currentYear = isset($_GET['year']) ? (int)$_GET['year'] : (int)date('Y');
 
-// Ajustar bordes
 if ($currentMonth < 1) {
     $currentMonth = 12;
     $currentYear--;
@@ -29,16 +26,28 @@ if ($currentMonth > 12) {
     $currentYear++;
 }
 
-// Conexión a BD (asumiendo que 'conexion.php' está en el mismo directorio o en ruta)
-require_once 'conexion.php'; 
+require_once 'conexion.php';
 
 $startDate = date('Y-m-01', strtotime("$currentYear-$currentMonth-01"));
 $endDate = date('Y-m-t', strtotime("$startDate"));
 
-$stmt = $conexion->prepare("SELECT id, titulo, DATE(fecha) as fecha, tipo_evento 
-                            FROM eventos 
-                            WHERE usuario_id = :uid AND fecha BETWEEN :start AND :end");
-$stmt->execute([':uid' => $usuario_id, ':start' => $startDate, ':end' => $endDate]);
+// Consulta de eventos según si hay curso específico o no
+if ($curso_id > 0) {
+    // Obtener eventos de las clases que pertenecen a este curso
+    $sql = "SELECT e.id, e.titulo, DATE(e.fecha) as fecha, e.tipo_evento 
+            FROM eventos e
+            JOIN clases c ON e.clase_id = c.id
+            WHERE c.curso_id = :curso_id AND e.fecha BETWEEN :start AND :end";
+    $stmt = $conexion->prepare($sql);
+    $stmt->execute([':curso_id' => $curso_id, ':start' => $startDate, ':end' => $endDate]);
+} else {
+    // Eventos generales del usuario (sin clase específica o con clase_id NULL)
+    $sql = "SELECT id, titulo, DATE(fecha) as fecha, tipo_evento 
+            FROM eventos 
+            WHERE usuario_id = :uid AND fecha BETWEEN :start AND :end";
+    $stmt = $conexion->prepare($sql);
+    $stmt->execute([':uid' => $usuario_id, ':start' => $startDate, ':end' => $endDate]);
+}
 $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Indexar eventos por fecha
@@ -48,18 +57,18 @@ foreach ($eventos as $ev) {
 }
 
 $monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-$firstDayWeek = date('N', strtotime($startDate)); // 1=Lunes, 7=Domingo
+$firstDayWeek = date('N', strtotime($startDate));
 $daysInMonth = date('t', strtotime($startDate));
 $today = date('Y-m-d');
 ?>
 
 <div class="custom-calendar-widget" id="dynamicCalendarWidget">
     <div class="calendar-header">
-        <button class="calendar-nav" data-month="<?php echo $currentMonth-1; ?>" data-year="<?php echo $currentYear; ?>">
+        <button class="calendar-nav" data-month="<?php echo $currentMonth-1; ?>" data-year="<?php echo $currentYear; ?>" data-curso="<?php echo $curso_id; ?>">
             <i class="fas fa-chevron-left"></i>
         </button>
         <h3><?php echo $monthNames[$currentMonth-1] . ' ' . $currentYear; ?></h3>
-        <button class="calendar-nav" data-month="<?php echo $currentMonth+1; ?>" data-year="<?php echo $currentYear; ?>">
+        <button class="calendar-nav" data-month="<?php echo $currentMonth+1; ?>" data-year="<?php echo $currentYear; ?>" data-curso="<?php echo $curso_id; ?>">
             <i class="fas fa-chevron-right"></i>
         </button>
     </div>
@@ -68,11 +77,9 @@ $today = date('Y-m-d');
         <div class="day-header">J</div><div class="day-header">V</div><div class="day-header">S</div><div class="day-header">D</div>
 
         <?php
-        // Celdas vacías iniciales
         for ($i = 1; $i < $firstDayWeek; $i++) {
             echo '<div class="calendar-day empty"></div>';
         }
-        // Días del mes
         for ($d = 1; $d <= $daysInMonth; $d++) {
             $fecha = sprintf('%04d-%02d-%02d', $currentYear, $currentMonth, $d);
             $esHoy = ($fecha === $today);
@@ -80,7 +87,7 @@ $today = date('Y-m-d');
             $clase = 'calendar-day';
             if ($esHoy) $clase .= ' today';
             if ($tieneEventos) $clase .= ' has-events';
-            echo "<div class='$clase' data-fecha='$fecha'>";
+            echo "<div class='$clase' data-fecha='$fecha' data-curso='$curso_id'>";
             echo "<span class='day-number'>$d</span>";
             if ($tieneEventos) {
                 echo "<span class='event-dot'></span>";
@@ -91,6 +98,7 @@ $today = date('Y-m-d');
     </div>
 </div>
 
+<!-- Modal para mostrar detalles de eventos (se mantiene igual, solo se mejora la carga) -->
 <div id="eventDetailModal" class="modal-overlay" style="display:none;">
     <div class="modal-window" style="max-width: 520px;">
         <div class="modal-header">
@@ -204,50 +212,76 @@ $today = date('Y-m-d');
 </style>
 
 <script>
-// Manejar navegación por AJAX para no recargar toda la página
-document.querySelectorAll('.calendar-nav').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const month = this.dataset.month;
-        const year = this.dataset.year;
-        const container = document.getElementById('dynamicCalendarWidget').parentNode;
-        fetch('calendar_widget.php?month=' + month + '&year=' + year)
-            .then(res => res.text())
-            .then(html => {
-                container.innerHTML = html;
-            })
-            .catch(err => console.error('Error al cargar calendario:', err));
-    });
-});
+// Función para recargar el widget mediante AJAX (preserva el curso_id si existe)
+function reloadCalendarWidget(month, year, cursoId) {
+    const container = document.getElementById('dynamicCalendarWidget').parentNode;
+    let url = 'calendar_widget.php?month=' + month + '&year=' + year;
+    if (cursoId && cursoId > 0) {
+        url += '&curso_id=' + cursoId;
+    }
+    fetch(url)
+        .then(res => res.text())
+        .then(html => {
+            container.innerHTML = html;
+            // Reasignar eventos después de insertar el nuevo contenido
+            bindNavButtons();
+            bindDayClick();
+        })
+        .catch(err => console.error('Error al cargar calendario:', err));
+}
 
-// Mostrar eventos al hacer clic en un día
-document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
-    day.addEventListener('click', function() {
-        const fecha = this.dataset.fecha;
-        if (fecha) {
-            if (typeof window.showEventModal === 'function') {
-                window.showEventModal(fecha);
-            } else {
-                console.warn('Función showEventModal no definida');
-            }
-        }
+// Asignar eventos a los botones de navegación (se ejecuta cada vez que se recarga el widget)
+function bindNavButtons() {
+    document.querySelectorAll('.calendar-nav').forEach(btn => {
+        // Evitar duplicar eventos
+        btn.removeEventListener('click', navClickHandler);
+        btn.addEventListener('click', navClickHandler);
     });
-});
+}
 
-window.showEventModal = async function(fecha) {
+function navClickHandler(e) {
+    e.stopPropagation();
+    const month = this.dataset.month;
+    const year = this.dataset.year;
+    const cursoId = this.dataset.curso || 0;
+    reloadCalendarWidget(month, year, cursoId);
+}
+
+// Asignar eventos a los días para mostrar modal
+function bindDayClick() {
+    document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
+        day.removeEventListener('click', dayClickHandler);
+        day.addEventListener('click', dayClickHandler);
+    });
+}
+
+function dayClickHandler(e) {
+    const fecha = this.dataset.fecha;
+    const cursoId = this.dataset.curso || 0;
+    if (fecha) {
+        showEventModal(fecha, cursoId);
+    }
+}
+
+// Función global para mostrar eventos de una fecha (puede llamarse desde fuera)
+window.showEventModal = async function(fecha, cursoId = 0) {
     const modal = document.getElementById('eventDetailModal');
     const content = document.getElementById('eventDetailContent');
+    if (!modal || !content) return;
     content.innerHTML = '<div class="p-3 text-center">Cargando eventos...</div>';
     modal.style.display = 'flex';
 
     try {
-        const res = await fetch('obtener_eventos_fecha.php?fecha=' + encodeURIComponent(fecha));
+        let url = 'obtener_eventos_fecha.php?fecha=' + encodeURIComponent(fecha);
+        if (cursoId && cursoId > 0) {
+            url += '&curso_id=' + cursoId;
+        }
+        const res = await fetch(url);
         const eventos = await res.json();
         if (!eventos.length) {
             content.innerHTML = '<p class="text-muted">No hay eventos para esta fecha.</p>';
             return;
         }
-
         content.innerHTML = eventos.map(evento => {
             return `
                 <div class="event-detail-card" style="border:1px solid #e2e8f0;border-radius:14px;padding:16px;margin-bottom:12px;">
@@ -268,14 +302,24 @@ window.showEventModal = async function(fecha) {
 };
 
 window.hideEventDetailModal = function() {
-    document.getElementById('eventDetailModal').style.display = 'none';
+    const modal = document.getElementById('eventDetailModal');
+    if (modal) modal.style.display = 'none';
 };
 
 function escapeHtml(text) {
     if (!text) return '';
-    return text.toString().replace(/[&<>"]+/g, function(match) {
+    return text.toString().replace(/[&<>"]/g, function(match) {
         const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
-        return escape[match];
+        return escape[match] || match;
     });
 }
+
+// Inicializar eventos después de cargar el DOM (y también después de una recarga AJAX)
+document.addEventListener('DOMContentLoaded', () => {
+    bindNavButtons();
+    bindDayClick();
+});
+// Para recargas internas (cuando se reemplaza el HTML), se ejecutará el script del nuevo contenido.
+// Para asegurar que los eventos se vuelvan a asignar, se puede llamar desde el script que recarga.
+// Por eso hemos definido bindNavButtons y bindDayClick como funciones y las llamamos al inicio.
 </script>
