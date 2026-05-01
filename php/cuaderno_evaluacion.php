@@ -76,33 +76,18 @@ try {
         }
     }
 
-    // Función auxiliar para las medias (Se queda igual)
     function calcularMediaPeriodoAnterior($alumno_id, $periodo_id, $conexion) {
-        // 1. Obtener todos los items de ese periodo
-        $sql_items = "SELECT id FROM items_evaluacion WHERE periodo_id = :per_id";
-        $stmt_items = $conexion->prepare($sql_items);
-        $stmt_items->execute([':per_id' => $periodo_id]);
-        $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
-
-        if (empty($items)) return '0';
-
-        $suma = 0;
-        $total = 0;
-
-        foreach ($items as $it) {
-            // CORRECCIÓN: Tabla 'evaluaciones' y columna 'nota'
-            $sql_nota = "SELECT nota FROM evaluaciones WHERE alumno_id = :al_id AND item_id = :it_id";
-            $stmt_nota = $conexion->prepare($sql_nota);
-            $stmt_nota->execute([':al_id' => $alumno_id, ':it_id' => $it['id']]);
-            $n = $stmt_nota->fetch(PDO::FETCH_ASSOC);
-
-            // CORRECCIÓN: Usamos $n['nota']
-            $nota_num = ($n && $n['nota'] !== '' && $n['nota'] !== null) ? floatval($n['nota']) : 0;
-            $suma += $nota_num;
-            $total++;
-        }
-
-        return ($total > 0) ? round($suma / $total, 2) : '0';
+        // Usamos LEFT JOIN para incluir todos los items aunque no tengan nota (contarán como 0)
+        $sql = "SELECT SUM(COALESCE(e.nota, 0) * i.peso) / SUM(i.peso) as media
+                FROM items_evaluacion i
+                LEFT JOIN evaluaciones e ON i.id = e.item_id AND e.alumno_id = :al_id
+                WHERE i.periodo_id = :per_id";
+        $stmt = $conexion->prepare($sql);
+        $stmt->execute([':al_id' => $alumno_id, ':per_id' => $periodo_id]);
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        // Si la suma de pesos es 0, evitamos división por cero
+        return ($res['media'] !== null) ? round($res['media'], 2) : '0';
     }
 
     // 2. OBTENER LAS COLUMNAS SOLO DEL PERIODO ACTUAL
@@ -215,149 +200,128 @@ function obtenerNotaActual($alumno_id, $item_id, $matriz_notas) {
             </div>
 
             <div class="spreadsheet-container">
+                <?php
+                // Primero calculamos la suma total de pesos para saber el color del encabezado final
+                $suma_total_pesos = 0;
+                foreach ($items_evaluacion as $item) {
+                    $suma_total_pesos += $item['peso'];
+                }
+                $clase_peso_total = (abs($suma_total_pesos - 1.0) > 0.001) ? 'weight-warning' : 'weight-ok';
+                ?>
+
+                <?php
+                // Calculamos la suma total de pesos para colorear la Media Final
+                $suma_total_pesos = 0;
+                foreach ($items_evaluacion as $item) {
+                    $suma_total_pesos += $item['peso'];
+                }
+                // Si la suma no es 1 (100%), activamos la clase de error en rojo
+                $clase_peso_total = (abs($suma_total_pesos - 1.0) > 0.001) ? 'weight-warning' : 'weight-ok';
+                ?>
+
                 <table class="gradebook-table">
                     <thead>
                         <tr>
                             <th class="sticky-col">Alumno</th>
+                            <?php foreach ($items_evaluacion as $item): ?>
+                                <th>
+                                    <div class="header-content" style="display: flex; flex-direction: column; align-items: center;">
+                                        
+                                        <div style="display: flex; align-items: center; gap: 6px;">
+                                            <span class="item-title" style="font-weight: 600;">
+                                                <?php echo htmlspecialchars($item['titulo']); ?>
+                                            </span>
+                                            <span class="header-weight" style="font-size: 0.85em; color: #64748b;">
+                                                (<?php echo round($item['peso'] * 100, 1); ?>%)
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="header-actions">
+                                            <button class="icon-btn" onclick="abrirModalEditar(<?php echo $item['id']; ?>, '<?php echo htmlspecialchars($item['titulo'], ENT_QUOTES); ?>', <?php echo $item['peso']; ?>)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="icon-btn delete-btn" onclick="borrarColumna(<?php echo $item['id']; ?>)">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </th>
+                            <?php endforeach; ?>
+                            <th>
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <span>Media Final</span>
+                                    <span class="header-weight <?php echo $clase_peso_total; ?>" style="font-size: 0.85em;">
+                                        (<?php echo round($suma_total_pesos * 100, 1); ?>%)
+                                    </span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody>
+                        <?php foreach ($alumnos as $alumno): ?>
+                        <tr>
+                            <td class="sticky-col student-cell">
+                                <div class="student-info">
+                                    <div class="student-avatar" onclick="abrirModalAvatar(<?php echo $alumno['id']; ?>, '<?php echo htmlspecialchars($alumno['foto'] ?? ''); ?>')">
+                                        <?php if (!empty($alumno['foto'])): ?>
+                                            <img src="../icons/<?php echo htmlspecialchars($alumno['foto']); ?>" alt="">
+                                        <?php else: ?>
+                                            <div class="avatar-placeholder"><?php 
+                                                $n = explode(' ', $alumno['nombre_alumno']);
+                                                echo strtoupper(substr($n[0], 0, 1) . (isset($n[1]) ? substr($n[1], 0, 1) : '')); 
+                                            ?></div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <span class="student-name"><?php echo htmlspecialchars($alumno['nombre_alumno']); ?></span>
+                                </div>
+                            </td>
                             
                             <?php foreach ($items_evaluacion as $item): ?>
-                                <td class="nota-celda" style="position:relative;">
+                                <td class="nota-celda">
                                     <?php 
-                                    $es_columna_automatica = false;
-                                    $valor_mostrar = '';
-                                    
-                                    // 1. Lógica para Evaluación Final
+                                    $es_auto = false;
+                                    $val = 0;
                                     if (isset($es_final) && $es_final) {
                                         foreach ($periodos_disponibles as $pd) {
-                                            if ($pd['nombre_periodo'] === $item['titulo'] && $pd['id'] != $periodo_id_actual) {
-                                                $es_columna_automatica = true;
-                                                // CORRECCIÓN: Usamos $al['id']
-                                                $valor_mostrar = calcularMediaPeriodoAnterior($al['id'], $pd['id'], $conexion);
+                                            if (trim(mb_strtolower($pd['nombre_periodo'])) === trim(mb_strtolower($item['titulo'])) && $pd['id'] != $periodo_id_actual) {
+                                                $es_auto = true;
+                                                $val = calcularMediaPeriodoAnterior($alumno['id'], $pd['id'], $conexion);
                                                 break;
                                             }
                                         }
                                     }
-                                    
-                                    // 2. Si es una columna normal
-                                    if (!$es_columna_automatica) {
-                                        // CORRECCIÓN: Usamos $al['id']
-                                        $nota = obtenerNotaActual($al['id'], $item['id'], $matriz_notas);
-                                        $valor_mostrar = ($nota === '' || $nota === null) ? '0' : $nota;
+                                    if (!$es_auto) {
+                                        $n = obtenerNotaActual($alumno['id'], $item['id'], $matriz_notas);
+                                        $val = ($n === '' || $n === null) ? 0 : $n;
                                     }
+                                    // Forzamos 2 decimales en el valor del input
+                                    $val_formateado = number_format((float)$val, 2, '.', '');
                                     ?>
-                                    
                                     <input type="number" 
-                                            class="grade-input <?php echo $es_columna_automatica ? 'auto-grade' : ''; ?>" 
-                                            data-alumno="<?php echo $al['id']; ?>" 
-                                            data-item="<?php echo $item['id']; ?>" 
-                                            data-peso="<?php echo $item['peso']; ?>"
-                                            value="<?php echo htmlspecialchars($valor_mostrar); ?>" 
-                                            step="0.1" min="0" max="10" placeholder="0"
-                                            <?php echo $es_columna_automatica ? 'readonly style="background-color: #f1f5f9; cursor: not-allowed; border: 1px dashed #cbd5e1; color: #475569; font-weight: bold;" title="Nota automática (No editable)"' : ''; ?>>
-                                    
-                                    <?php if (!$es_columna_automatica): ?>
-                                        <button class="comentario-btn" 
-                                                data-alumno="<?php echo $al['id']; ?>" 
-                                                data-item="<?php echo $item['id']; ?>" 
-                                                title="Ver/Editar observación"
-                                                style="display:none; position:absolute; right:2px; top:2px; background:transparent; border:none; cursor:pointer; color:#888;">
-                                            <i class="fas fa-comment-dots"></i>
-                                        </button>
-                                    <?php endif; ?>
+                                        class="grade-input <?php echo $es_auto ? 'auto-grade' : ''; ?>" 
+                                        data-alumno="<?php echo $alumno['id']; ?>" 
+                                        data-item="<?php echo $item['id']; ?>" 
+                                        data-peso="<?php echo $item['peso']; ?>"
+                                        value="<?php echo $val_formateado; ?>" 
+                                        step="0.01" min="0" max="10"
+                                        <?php echo $es_auto ? 'readonly tabindex="-1"' : ''; ?>>
                                 </td>
                             <?php endforeach; ?>
-                            
-                            <?php
-                                // Calcular suma de pesos
-                                $suma_pesos = 0;
-                                foreach ($items_evaluacion as $item) {
-                                    $suma_pesos += floatval($item['peso']);
-                                }
-                                $suma_pesos_redondeada = round($suma_pesos, 2);
-                                $color = ($suma_pesos_redondeada === 1.00) ? 'black' : '#e74c3c';
-                                $texto = ($suma_pesos_redondeada === 1.00) ? ' (100%)' : ' ('.($suma_pesos_redondeada*100).'%)';
-                            ?>
-                            <th class="col-final">
-                                Media Final<span style="color: <?php echo $color; ?>; font-weight:600;"><?php echo $texto; ?></span>
-                            </th>
+                            <td class="final-grade" id="media-<?php echo $alumno['id']; ?>" style="font-weight: bold; background: #f8fafc; color: #1e293b; text-align: center;">0.00</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (empty($alumnos)): ?>
-                            <tr>
-                                <td colspan="100%" style="text-align: center; padding: 20px;">
-                                    No hay alumnos matriculados en esta clase.
-                                </td>
-                            </tr>
-                        <?php else: ?>
-                            <?php foreach ($alumnos as $alumno): ?>
-                            <tr>
-                                <td class="sticky-col student-cell">
-                                    <div style="display: flex; align-items: center; gap: 12px;">
-                                        <div class="student-avatar cursor-pointer" onclick="abrirModalAvatar(<?php echo $alumno['id']; ?>, '<?php echo $alumno['foto'] ?? ''; ?>')" title="Cambiar foto de <?php echo htmlspecialchars($alumno['nombre_alumno']); ?>">
-                                            <?php if (!empty($alumno['foto'])): ?>
-                                                <img src="../icons/<?php echo htmlspecialchars($alumno['foto']); ?>" 
-                                                    alt="Foto"
-                                                    style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-                                            <?php else: ?>
-                                                <?php 
-                                                    $nombres = explode(' ', $alumno['nombre_alumno']);
-                                                    $iniciales = "";
-                                                    foreach($nombres as $n) { if(!empty($n)) $iniciales .= strtoupper($n[0]); }
-                                                    echo substr($iniciales, 0, 2); 
-                                                ?>
-                                            <?php endif; ?>
-                                        </div>
-                                        <span class="student-name" style="white-space:nowrap; font-size:1rem; color:#222;"><?php echo htmlspecialchars($alumno['nombre_alumno']); ?></span>
-                                    </div>
-                                </td>
-                                
-                                <?php foreach ($items_evaluacion as $item): ?>
-                                    <td class="nota-celda" style="position:relative;">
-                                        <input type="number" 
-                                               class="grade-input" 
-                                               data-alumno="<?php echo $alumno['id']; ?>" 
-                                               data-item="<?php echo $item['id']; ?>" 
-                                               data-peso="<?php echo $item['peso']; ?>"
-                                               value="<?php $nota = obtenerNotaActual($alumno['id'], $item['id'], $matriz_notas); echo ($nota === '' || $nota === null) ? '0' : $nota; ?>" 
-                                               step="0.1" min="0" max="10" placeholder="-">
-                                        <button class="comentario-btn" 
-                                                data-alumno="<?php echo $alumno['id']; ?>" 
-                                                data-item="<?php echo $item['id']; ?>" 
-                                                title="Ver/Editar observación"
-                                                style="display:none; position:absolute; right:2px; top:2px; background:transparent; border:none; cursor:pointer; color:#888;">
-                                            <i class="fas fa-comment-dots"></i>
-                                        </button>
-                                    </td>
-                                <?php endforeach; ?>
-                                    <!-- Modal de comentario -->
-                                    <div id="modalComentario" class="modal-overlay" style="display:none;">
-                                        <div class="modal-content" style="max-width:400px;">
-                                            <div class="modal-header">
-                                                <h3>Observación</h3>
-                                                <button class="close-btn" onclick="cerrarModalComentario()"><i class="fas fa-times"></i></button>
-                                            </div>
-                                            <form id="formComentario" onsubmit="guardarComentario(event)">
-                                                <input type="hidden" id="comentarioAlumnoId">
-                                                <input type="hidden" id="comentarioItemId">
-                                                <div class="form-group">
-                                                    <label for="comentarioTexto">Observación para este alumno y prueba:</label>
-                                                    <textarea id="comentarioTexto" rows="4" style="width:100%;"></textarea>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn-cancel" onclick="cerrarModalComentario()">Cancelar</button>
-                                                    <button type="submit" class="btn-save">Guardar</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                
-                                <td class="final-grade" id="media-<?php echo $alumno['id']; ?>">0.00</td>
-                            </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
+
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (typeof actualizarMedia === 'function') {
+                        const alumnosIds = [...new Set([...document.querySelectorAll('.grade-input')].map(i => i.dataset.alumno))];
+                        alumnosIds.forEach(id => actualizarMedia(id));
+                    }
+                });
+                </script>
             </div>
         </main>
     </div>
@@ -485,6 +449,50 @@ function obtenerNotaActual($alumno_id, $item_id, $matriz_notas) {
                 else alert("Error al guardar: " + data.message);
             } catch(e) { console.error(e); }
         }
+    </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sobrescribimos cualquier función previa para garantizar el cálculo exacto
+        window.actualizarMedia = window.calcularMedia = function(alumnoId) {
+            const inputs = document.querySelectorAll(`.grade-input[data-alumno="${alumnoId}"]`);
+            let notaFinal = 0;
+
+            inputs.forEach(input => {
+                // Reemplazamos coma por punto para evitar fallos de cálculo de JS
+                const notaStr = (input.value || "0").replace(',', '.');
+                const pesoStr = (input.dataset.peso || "0").replace(',', '.');
+                
+                const nota = parseFloat(notaStr);
+                const peso = parseFloat(pesoStr);
+                
+                // Aquí forzamos la ponderación: Nota multiplicada por su peso %
+                if (!isNaN(nota) && !isNaN(peso)) {
+                    notaFinal += (nota * peso);
+                }
+            });
+
+            // Escribimos la nota final con 2 decimales en su respectiva celda
+            const celdaMedia = document.getElementById(`media-${alumnoId}`);
+            if (celdaMedia) {
+                celdaMedia.textContent = notaFinal.toFixed(2);
+            }
+        };
+
+        // Aplicar los cálculos pasados unos milisegundos para anular el JS antiguo
+        setTimeout(() => {
+            const inputs = document.querySelectorAll('.grade-input');
+            const alumnosIds = [...new Set(Array.from(inputs).map(i => i.dataset.alumno))];
+            alumnosIds.forEach(id => window.calcularMedia(id));
+        }, 150);
+        
+        // Y cuando el profe escriba una nota, se vuelve a calcular la media
+        document.querySelectorAll('.grade-input').forEach(input => {
+            input.addEventListener('input', function() {
+                window.calcularMedia(this.dataset.alumno);
+            });
+        });
+    });
     </script>
 
     <script src="../js/cuaderno.js"></script>

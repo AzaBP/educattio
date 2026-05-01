@@ -134,7 +134,7 @@ CREATE TABLE alumnos_asignaturas (
 --Para recuperar la contraseña
 CREATE TABLE IF NOT EXISTS password_resets (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    email email VARCHAR(100) NOT NULL UNIQUE,        
+    email VARCHAR(100) NOT NULL UNIQUE,        
     token VARCHAR(64) NOT NULL,
     expires_at DATETIME NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -145,9 +145,9 @@ CREATE TABLE IF NOT EXISTS password_resets (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
---para la verificacion de email
+-- Para la verificacion de email
 ALTER TABLE usuarios ADD COLUMN verificado BOOLEAN DEFAULT FALSE;
 ALTER TABLE usuarios ADD COLUMN token_verificacion VARCHAR(64) NULL;
 
---para la foto de perfil
+-- Para la foto de perfil
 ALTER TABLE usuarios ADD COLUMN foto_perfil VARCHAR(255) DEFAULT NULL;
