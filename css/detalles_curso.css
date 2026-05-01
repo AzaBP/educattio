@@ -522,125 +522,91 @@ input[type="color"]::-moz-color-swatch {
     min-height: 100vh;
 }
 
-/* --- CABECERA MODERNA --- */
-.course-header-modern {
-    position: relative;
-    padding: 2.5rem;
-    border-radius: 30px;
-    margin-bottom: 2.5rem;
-    overflow: hidden;
-    background: white;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-}
-
-.header-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.15;
-    z-index: 0;
+/* --- CABECERA --- */
+.course-page-header {
+    margin-bottom: 2rem;
 }
 
 .header-top-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: relative;
-    z-index: 1;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
-.back-pill, .settings-pill {
+.back-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: var(--accent-color);
+}
+
+/* Nuevo Botón de Ajustes */
+.btn-settings {
+    background: white;
+    border: 1px solid #ddd;
+    color: #666;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 20px;
-    border-radius: 50px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    text-decoration: none !important;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(0,0,0,0.05);
 }
 
-.back-pill {
-    background: rgba(255, 255, 255, 0.8);
-    color: #64748b;
-}
-
-.back-pill:hover {
-    background: white;
-    color: var(--accent-color);
-    transform: translateX(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-}
-
-.settings-pill {
-    background: white;
-    color: #1e293b;
-    cursor: pointer;
-}
-
-.settings-pill:hover {
-    background: #f8fafc;
+.btn-settings:hover {
+    background: #f9f9f9;
+    color: var(--text-color);
+    border-color: #ccc;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
-.settings-pill i {
+.btn-settings i {
     color: var(--accent-color);
 }
 
-.header-main-content {
-    position: relative;
-    z-index: 1;
-}
-
-.course-title-group {
-    margin-bottom: 1.5rem;
-}
-
-.center-type {
-    display: block;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: #94a3b8;
-    margin-bottom: 0.5rem;
-    font-weight: 700;
-}
-
-.header-main-content h1 {
-    font-size: 3rem;
+.header-content h1 {
     font-family: var(--font-serif);
-    color: #0f172a;
+    color: #111827;
+    font-size: 2.25rem;
     margin: 0;
     line-height: 1.1;
+    letter-spacing: -0.02em;
 }
 
-.course-meta-pills {
+.header-content {
     display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-.meta-pill {
-    background: #f1f5f9;
-    color: #475569;
-    padding: 8px 16px;
-    border-radius: 12px;
-    font-size: 0.95rem;
+.badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    opacity: 1;
+    font-size: 0.85rem;
     font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
 
-.meta-pill i {
-    color: var(--accent-color);
-    font-size: 0.9rem;
+.badge.year {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.badge.location {
+    background: #f3e5f5;
+    color: #7b1fa2;
 }
 
 /* --- SECCIÓN SUPERIOR (Info + Calendario) --- */
@@ -704,149 +670,145 @@ input[type="color"]::-moz-color-swatch {
 /* --- GRID DE CLASES --- */
 .groups-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 24px;
-    margin-top: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 1.5rem;
 }
 
-/* Tarjeta de Clase (GUAY) */
+/* Tarjeta de Clase */
 .group-card {
     background: white;
-    border-radius: 24px;
+    border-radius: 15px;
     overflow: hidden;
-    text-decoration: none !important;
+    text-decoration: none;
     color: inherit;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    flex-direction: column;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: block;
     position: relative;
-    border: 1px solid #f1f5f9;
-    height: 100%;
 }
 
 .group-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .group-header {
-    height: 130px;
+    height: 80px;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
 }
 
+/* Colores para las cabeceras */
+.color-1 {
+    background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+}
+
+.color-2 {
+    background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+}
+
+.color-3 {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+}
+
 .group-icon {
-    width: 64px;
-    height: 64px;
+    font-size: 2rem;
     background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(8px);
+    width: 50px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 18px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    border-radius: 50%;
 }
 
 .group-icon i {
-    font-size: 2rem;
-    color: white;
+    font-size: 1.5rem;
+    color: inherit;
+    /* Hereda el color calculado por JS para contraste */
+}
+
+.menu-dots {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: inherit;
+    /* Hereda color calculado por JS para contraste */
+    background: transparent !important;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0;
+    transition: transform 0.2s;
+}
+
+.menu-dots:hover {
+    transform: scale(1.1);
 }
 
 .group-body {
-    padding: 1.75rem;
-    text-align: left;
+    padding: 1rem;
+    text-align: center;
 }
 
 .group-body h3 {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    color: var(--text-color);
 }
 
 .group-body .subtitle {
-    font-size: 1rem;
-    color: #64748b;
-    font-weight: 500;
-    margin: 0;
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 1rem;
 }
 
-/* FOOTER DE LA TARJETA */
-.card-footer {
-    margin-top: 1.5rem;
-    padding-top: 1rem;
-    border-top: 1px solid #f1f5f9;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.group-stats {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 10px;
+    font-size: 0.85rem;
+    color: #666;
 }
 
-.tasks-pending {
-    font-size: 0.9rem;
-    color: #94a3b8;
-    font-weight: 600;
-}
-
-.folder-icon {
-    color: var(--accent-color);
-    opacity: 0.6;
-    transition: all 0.3s ease;
-}
-
-.group-card:hover .folder-icon {
-    opacity: 1;
-    transform: translateX(3px);
-}
-
-/* TARJETA DASHED (Añadir Clase) - BONITA */
+/* TARJETA DASHED (Añadir Clase) */
 .add-card-dashed {
-    min-height: 240px;
-    background: rgba(255, 255, 255, 0.4);
-    border: 3px dashed #e2e8f0;
-    border-radius: 24px;
+    min-height: 200px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border: 3px dashed #ccc;
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 15px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    color: #94a3b8;
-    height: 100%;
+    transition: all 0.3s;
+    padding: 20px;
 }
 
 .add-card-dashed:hover {
-    background: white;
+    background-color: white;
     border-color: var(--accent-color);
-    color: var(--accent-color);
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
 }
 
-.add-icon {
-    width: 60px;
-    height: 60px;
+.add-card-dashed .add-icon {
+    width: 50px;
+    height: 50px;
+    border: 2px solid #ccc;
     border-radius: 50%;
-    border: 2px solid #e2e8f0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
-    transition: all 0.3s ease;
-}
-
-.add-card-dashed:hover .add-icon {
-    background: var(--accent-color);
-    border-color: var(--accent-color);
-    color: white;
+    color: #999;
+    margin-bottom: 10px;
 }
 
 .add-card-dashed h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
+    font-size: 1rem;
+    color: #999;
+    font-family: var(--font-sans);
 }
 
 /* --- VENTANA MODAL (Estilos base compartidos) --- */
