@@ -65,7 +65,26 @@ async function guardarEdicionAlumno(e) {
 }
 document.addEventListener('DOMContentLoaded', () => {
     cargarDatosClase();
+    
+    // Inicializar mini-calendario para la clase
+    if (window.MiniCalendar && CLASE_ACTUAL_ID) {
+        window.miniCalendarClase = new MiniCalendar('#miniCalendarClaseContainer', {
+            claseId: CLASE_ACTUAL_ID,
+            onEventCreate: () => {
+                // Recargar si es necesario
+                console.log('Evento creado en la clase');
+            }
+        });
+    }
 });
+
+function abrirMiniEventoClase() {
+    if (!window.miniCalendarClase) return;
+    const today = new Date().toISOString().split('T')[0];
+    window.miniCalendarClase.selectedDate = today;
+    window.miniCalendarClase.updateEventsList();
+    window.miniCalendarClase.openEventModal();
+}
 
 async function cargarDatosClase() {
     try {

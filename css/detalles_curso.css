@@ -510,16 +510,17 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
 
 .header-content h1 {
     font-family: var(--font-serif);
-     background: none;
-     border: none;
-     color: white;
-     font-size: 1.2rem;
-     cursor: pointer;
-     opacity: 0.8;
-     width: 30px;
-     height: 30px;
-     border-radius: 50%;
-     transition: opacity 0.2s;
+    color: #111827;
+    font-size: 2.25rem;
+    margin: 0;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+.header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .badge {
@@ -536,13 +537,14 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
 /* --- SECCIÓN SUPERIOR (Info + Calendario) --- */
 .top-info-section {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    grid-template-columns: minmax(320px, 1.5fr) minmax(320px, 1fr) minmax(220px, 0.9fr);
+    gap: 1.5rem;
     margin-bottom: 2rem;
+    align-items: start;
 }
 
 /* Tarjetas Blancas Genéricas */
-.info-card, .course-calendar {
+.info-card, .course-calendar, .calendar-card, .today-card {
     background: white;
     border-radius: 20px;
     padding: 1.5rem;
@@ -571,20 +573,6 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
 .icon-box.green { background: #e8f5e9; color: #2e7d32; }
 .icon-box.red { background: #ffebee; color: #c62828; }
 
-/* Mini Calendario Simple */
-.cal-header-small {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 10px; font-weight: bold;
-}
-.cal-grid-small {
-    display: grid; grid-template-columns: repeat(7, 1fr);
-    text-align: center; font-size: 0.9rem; gap: 5px;
-}
-.day-head { color: #999; font-size: 0.8rem; margin-bottom: 5px; }
-.today { background: var(--accent-color); color: white; border-radius: 50%; }
-.weekend { color: #ff6b6b; }
-
-.section-divider {
     border: none; border-top: 1px solid #eee; margin: 2rem 0;
 }
 
@@ -746,273 +734,7 @@ input[type="color"]::-moz-color-swatch { border: none !important; border-radius:
 /* RESPONSIVE */
 @media (max-width: 900px) {
     .main-content { margin-left: 80px; padding: 1.5rem; }
-    .top-info-section { grid-template-columns: 1fr; }
-}
-@media (max-width: 600px) {
-    .danger-zone-modal { flex-direction: column; align-items: flex-start; gap: 10px; }
-    .btn-delete-course { width: 100%; justify-content: center; }
-}
-
-/* --- FIX PARA MENÚS DE TRES PUNTOS Y Z-INDEX --- */
-.groups-grid > div:nth-child(1) { z-index: 100; }
-.groups-grid > div:nth-child(2) { z-index: 99; }
-.groups-grid > div:nth-child(3) { z-index: 98; }
-.groups-grid > div:nth-child(4) { z-index: 97; }
-.groups-grid > div:nth-child(5) { z-index: 96; }
-.groups-grid > div:nth-child(6) { z-index: 95; }
-.groups-grid > div.add-card-dashed-container { z-index: 1; }
-
-.card-options { position: absolute; top: 15px; right: 15px; z-index: 10; }
-
-.menu-dots { background: transparent !important; border: none !important; cursor: pointer; font-size: 1.2rem; opacity: 0.7; transition: opacity 0.2s; padding: 0; box-shadow: none !important; }
-.menu-dots:hover { opacity: 1; }
-
-.menu-opciones-aislado {
-    display: none; position: absolute; top: 100%; right: 0; margin-top: 10px;
-    background-color: #ffffff !important; border-radius: 8px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important; min-width: 140px;
-    z-index: 9999 !important; overflow: hidden; padding: 0;
-}
-.menu-opciones-aislado.show { display: flex; flex-direction: column; }
-
-/* Para asegurarnos de que el contenedor de la tarjeta no oculte el menú */
-.group-card { overflow: visible !important; }ms: center;
-    gap: 10px;
-    padding: 12px 15px;
-    color: #333 !important;
-    text-decoration: none;
-    font-size: 0.9rem;
-    background: none;
-    border: none;
-    text-align: left;
-    width: 100%;
-    cursor: pointer;
-    transition: background 0.2s;
-    border-bottom: 1px solid #f0f0f0;
-}
-.menu-opciones-aislado .item-opcion:last-child {
-    border-bottom: none;
-}
-.menu-opciones-aislado .item-opcion:hover {
-    background-color: #f5f5f5 !important;
-}
-
-.menu-opciones-aislado .delete-option {
-    color: #e74c3c !important; /* Standard red delete color */
-}
-.menu-opciones-aislado .delete-option:hover {
-    background-color: #fbe9e7 !important;
-    color: #c0392b !important;
-}
-
-/* Card Body (the white area with class info) */
-.group-body {
-    padding: 15px;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.group-body h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #333;
-}
-
-.group-body .subtitle {
-    margin: 2px 0 8px 0;
-    font-size: 0.9rem;
-    color: #666;
-    flex-grow: 1;
-}
-
-.group-stats {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.9rem;
-    color: #555;
-    margin-top: 10px;
-}
-
-/* Reset any problematic previous attempts */
-.group-card-container {
-    all: unset;
-}
-
-/* --- BOTÓN ELIMINAR MINI EN TARJETA DE CLASE --- */
-.group-card-container {
-    position: relative;
-}
-
-.btn-delete-mini {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: white;
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.3s;
-    z-index: 10;
-}
-
-.btn-delete-mini:hover {
-    background: #e74c3c;
-}
-
-/* =========================================
-   ESTILOS DETALLE DEL CURSO
-   ========================================= */
-
-.main-content {
-    flex: 1;
-    margin-left: 260px;
-    padding: 3rem;
-    background-color: #f4f6f8;
-    min-height: 100vh;
-}
-
-/* --- CABECERA --- */
-.course-page-header {
-    margin-bottom: 2rem;
-}
-
-.header-top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.back-link {
-    color: #666;
-    text-decoration: none;
-    font-size: 0.9rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    transition: color 0.2s;
-}
-
-.back-link:hover { color: var(--accent-color); }
-
-/* Nuevo Botón de Ajustes */
-.btn-settings {
-    background: white;
-    border: 1px solid #ddd;
-    color: #666;
-    padding: 8px 15px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-settings:hover {
-    background: #f9f9f9;
-    color: var(--text-color);
-    border-color: #ccc;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-
-.btn-settings i {
-    color: var(--accent-color);
-}
-
-.header-content h1 {
-    font-family: var(--font-serif);
-     background: none;
-     border: none;
-     color: white;
-     font-size: 1.2rem;
-     cursor: pointer;
-     opacity: 0.8;
-     width: 30px;
-     height: 30px;
-     border-radius: 50%;
-     transition: opacity 0.2s;
-}
-
-.badge {
-    padding: 5px 12px;
-    border-radius: 20px;
-     opacity: 1;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-.badge.year { background: #e3f2fd; color: #1976d2; }
-.badge.location { background: #f3e5f5; color: #7b1fa2; }
-
-/* --- SECCIÓN SUPERIOR (Info + Calendario) --- */
-.top-info-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin-bottom: 2rem;
-}
-
-/* Tarjetas Blancas Genéricas */
-.info-card, .course-calendar {
-    background: white;
-    border-radius: 20px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-}
-
-.info-list {
-    list-style: none;
-    margin-top: 1rem;
-}
-
-.info-list li {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
-.icon-box {
-    width: 45px; height: 45px;
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem;
-}
-.icon-box.blue { background: #e3f2fd; color: #1976d2; }
-.icon-box.green { background: #e8f5e9; color: #2e7d32; }
-.icon-box.red { background: #ffebee; color: #c62828; }
-
-/* Mini Calendario Simple */
-.cal-header-small {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 10px; font-weight: bold;
-}
-.cal-grid-small {
-    display: grid; grid-template-columns: repeat(7, 1fr);
-    text-align: center; font-size: 0.9rem; gap: 5px;
-}
-.day-head { color: #999; font-size: 0.8rem; margin-bottom: 5px; }
-.today { background: var(--accent-color); color: white; border-radius: 50%; }
-.weekend { color: #ff6b6b; }
-
-.section-divider {
-    border: none; border-top: 1px solid #eee; margin: 2rem 0;
-}
-
-/* --- GRID DE CLASES --- */
+    /* --- GRID DE CLASES --- */
 .groups-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

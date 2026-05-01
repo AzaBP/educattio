@@ -92,6 +92,7 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
     <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/portal_inicio_usuario.css">
     <link rel="stylesheet" href="../css/detalles_curso.css">
+    <link rel="stylesheet" href="../css/calendario.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
@@ -125,7 +126,10 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
 
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="asignaturas-tab" data-bs-toggle="tab" data-bs-target="#asignaturas" type="button" role="tab"><i class="fas fa-book"></i> Asignaturas</button>
+                    <button class="nav-link active" id="calendario-tab" data-bs-toggle="tab" data-bs-target="#calendario" type="button" role="tab"><i class="fas fa-calendar-alt"></i> Calendario</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="asignaturas-tab" data-bs-toggle="tab" data-bs-target="#asignaturas" type="button" role="tab"><i class="fas fa-book"></i> Asignaturas</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="alumnos-tab" data-bs-toggle="tab" data-bs-target="#alumnos" type="button" role="tab"><i class="fas fa-users"></i> Alumnos matriculados</button>
@@ -133,7 +137,17 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
             </ul>
 
             <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade show active" id="asignaturas" role="tabpanel">
+                <div class="tab-pane fade show active" id="calendario" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                        <h3 class="m-0" style="font-size:1.05rem;">Eventos de la clase</h3>
+                        <button class="btn btn-primary btn-sm" onclick="abrirMiniEventoClase()">
+                            <i class="fas fa-plus"></i> Añadir evento
+                        </button>
+                    </div>
+                    <div id="miniCalendarClaseContainer" style="padding: 2rem 0;"></div>
+                </div>
+                
+                <div class="tab-pane fade" id="asignaturas" role="tabpanel">
                     <div class="row" id="contenedor-asignaturas">
                         <div class="col-md-4 mb-4">
                             <div class="btn-add-element h-100 d-flex flex-column justify-content-center align-items-center" onclick="abrirModalNuevaAsignatura()">
@@ -256,6 +270,8 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
     </div>
 </div>
 
+<script src="../js/calendar-sync.js"></script>
+<script src="../js/mini-calendar.js"></script>
 <script src="../js/detalles_clase.js"></script>
 </body>
 </html>

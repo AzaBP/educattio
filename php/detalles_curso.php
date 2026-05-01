@@ -26,6 +26,7 @@ try {
     <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/portal_inicio_usuario.css">
     <link rel="stylesheet" href="../css/detalles_curso.css">
+    <link rel="stylesheet" href="../css/calendario.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -77,23 +78,17 @@ try {
                     </ul>
                 </div>
                 
-                <div class="overview-card calendar-card">
-                    <div class="calendar-header-row">
-                        <button class="calendar-nav" id="prevMonth"><i class="fas fa-chevron-left"></i></button>
-                        <div class="calendar-title">
-                            <span id="bigCalendarMonth">-- --</span>
+                <div class="overview-card calendar-card course-calendar">
+                    <div class="calendar-card-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; gap:0.75rem;">
+                        <div>
+                            <span class="small-label">Calendario de eventos</span>
+                            <h3 style="margin:0; font-size:1rem; color:#111827;">Mini calendario del curso</h3>
                         </div>
-                        <button class="calendar-nav" id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                        <button class="btn-add-class" onclick="abrirMiniEventoCurso()">
+                            <i class="fas fa-plus"></i> Añadir evento
+                        </button>
                     </div>
-                    <div class="small-calendar-grid" id="calendarGrid">
-                        <div class="day-name">Lun</div>
-                        <div class="day-name">Mar</div>
-                        <div class="day-name">Mié</div>
-                        <div class="day-name">Jue</div>
-                        <div class="day-name">Vie</div>
-                        <div class="day-name">Sáb</div>
-                        <div class="day-name">Dom</div>
-                    </div>
+                    <div id="miniCalendarContainer"></div>
                 </div>
 
                 <div class="overview-card today-card">
@@ -237,6 +232,8 @@ try {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/calendar-sync.js"></script>
+    <script src="../js/mini-calendar.js"></script>
     <script src="../js/detalles_curso.js"></script>
 </body>
 </html>

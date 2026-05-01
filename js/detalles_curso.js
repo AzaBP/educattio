@@ -195,8 +195,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (cursoId) {
         cargarDatosPantalla(cursoId);
-        // Inicializar calendario
-        inicializarCalendario(cursoId);
+        actualizarRelojHoy();
+        setInterval(actualizarRelojHoy, 1000);
+        // Inicializar mini-calendario para el curso
+        const miniCalendarContainer = document.getElementById('miniCalendarContainer');
+        if (miniCalendarContainer && window.MiniCalendar) {
+            window.miniCalendarCurso = new MiniCalendar('#miniCalendarContainer', {
+                cursoId: cursoId,
+                onEventCreate: () => {
+                    if (window.detallesCursoCalendar) {
+                        window.detallesCursoCalendar.refetchEvents();
+                    }
+                }
+            });
+        }
+        
         // Escuchador para el formulario de crear clase
         const formClase = document.getElementById('formCrearClase');
         if(formClase) {
@@ -231,6 +244,14 @@ async function verificarSesion() {
     } catch (e) {
         console.error("Error verificando sesión:", e);
     }
+}
+
+function abrirMiniEventoCurso() {
+    if (!window.miniCalendarCurso) return;
+    const today = new Date().toISOString().split('T')[0];
+    window.miniCalendarCurso.selectedDate = today;
+    window.miniCalendarCurso.updateEventsList();
+    window.miniCalendarCurso.openEventModal();
 }
 
 async function cargarDatosPantalla(id) {
@@ -421,6 +442,27 @@ async function eliminarClase(idClase) {
     }
 }
 
+function actualizarRelojHoy() {
+    const now = new Date();
+    const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+    const diaNombre = dias[now.getDay()];
+    const diaNumero = now.getDate();
+    const mesAno = `${meses[now.getMonth()]} ${now.getFullYear()}`;
+    const hora = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+    const dayNameEl = document.getElementById('current-day-name');
+    const dayNumberEl = document.getElementById('current-day-number');
+    const monthYearEl = document.getElementById('current-month-year');
+    const clockEl = document.getElementById('real-time-clock');
+
+    if (dayNameEl) dayNameEl.textContent = diaNombre;
+    if (dayNumberEl) dayNumberEl.textContent = diaNumero;
+    if (monthYearEl) monthYearEl.textContent = mesAno;
+    if (clockEl) clockEl.textContent = hora;
+}
+
 function openSettingsModal() {
     const urlParams = new URLSearchParams(window.location.search);
     const cursoId = urlParams.get('id');
@@ -546,18 +588,25 @@ function inicializarCalendario(cursoId) {
             // Abrir modal para añadir evento
             abrirModalEvento(info.dateStr, cursoId);
         },
-        eventClick: function(info) {
-            // Editar o eliminar evento
-            editarEvento(info.event);
-        },
-        editable: true,
-        eventDrop: function(info) {
-            // Actualizar fecha del evento
-            actualizarFechaEvento(info.event);
-        }
+        editable: false,
     });
 
     calendar.render();
+    window.detallesCursoCalendar = calendar;
+
+    // Configurar sincronización en tiempo real con otros calendarios
+    if (window.calendarSync) {
+        window.calendarSync.subscribe((data) => {
+            if (
+                data.type === 'event-created' ||
+                data.type === 'event-updated' ||
+                data.type === 'event-deleted' ||
+                data.type === 'refresh-request'
+            ) {
+                calendar.refetchEvents();
+            }
+        });
+    }
 }
 
 function abrirModalEvento(dateStr, cursoId) {
@@ -625,8 +674,14 @@ async function guardarEvento(e) {
         const data = await response.json();
         if (data.status === 'success') {
             cerrarModalEvento();
-            // Recargar calendario
-            location.reload();
+            if (window.detallesCursoCalendar) {
+                window.detallesCursoCalendar.refetchEvents();
+            } else {
+                location.reload();
+            }
+            if (window.calendarSync) {
+                window.calendarSync.notifyRefresh();
+            }
         } else {
             alert('Error al guardar el evento');
         }

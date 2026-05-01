@@ -1,25 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const asignaturaId = urlParams.get('id');
-    if (!asignaturaId) {
-        document.querySelector('.main-content').innerHTML = '<div class="p-4 text-danger">No se encontró el ID de la asignatura.</div>';
+    const miniContainer = document.getElementById('miniCalendarAsignaturaContainer');
+    if (!miniContainer || !window.MiniCalendar) {
         return;
     }
 
-    document.getElementById('irCuadernoLink').href = `cuaderno_evaluacion.php?asig_id=${asignaturaId}`;
-    document.getElementById('abrirCuadernoBtn').href = `cuaderno_evaluacion.php?asig_id=${asignaturaId}`;
-    cargarDetallesAsignatura(asignaturaId);
+    const claseId = miniContainer.dataset.claseId || null;
+    const asignaturaId = miniContainer.dataset.asignaturaId || null;
 
-    document.getElementById('formAgregarTema').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await guardarTema(asignaturaId);
+    window.miniCalendarAsignatura = new MiniCalendar(miniContainer, {
+        claseId: claseId,
+        onEventCreate: () => {
+            refreshSubjectEvents(asignaturaId);
+        }
     });
 
-    document.getElementById('formAgregarPeriodos').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await guardarPeriodos(asignaturaId);
-    });
+    if (window.calendarSync) {
+        window.calendarSync.subscribe((data) => {
+            if (
+                data.type === 'event-created' ||
+                data.type === 'event-updated' ||
+                data.type === 'event-deleted' ||
+                data.type === 'refresh-request'
+            ) {
+                refreshSubjectEvents(asignaturaId);
+            }
+        });
+    }
 });
+
+function abrirMiniEventoAsignatura() {
+    if (!window.miniCalendarAsignatura) return;
+    const today = new Date().toISOString().split('T')[0];
+    window.miniCalendarAsignatura.selectedDate = today;
+    window.miniCalendarAsignatura.updateEventsList();
+    window.miniCalendarAsignatura.openEventModal();
+}
 
 function toggleSection(sectionId) {
     const section = document.getElementById(sectionId);
@@ -55,14 +70,16 @@ async function cargarDetallesAsignatura(asignaturaId) {
 
 function renderEventos(eventos) {
     const container = document.getElementById('eventosList');
-    const empty = document.getElementById('eventosEmpty');
+    if (!container) return;
     container.innerHTML = '';
 
     if (!eventos || eventos.length === 0) {
-        empty.classList.remove('hidden');
+        const empty = document.createElement('div');
+        empty.className = 'empty-state';
+        empty.textContent = 'No hay eventos programados para esta asignatura.';
+        container.appendChild(empty);
         return;
     }
-    empty.classList.add('hidden');
 
     eventos.forEach(evento => {
         const card = document.createElement('div');
@@ -177,6 +194,27 @@ async function guardarPeriodos(asignaturaId) {
     } catch (error) {
         console.error(error);
         alert('Error al guardar los periodos.');
+    }
+}
+
+async function refreshSubjectEvents(asignaturaId) {
+    if (!asignaturaId) return;
+
+    try {
+        const response = await fetch(`controllers/get_detalles_asignatura.php?id=${encodeURIComponent(asignaturaId)}`);
+        const data = await response.json();
+        if (data.status !== 'success') return;
+
+        const summaryEventos = document.getElementById('summaryEventos');
+        if (summaryEventos && Array.isArray(data.eventos)) {
+            summaryEventos.textContent = data.eventos.length;
+        }
+
+        if (Array.isArray(data.eventos)) {
+            renderEventos(data.eventos);
+        }
+    } catch (error) {
+        console.error('Error refrescando eventos de asignatura:', error);
     }
 }
 

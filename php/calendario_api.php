@@ -4,7 +4,9 @@ require_once 'conexion.php';
 
 if (!isset($_SESSION['usuario_id'])) {
     http_response_code(401);
-    exit('No autorizado');
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'No autorizado']);
+    exit;
 }
 
 $userId = $_SESSION['usuario_id'];
@@ -29,9 +31,16 @@ if ($method === 'GET') {
         $params[':end'] = $end;
     }
     
-    $stmt = $conexion->prepare($sql);
-    $stmt->execute($params);
-    $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    try {
+        $stmt = $conexion->prepare($sql);
+        $stmt->execute($params);
+        $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'Error obteniendo eventos']);
+        exit;
+    }
     
     // Formatear para FullCalendar
     $result = [];
@@ -59,69 +68,103 @@ if ($method === 'GET') {
 
 // Crear o actualizar evento (POST)
 if ($method === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    $id = $data['id'] ?? null;
-    $titulo = $data['titulo'];
-    $descripcion = $data['descripcion'] ?? '';
-    $fecha = $data['fecha'];
-    $tipo = $data['tipo'];
-    $clase_id = !empty($data['clase_id']) ? $data['clase_id'] : null;
-    
-    if ($id) {
-        // Actualizar
-        $sql = "UPDATE eventos SET titulo=:titulo, descripcion=:descripcion, fecha=:fecha, tipo_evento=:tipo, clase_id=:clase_id 
-                WHERE id=:id AND usuario_id=:user_id";
-        $stmt = $conexion->prepare($sql);
-        $success = $stmt->execute([
-            ':titulo' => $titulo,
-            ':descripcion' => $descripcion,
-            ':fecha' => $fecha,
-            ':tipo' => $tipo,
-            ':clase_id' => $clase_id,
-            ':id' => $id,
-            ':user_id' => $userId
-        ]);
-    } else {
-        // Insertar
-        $sql = "INSERT INTO eventos (titulo, descripcion, fecha, tipo_evento, clase_id, usuario_id) 
-                VALUES (:titulo, :descripcion, :fecha, :tipo, :clase_id, :user_id)";
-        $stmt = $conexion->prepare($sql);
-        $success = $stmt->execute([
-            ':titulo' => $titulo,
-            ':descripcion' => $descripcion,
-            ':fecha' => $fecha,
-            ':tipo' => $tipo,
-            ':clase_id' => $clase_id,
-            ':user_id' => $userId
-        ]);
-        if ($success) $id = $conexion->lastInsertId();
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($input)) {
+        http_response_code(400);
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'JSON inválido']);
+        exit;
     }
-    
-    echo json_encode(['success' => $success, 'id' => $id]);
+
+    if (!empty($input['id'])) {
+        // Actualizar (admite actualización parcial: solo fecha al arrastrar/resize)
+        $stmtCurrent = $conexion->prepare("SELECT titulo, fecha, tipo_evento, descripcion, clase_id FROM eventos WHERE id = :id AND usuario_id = :user_id");
+        $stmtCurrent->execute([':id' => $input['id'], ':user_id' => $userId]);
+        $current = $stmtCurrent->fetch(PDO::FETCH_ASSOC);
+        if (!$current) {
+            http_response_code(404);
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Evento no encontrado']);
+            exit;
+        }
+
+        $titulo = $input['titulo'] ?? $current['titulo'];
+        $fecha = $input['fecha'] ?? $current['fecha'];
+        $tipo = $input['tipo'] ?? $current['tipo_evento'] ?? 'Reunión';
+        $descripcion = array_key_exists('descripcion', $input) ? $input['descripcion'] : ($current['descripcion'] ?? '');
+        $claseId = array_key_exists('clase_id', $input) ? $input['clase_id'] : $current['clase_id'];
+
+        $sql = "UPDATE eventos SET titulo = :titulo, fecha = :fecha, tipo_evento = :tipo, descripcion = :descripcion, clase_id = :clase_id WHERE id = :id AND usuario_id = :user_id";
+        $stmt = $conexion->prepare($sql);
+        $ok = $stmt->execute([
+            ':id' => $input['id'],
+            ':titulo' => $titulo,
+            ':fecha' => $fecha,
+            ':tipo' => $tipo,
+            ':descripcion' => $descripcion,
+            ':clase_id' => $claseId,
+            ':user_id' => $userId
+        ]);
+        header('Content-Type: application/json');
+        echo json_encode(['success' => (bool)$ok, 'message' => $ok ? 'Evento actualizado' : 'No se pudo actualizar']);
+    } else {
+        // Crear
+        $titulo = trim((string)($input['titulo'] ?? ''));
+        $fecha = $input['fecha'] ?? null;
+        if ($titulo === '' || empty($fecha)) {
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Título y fecha son obligatorios']);
+            exit;
+        }
+
+        $sql = "INSERT INTO eventos (usuario_id, titulo, fecha, tipo_evento, descripcion, clase_id) VALUES (:user_id, :titulo, :fecha, :tipo, :descripcion, :clase_id)";
+        $stmt = $conexion->prepare($sql);
+        $ok = $stmt->execute([
+            ':user_id' => $userId,
+            ':titulo' => $titulo,
+            ':fecha' => $fecha,
+            ':tipo' => $input['tipo'] ?? 'Reunión',
+            ':descripcion' => $input['descripcion'] ?? '',
+            ':clase_id' => $input['clase_id'] ?? null
+        ]);
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => (bool)$ok,
+            'message' => $ok ? 'Evento creado' : 'No se pudo crear',
+            'id' => $ok ? $conexion->lastInsertId() : null
+        ]);
+    }
     exit;
 }
 
 // Eliminar evento (DELETE)
 if ($method === 'DELETE') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    $id = $data['id'] ?? null;
-    if (!$id) {
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (empty($input['id'])) {
         http_response_code(400);
-        exit('ID requerido');
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'ID requerido']);
+        exit;
     }
-    $stmt = $conexion->prepare("DELETE FROM eventos WHERE id = :id AND usuario_id = :user_id");
-    $success = $stmt->execute([':id' => $id, ':user_id' => $userId]);
-    echo json_encode(['success' => $success]);
+    $sql = "DELETE FROM eventos WHERE id = :id AND usuario_id = :user_id";
+    $stmt = $conexion->prepare($sql);
+    $ok = $stmt->execute([':id' => $input['id'], ':user_id' => $userId]);
+    header('Content-Type: application/json');
+    echo json_encode(['success' => (bool)$ok]);
     exit;
 }
 
 function getColorByTipo($tipo) {
-    switch ($tipo) {
-        case 'Examen': return '#f44336'; // rojo
-        case 'Festivo': return '#4caf50'; // verde
-        case 'Excursión': return '#ff9800'; // naranja
-        case 'Reunión': return '#2196f3'; // azul
-        default: return '#9e9e9e';
-    }
+    $colors = [
+        'Examen' => '#e74c3c',
+        'Festivo' => '#3498db',
+        'Excursión' => '#2ecc71',
+        'Reunión' => '#f39c12',
+        'General' => '#95a5a6'
+    ];
+    return $colors[$tipo] ?? '#f39c12';
 }
-?>
+header('Content-Type: application/json');
+http_response_code(405);
+echo json_encode(['success' => false, 'message' => 'Método no permitido']);

@@ -1,19 +1,57 @@
 <?php
-// calendar_widget.php - Versión modificada para filtrar por curso (si $widget_curso_id está definido)
+// calendar_widget.php - Widget de calendario con soporte para JSON API
 
-// No iniciar sesión aquí; se espera que la página principal ya tenga la sesión iniciada.
+session_start();
+
 if (!isset($usuario_id) && isset($_SESSION['usuario_id'])) {
     $usuario_id = $_SESSION['usuario_id'];
 }
 if (!isset($usuario_id)) {
+    if ($_GET['action'] === 'events' || $_GET['action'] === 'events_json') {
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'events' => []]);
+        exit;
+    }
     echo '<div class="calendar-error">Error: usuario no identificado</div>';
     return;
 }
 
-// Determinar si se debe filtrar por un curso específico (variable pasada antes de incluir)
-$curso_id = isset($widget_curso_id) ? (int)$widget_curso_id : 0;
+// Determinar si se debe filtrar por un curso específico
+$curso_id = isset($_GET['curso_id']) ? (int)$_GET['curso_id'] : (isset($widget_curso_id) ? (int)$widget_curso_id : 0);
+$clase_id = isset($_GET['clase_id']) ? (int)$_GET['clase_id'] : 0;
 
-// Obtener mes y año desde parámetros GET (para navegación)
+// Acción para obtener eventos en JSON (para mini calendarios)
+if (isset($_GET['action']) && ($_GET['action'] === 'events' || $_GET['action'] === 'events_json')) {
+    require_once 'conexion.php';
+    
+    $sql = "SELECT e.id, e.titulo, e.descripcion, e.fecha, e.tipo_evento, e.clase_id, c.nombre_clase
+            FROM eventos e
+            LEFT JOIN clases c ON e.clase_id = c.id
+            WHERE e.usuario_id = :user_id";
+    
+    $params = [':user_id' => $usuario_id];
+    
+    if ($clase_id) {
+        $sql .= " AND e.clase_id = :clase_id";
+        $params[':clase_id'] = $clase_id;
+    } elseif ($curso_id) {
+        $sql .= " AND c.curso_id = :curso_id";
+        $params[':curso_id'] = $curso_id;
+    }
+    
+    $stmt = $conexion->prepare($sql);
+    $stmt->execute($params);
+    $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    header('Content-Type: application/json');
+    echo json_encode([
+        'status' => 'success',
+        'events' => $eventos
+    ]);
+    exit;
+}
+
+// Obtener mes y año desde parámetros GET (para navegación del widget HTML)
 $currentMonth = isset($_GET['month']) ? (int)$_GET['month'] : (int)date('n');
 $currentYear = isset($_GET['year']) ? (int)$_GET['year'] : (int)date('Y');
 
@@ -31,23 +69,28 @@ require_once 'conexion.php';
 $startDate = date('Y-m-01', strtotime("$currentYear-$currentMonth-01"));
 $endDate = date('Y-m-t', strtotime("$startDate"));
 
-// Consulta de eventos según si hay curso específico o no
-if ($curso_id > 0) {
-    // Obtener eventos de las clases que pertenecen a este curso
+// Consulta de eventos según filtros
+if ($clase_id > 0) {
+    $sql = "SELECT e.id, e.titulo, DATE(e.fecha) as fecha, e.tipo_evento 
+            FROM eventos e
+            WHERE e.clase_id = :clase_id AND e.usuario_id = :user_id AND e.fecha BETWEEN :start AND :end";
+    $stmt = $conexion->prepare($sql);
+    $stmt->execute([':clase_id' => $clase_id, ':user_id' => $usuario_id, ':start' => $startDate, ':end' => $endDate]);
+} elseif ($curso_id > 0) {
     $sql = "SELECT e.id, e.titulo, DATE(e.fecha) as fecha, e.tipo_evento 
             FROM eventos e
             JOIN clases c ON e.clase_id = c.id
-            WHERE c.curso_id = :curso_id AND e.fecha BETWEEN :start AND :end";
+            WHERE c.curso_id = :curso_id AND e.usuario_id = :user_id AND e.fecha BETWEEN :start AND :end";
     $stmt = $conexion->prepare($sql);
-    $stmt->execute([':curso_id' => $curso_id, ':start' => $startDate, ':end' => $endDate]);
+    $stmt->execute([':curso_id' => $curso_id, ':user_id' => $usuario_id, ':start' => $startDate, ':end' => $endDate]);
 } else {
-    // Eventos generales del usuario (sin clase específica o con clase_id NULL)
     $sql = "SELECT id, titulo, DATE(fecha) as fecha, tipo_evento 
             FROM eventos 
-            WHERE usuario_id = :uid AND fecha BETWEEN :start AND :end";
+            WHERE usuario_id = :user_id AND fecha BETWEEN :start AND :end";
     $stmt = $conexion->prepare($sql);
-    $stmt->execute([':uid' => $usuario_id, ':start' => $startDate, ':end' => $endDate]);
+    $stmt->execute([':user_id' => $usuario_id, ':start' => $startDate, ':end' => $endDate]);
 }
+
 $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Indexar eventos por fecha

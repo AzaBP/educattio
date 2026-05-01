@@ -86,6 +86,10 @@ $nombre_usuario = $_SESSION['nombre_usuario'];
                 <textarea id="eventDesc" rows="3" class="form-control"></textarea>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn-cancel btn-delete" id="deleteEventBtn" style="display:none;" onclick="deleteEvent(document.getElementById('eventId').value)">
+                    <i class="fas fa-trash"></i> Eliminar
+                </button>
+                <div style="flex:1;"></div>
                 <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
                 <button type="submit" class="btn-save">Guardar</button>
             </div>
@@ -93,6 +97,7 @@ $nombre_usuario = $_SESSION['nombre_usuario'];
     </div>
 </div>
 
+<script src="../js/calendar-sync.js"></script>
 <script src="../js/calendario.js"></script>
 <script>
     // Cargar las clases del usuario para el select

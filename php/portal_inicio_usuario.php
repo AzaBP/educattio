@@ -63,6 +63,7 @@ try {
     <link rel="icon" type="image/png" href="../imagenes/dolphin.png">
     <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/portal_inicio_usuario.css">
+    <link rel="stylesheet" href="../css/calendario.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -372,6 +373,8 @@ try {
     cargarNotificaciones();
     setInterval(cargarNotificaciones, 60000);
 </script>
+
+<script src="../js/mini-calendar.js"></script>
 
 </body>
 </html>
