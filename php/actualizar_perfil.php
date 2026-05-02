@@ -25,7 +25,39 @@ if (empty($fecha_nacimiento)) {
 }
 
 try {
-    // 3. PREPARAR LA CONSULTA DE ACTUALIZACIÓN
+    // 3. PROCESAR FOTO SI SE HA SUBIDO
+    $foto_sql = "";
+    $params = [
+        ':nombre' => $nombre_completo,
+        ':usuario' => $nombre_usuario,
+        ':telefono' => $telefono,
+        ':fecha' => $fecha_nacimiento,
+        ':formacion' => $formacion_academica,
+        ':experiencia' => $experiencia_laboral,
+        ':id' => $id_usuario
+    ];
+
+    if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
+        $archivo = $_FILES['foto_perfil'];
+        $maxSize = 2 * 1024 * 1024;
+        $tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
+
+        if ($archivo['size'] <= $maxSize && in_array($archivo['type'], $tiposPermitidos)) {
+            $directorio = dirname(__DIR__) . '/uploads/perfil/';
+            if (!is_dir($directorio)) mkdir($directorio, 0777, true);
+
+            $extension = strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
+            $nombreUnico = $id_usuario . '_' . uniqid() . '.' . $extension;
+            $rutaDestino = $directorio . $nombreUnico;
+            
+            if (move_uploaded_file($archivo['tmp_name'], $rutaDestino)) {
+                $foto_sql = ", foto_perfil = :foto";
+                $params[':foto'] = 'uploads/perfil/' . $nombreUnico;
+            }
+        }
+    }
+
+    // 4. PREPARAR Y EJECUTAR LA CONSULTA DE ACTUALIZACIÓN
     $sql = "UPDATE usuarios 
             SET nombre_completo = :nombre, 
                 nombre_usuario = :usuario, 
@@ -33,33 +65,20 @@ try {
                 fecha_nacimiento = :fecha, 
                 formacion_academica = :formacion, 
                 experiencia_laboral = :experiencia 
+                $foto_sql
             WHERE id = :id";
             
     $stmt = $conexion->prepare($sql);
-    
-    // 4. VINCULAR LOS PARÁMETROS
-    $stmt->bindParam(':nombre', $nombre_completo);
-    $stmt->bindParam(':usuario', $nombre_usuario);
-    $stmt->bindParam(':telefono', $telefono);
-    $stmt->bindParam(':fecha', $fecha_nacimiento);
-    $stmt->bindParam(':formacion', $formacion_academica);
-    $stmt->bindParam(':experiencia', $experiencia_laboral);
-    $stmt->bindParam(':id', $id_usuario);
-    
-    // 5. EJECUTAR LOS CAMBIOS
-    $stmt->execute();
+    $stmt->execute($params);
 
-    // IMPORTANTE: Si ha cambiado su nombre de usuario, actualizamos la "memoria" de la sesión
-    // para que no se le cierre la sesión ni haya errores de visualización.
+    // IMPORTANTE: Si ha cambiado su nombre de usuario, actualizamos la sesión
     $_SESSION['nombre_usuario'] = $nombre_usuario;
 
-    // 6. VOLVER A LA PÁGINA CON MENSAJE DE ÉXITO
-    header("Location: ../php/perfil_usuario.php?exito=1");
+    header("Location: perfil_usuario.php?exito=1" . (!empty($foto_sql) ? "&foto_ok=1" : ""));
     exit();
 
 } catch (PDOException $e) {
-    // Si hay un error (por ejemplo, si intenta ponerse un nombre de usuario que ya tiene otra persona)
-    header("Location: ../php/perfil_usuario.php?error=1");
+    header("Location: perfil_usuario.php?error=1");
     exit();
 }
 ?>

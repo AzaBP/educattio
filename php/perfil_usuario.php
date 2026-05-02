@@ -66,7 +66,7 @@ try {
                 </div>
             <?php endif; ?>
 
-            <form action="actualizar_perfil.php" method="POST" class="profile-grid">
+            <form action="actualizar_perfil.php" method="POST" enctype="multipart/form-data" class="profile-grid">
                 
                 <section class="card personal-card">
                     <h3 class="card-title"><i class="fas fa-user"></i> Datos Personales</h3>
@@ -113,33 +113,34 @@ try {
                     <div class="photo-container">
                         <?php 
                         $foto_actual = $datos_usuario['foto_perfil'] ?? '';
-                        // Construir la ruta para el navegador desde /php/ hacia uploads/perfil
                         if (!empty($foto_actual)) {
                             $foto_url = '../' . ltrim($foto_actual, '/');
                         } else {
                             $foto_url = '../uploads/perfil/default-avatar.png';
                         }
                         ?>
-                        <img src="<?php echo $foto_url; ?>" alt="Foto de perfil" class="profile-photo" id="previewFoto">
+                        <div class="profile-photo-wrapper">
+                            <img src="<?php echo $foto_url; ?>" alt="Foto de perfil" class="profile-photo" id="previewFoto">
+                            <label for="foto_perfil" class="photo-upload-label">
+                                <i class="fas fa-edit"></i>
+                            </label>
+                        </div>
                         
-                        <form action="subir_foto.php" method="POST" enctype="multipart/form-data" class="upload-form" id="uploadForm">
-                            <input type="file" name="foto_perfil" id="foto_perfil" accept="image/jpeg, image/png, image/webp">
-                            <button type="submit" name="submit_foto">Subir foto</button>
-                        </form>
+                        <input type="file" name="foto_perfil" id="foto_perfil" accept="image/jpeg, image/png, image/webp" style="display: none;">
+                        <p class="text-muted small">Haz clic en el lápiz para cambiar la foto</p>
                         
                         <?php if(isset($_GET['foto_ok'])): ?>
                             <div class="success-msg"><i class="fas fa-check-circle"></i> ¡Foto actualizada!</div>
                         <?php elseif(isset($_GET['foto_error'])): ?>
-                            <div class="error-msg"><i class="fas fa-exclamation-triangle"></i> Error al subir la foto. Verifica formato y tamaño (max 2MB).</div>
+                            <div class="error-msg"><i class="fas fa-exclamation-triangle"></i> Error en la imagen.</div>
                         <?php endif; ?>
                     </div>
                 </section>
 
                 <div class="form-actions-bar">
-                    <a href="portal_inicio_usuario.php" class="btn btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; color: #666; border: 1px solid #ddd; background: white;">Cancelar</a>
+                    <a href="portal_inicio_usuario.php" class="btn btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">Cancelar</a>
                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 </div>
-
             </form>
         </main>
     </div>
