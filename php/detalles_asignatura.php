@@ -112,10 +112,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit();
 }
 
-// 3.4 Eliminar asignatura completa
+// 3.4 Eliminar tema individual
+if (isset($_GET['delete_tema']) && is_numeric($_GET['delete_tema'])) {
+    $temaId = (int)$_GET['delete_tema'];
+    $stmt = $conexion->prepare("DELETE FROM temas_asignatura WHERE id = ? AND asignatura_id = ?");
+    $stmt->execute([$temaId, $asignatura_id]);
+    header("Location: detalles_asignatura.php?id=" . $asignatura_id);
+    exit();
+}
+
+// 3.5 Eliminar periodo individual
+if (isset($_GET['delete_periodo']) && is_numeric($_GET['delete_periodo'])) {
+    $pId = (int)$_GET['delete_periodo'];
+    $stmt = $conexion->prepare("DELETE FROM periodos_evaluacion WHERE id = ? AND asignatura_id = ?");
+    $stmt->execute([$pId, $asignatura_id]);
+    header("Location: detalles_asignatura.php?id=" . $asignatura_id);
+    exit();
+}
+
+// 3.6 Eliminar asignatura completa
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_asignatura') {
-    // Primero eliminar dependencias (alumnos_asignaturas, periodos, temas, items_evaluacion, evaluaciones...)
-    // La BD con ON DELETE CASCADE ya lo hará automáticamente si las FK están bien definidas.
     $stmt = $conexion->prepare("DELETE FROM asignaturas WHERE id = ?");
     $stmt->execute([$asignatura_id]);
     header("Location: detalles_curso.php?id=" . $curso_id);
@@ -197,56 +213,217 @@ try {
     <title><?= htmlspecialchars($asignatura['nombre_asignatura']) ?> - Educattio</title>
     <link rel="icon" type="image/png" href="../imagenes/dolphin.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/global.css">
-    <link rel="stylesheet" href="../css/detalles_asignatura.css">
-    <link rel="stylesheet" href="../css/portal_inicio_usuario.css">
-    <link rel="stylesheet" href="../css/calendario.css">
+    <link rel="stylesheet" href="../css/global.css?v=2.1">
+    <link rel="stylesheet" href="../css/portal_inicio_usuario.css?v=2.1">
+    <link rel="stylesheet" href="../css/calendario.css?v=2.1">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* ESTILOS DE ALTA PRIORIDAD PARA DETALLES ASIGNATURA */
+        .dashboard-layout { display: flex; min-height: 100vh; background: #f8fafc; }
+        .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
+        
+        .course-page-header-modern {
+            position: relative;
+            background: linear-gradient(135deg, #0f172a 0%, #334155 100%) !important;
+            padding: 3.5rem 2rem !important;
+            border-radius: 24px !important;
+            color: white !important;
+            margin-bottom: 2.5rem !important;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.15);
+        }
+
+        .header-main-content { display: flex; justify-content: space-between; align-items: flex-end; }
+        .course-title-animate { font-size: 2.8rem; font-weight: 800; margin: 0.5rem 0; color: white; }
+        
+        .back-pill {
+            display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px;
+            background: rgba(255,255,255,0.1); border-radius: 50px; color: white;
+            text-decoration: none; font-size: 0.85rem; transition: 0.3s;
+        }
+        .back-pill:hover { background: rgba(255,255,255,0.2); color: white; transform: translateX(-5px); }
+
+        .modern-badge {
+            padding: 6px 14px; background: rgba(255,255,255,0.1); border-radius: 10px;
+            font-size: 0.85rem; display: inline-flex; align-items: center; gap: 8px; margin-right: 10px;
+        }
+
+        .top-info-section { display: grid; grid-template-columns: 1fr 1.5fr; gap: 1.5rem; margin-bottom: 3rem; }
+        .info-card { background: white; padding: 1.5rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; }
+        .info-card h3 { font-size: 1.1rem; margin-bottom: 1.5rem; color: #1e293b; }
+        .info-list { list-style: none; padding: 0; margin: 0; }
+        .info-list li { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem; }
+        .icon-box { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .icon-box.blue { background: #eff6ff; color: #3b82f6; }
+        .icon-box.green { background: #f0fdf4; color: #10b981; }
+        .icon-box.red { background: #fef2f2; color: #ef4444; }
+
+        .subject-detail-grid { display: grid; grid-template-columns: 1.3fr 1.5fr; gap: 2rem; }
+        .box { background: white; padding: 1.5rem; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; }
+        .box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .box-header h2 { font-size: 1.3rem; font-weight: 700; color: #0f172a; margin: 0; }
+
+        .premium-card-wrapper { position: relative; margin-bottom: 1.5rem; }
+        .card-options-container { position: absolute; top: 12px; right: 12px; z-index: 10; }
+        .menu-dots-btn { 
+            width: 34px; height: 34px; border-radius: 10px; background: rgba(255,255,255,0.9); 
+            border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+        .dropdown-options-menu {
+            position: absolute; top: 40px; right: 0; width: 170px; background: white; border-radius: 14px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: none; flex-direction: column; padding: 8px; z-index: 100;
+        }
+        .dropdown-options-menu.show { display: flex; }
+        .dropdown-options-menu a { padding: 10px 14px; font-size: 0.9rem; color: #475569; display: flex; align-items: center; gap: 10px; border-radius: 10px; }
+        .dropdown-options-menu a:hover { background: #f1f5f9; color: #2563eb; }
+        
+        .section-divider { border: 0; height: 1px; background: #e2e8f0; margin: 3rem 0; }
+        .hidden { display: none !important; }
+    </style>
+
+    <script>
+        function toggleMenu(event, id) {
+            event.preventDefault();
+            event.stopPropagation();
+            document.querySelectorAll('.dropdown-options-menu').forEach(m => {
+                if (m.id !== `dropdown-${id}`) m.classList.remove('show');
+            });
+            const menu = document.getElementById(`dropdown-${id}`);
+            if (menu) menu.classList.toggle('show');
+        }
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown-options-menu').forEach(m => m.classList.remove('show'));
+        });
+
+        function toggleSection(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('hidden');
+        }
+
+        async function eliminarTema(id) {
+            if (!confirm('¿Seguro que quieres eliminar este tema?')) return;
+            window.location.href = `detalles_asignatura.php?id=<?= $asignatura_id ?>&delete_tema=${id}`;
+        }
+        
+        async function eliminarPeriodo(id) {
+            if (!confirm('¿Seguro que quieres eliminar este periodo?')) return;
+            window.location.href = `detalles_asignatura.php?id=<?= $asignatura_id ?>&delete_periodo=${id}`;
+        }
+
+        function editarTema(id) {
+            alert('Función de edición de tema próximamente disponible.');
+        }
+
+        function openSettingsModal() { document.getElementById('settingsModal').style.display = 'flex'; }
+        function closeSettingsModal() { document.getElementById('settingsModal').style.display = 'none'; }
+    </script>
 </head>
 <body>
 <div class="dashboard-layout">
     <?php include 'sidebar.php'; ?>
     <main class="main-content subject-detail-page">
-        <header class="subject-header">
-            <div class="subject-title-row">
-                <a id="backToClassLink" href="detalles_curso.php?id=<?= $curso_id ?>" class="back-link">
-                    <i class="fas fa-arrow-left"></i> Volver a <?= htmlspecialchars($asignatura['nombre_clase']) ?>
-                </a>
-                <div>
-                    <button class="btn-settings" onclick="openSettingsModal()">
-                        <i class="fas fa-cog"></i> Ajustes de Asignatura
-                    </button>
+        <!-- CABECERA PREMIUM -->
+        <header class="course-page-header-modern">
+            <div class="header-glass-overlay"></div>
+            <div class="header-main-content">
+                <div class="header-left">
+                    <a href="detalles_clase.php?id=<?= $clase_id ?>" class="back-pill">
+                        <i class="fas fa-chevron-left"></i> Volver a <?= htmlspecialchars($asignatura['nombre_clase']) ?>
+                    </a>
+                    <h1 class="course-title-animate"><?= htmlspecialchars($asignatura['nombre_asignatura']) ?></h1>
+                    <div class="header-badges-row">
+                        <span class="modern-badge"><i class="fas fa-university"></i> <?= htmlspecialchars($asignatura['nombre_centro']) ?></span>
+                        <span class="modern-badge"><i class="fas fa-users"></i> <?= htmlspecialchars($asignatura['nombre_clase']) ?></span>
+                        <span class="modern-badge"><i class="far fa-calendar-alt"></i> <?= htmlspecialchars($asignatura['anio_academico']) ?></span>
+                    </div>
                 </div>
-            </div>
-            <div class="subject-top">
-                <div>
-                    <h1 id="asignaturaNombre"><?= htmlspecialchars($asignatura['nombre_asignatura']) ?></h1>
-                    <p class="subject-meta" id="asignaturaMeta">
-                        <?= htmlspecialchars($asignatura['anio_academico']) ?> · 
-                        <?= htmlspecialchars($asignatura['nombre_clase']) ?> · 
-                        <?= htmlspecialchars($asignatura['nombre_centro']) ?>
-                    </p>
+                <div class="header-right">
+                    <button class="settings-glass-btn" onclick="openSettingsModal()">
+                        <i class="fas fa-sliders-h"></i> Ajustes de Asignatura
+                    </button>
                 </div>
             </div>
         </header>
 
-        <section class="subject-summary-grid">
-            <article class="summary-card blue">
-                <h4>Alumnos</h4>
-                <strong id="summaryAlumnos"><?= $totalAlumnos ?></strong>
-                <p>Matriculados en esta clase</p>
-            </article>
-            <article class="summary-card green">
-                <h4>Periodos</h4>
-                <strong id="summaryPeriodos"><?= $totalPeriodos ?></strong>
-                <p>Periodos de evaluación definidos</p>
-            </article>
-            <article class="summary-card orange">
-                <h4>Eventos</h4>
-                <strong id="summaryEventos"><?= $totalEventos ?></strong>
-                <p>Próximos eventos relacionados</p>
-            </article>
+        <section class="top-info-section">
+            <div class="info-card">
+                <h3>Resumen de Asignatura</h3>
+                <ul class="info-list">
+                    <li>
+                        <div class="icon-box blue"><i class="fas fa-users"></i></div>
+                        <div>
+                            <strong><?= $totalAlumnos ?> Alumnos</strong>
+                            <span>Participando en esta materia</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="icon-box green"><i class="fas fa-calendar-check"></i></div>
+                        <div>
+                            <strong><?= $totalPeriodos ?> Periodos</strong>
+                            <span>Etapas de evaluación</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="icon-box red"><i class="fas fa-bell"></i></div>
+                        <div>
+                            <strong><?= $totalEventos ?> Eventos</strong>
+                            <span>Pruebas y fechas clave</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="overview-card evaluation-top-card" style="flex: 1.5; background: white; padding: 1.5rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h3 style="margin:0; font-size:1.1rem; color:#1e293b;">Evaluaciones & Periodos</h3>
+                        <p class="text-muted small m-0">Gestiona los trimestres y accede al cuaderno.</p>
+                    </div>
+                    <a id="abrirCuadernoBtn" class="btn btn-primary btn-sm" href="cuaderno_evaluacion.php?asig_id=<?= $asignatura_id ?>&periodo_id=<?= !empty($periodos) ? $periodos[0]['id'] : '' ?>" <?= empty($periodos) ? 'onclick="alert(\'Crea un periodo primero\'); return false;"' : '' ?>>
+                        <i class="fas fa-book-open"></i> Cuaderno
+                    </a>
+                </div>
+                
+                <div id="periodosList" class="list-group list-group-flush" style="max-height: 180px; overflow-y: auto;">
+                    <?php if (empty($periodos)): ?>
+                        <div class="empty-state text-center py-3">No hay periodos definidos.</div>
+                    <?php else: ?>
+                        <?php foreach ($periodos as $periodo): ?>
+                            <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="fas fa-calendar-alt text-primary" style="font-size: 0.9rem;"></i>
+                                    <span style="font-size: 0.95rem; font-weight: 500;"><?= htmlspecialchars($periodo['nombre_periodo']) ?></span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="cuaderno_evaluacion.php?asig_id=<?= $asignatura_id ?>&periodo_id=<?= $periodo['id'] ?>" class="btn btn-sm btn-light" title="Ver cuaderno"><i class="fas fa-eye"></i></a>
+                                    <button class="btn btn-sm btn-light text-danger" onclick="eliminarPeriodo(<?= $periodo['id'] ?>)" title="Eliminar"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+                <div class="mt-3 text-end">
+                    <button class="btn btn-sm btn-outline-primary" onclick="toggleSection('nuevoPeriodoSection')">
+                        <i class="fas fa-plus"></i> Añadir periodo
+                    </button>
+                </div>
+
+                <div id="nuevoPeriodoSection" class="new-item-card hidden mt-3" style="background: #f8fafc; padding: 1rem; border-radius: 12px;">
+                    <form method="POST">
+                        <input type="hidden" name="action" value="add_periodos">
+                        <div class="mb-2">
+                            <input type="text" name="nombres" class="form-control form-control-sm" placeholder="Ej: 1º Trimestre" required>
+                        </div>
+                        <div class="d-flex gap-2 justify-content-end">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleSection('nuevoPeriodoSection')">Cancelar</button>
+                            <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </section>
+
+        <hr class="section-divider">
 
         <section class="subject-detail-grid">
             <!-- Bloque de Eventos -->
@@ -301,22 +478,33 @@ try {
                         <div class="empty-state" id="temasEmpty">Añade los primeros temas para compartir el temario.</div>
                     <?php else: ?>
                         <?php foreach ($temas as $tema): ?>
-                            <div class="premium-card" style="--accent-color: #64748b; margin-bottom: 1.5rem;">
-                                <div class="card-banner" style="height: 40px;">
-                                    <div class="card-badge">Tema</div>
+                            <div class="premium-card-wrapper">
+                                <div class="card-options-container">
+                                    <button class="menu-dots-btn" onclick="toggleMenu(event, 'tema-<?= $tema['id'] ?>')">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div id="dropdown-tema-<?= $tema['id'] ?>" class="dropdown-options-menu">
+                                        <a href="javascript:void(0)" onclick="editarTema(<?= $tema['id'] ?>)"><i class="fas fa-edit"></i> Modificar</a>
+                                        <a href="javascript:void(0)" onclick="eliminarTema(<?= $tema['id'] ?>)" class="delete-option"><i class="fas fa-trash"></i> Eliminar</a>
+                                    </div>
                                 </div>
-                                <div class="card-content">
-                                    <h3><?= htmlspecialchars($tema['titulo']) ?></h3>
-                                    <p><?= nl2br(htmlspecialchars($tema['descripcion'])) ?></p>
-                                    
-                                    <?php if (!empty($tema['documento'])): ?>
-                                        <div class="card-footer">
-                                            <a href="../uploads/temarios/<?= htmlspecialchars($tema['documento']) ?>" target="_blank" style="color: var(--accent-color); text-decoration: none;">
-                                                <i class="fas fa-paperclip"></i> Ver documento
-                                            </a>
-                                            <i class="fas fa-file-download"></i>
-                                        </div>
-                                    <?php endif; ?>
+                                <div class="premium-card" style="--accent-color: #64748b; margin-bottom: 1.5rem;">
+                                    <div class="card-banner" style="height: 40px;">
+                                        <div class="card-badge">Tema <?= htmlspecialchars($tema['orden']) ?></div>
+                                    </div>
+                                    <div class="card-content">
+                                        <h3><?= htmlspecialchars($tema['titulo']) ?></h3>
+                                        <p><?= nl2br(htmlspecialchars($tema['descripcion'])) ?></p>
+                                        
+                                        <?php if (!empty($tema['documento'])): ?>
+                                            <div class="card-footer">
+                                                <a href="../uploads/temarios/<?= htmlspecialchars($tema['documento']) ?>" target="_blank" style="color: var(--accent-color); text-decoration: none;">
+                                                    <i class="fas fa-paperclip"></i> Ver documento
+                                                </a>
+                                                <i class="fas fa-file-download"></i>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -336,71 +524,12 @@ try {
                         <div class="mb-3">
                             <label class="form-label">Documento adjunto (Opcional)</label>
                             <input type="file" name="documento" class="form-control">
-                            <small class="form-text text-muted">Puedes subir archivos PDF, Word, Excel, imágenes, etc.</small>
                         </div>
                         <div class="d-flex gap-2 justify-content-end">
                             <button type="button" class="btn btn-outline-secondary" onclick="toggleSection('nuevoTemaSection')">Cancelar</button>
                             <button type="submit" class="btn btn-primary">Guardar tema</button>
                         </div>
                     </form>
-                </div>
-            </div>
-
-            <!-- Bloque Evaluaciones -->
-            <div class="box box-evaluation">
-                <div class="box-header">
-                    <div>
-                        <h2>Evaluaciones</h2>
-                        <p>Gestiona los periodos y accede al cuaderno.</p>
-                    </div>
-                </div>
-                <div class="evaluation-panel">
-                    <div class="evaluation-card">
-                        <h3>Ir al cuaderno</h3>
-                        <p>Usa el cuaderno de evaluación para registrar notas y organizar items.</p>
-                        <?php if (empty($periodos)): ?>
-                            <button id="abrirCuadernoBtn" class="btn btn-primary" onclick="alert('Crea al menos un periodo de evaluación para usar el cuaderno.')">
-                                <i class="fas fa-book-open"></i> Abrir cuaderno
-                            </button>
-                        <?php else: ?>
-                            <a id="abrirCuadernoBtn" class="btn btn-primary" href="cuaderno_evaluacion.php?asig_id=<?= $asignatura_id ?>&periodo_id=<?= $periodos[0]['id'] ?>">
-                                <i class="fas fa-book-open"></i> Abrir cuaderno
-                            </a>
-                        <?php endif; ?>
-                    </div>
-                    <div class="periodos-card">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h3>Periodos</h3>
-                            <button class="btn btn-sm btn-outline-primary" onclick="toggleSection('nuevoPeriodoSection')">
-                                <i class="fas fa-plus"></i> Añadir periodo
-                            </button>
-                        </div>
-                        <div id="periodosList">
-                            <?php if (empty($periodos)): ?>
-                                <div id="periodosEmpty" class="empty-state">Crea periodos para estructurar las evaluaciones.</div>
-                            <?php else: ?>
-                                <ul class="list-group">
-                                    <?php foreach ($periodos as $periodo): ?>
-                                        <li class="list-group-item"><?= htmlspecialchars($periodo['nombre_periodo']) ?></li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            <?php endif; ?>
-                        </div>
-                        <div id="nuevoPeriodoSection" class="new-item-card hidden">
-                            <form method="POST">
-                                <input type="hidden" name="action" value="add_periodos">
-                                <div class="mb-3">
-                                    <label class="form-label">Nombres de periodos</label>
-                                    <input type="text" name="nombres" class="form-control" placeholder="Ej: 1º Trimestre, 2º Trimestre" required>
-                                    <small class="form-text text-muted">Sepáralos con comas para crear varios a la vez.</small>
-                                </div>
-                                <div class="d-flex gap-2 justify-content-end">
-                                    <button type="button" class="btn btn-outline-secondary" onclick="toggleSection('nuevoPeriodoSection')">Cancelar</button>
-                                    <button type="submit" class="btn btn-primary">Guardar periodos</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
@@ -566,8 +695,8 @@ window.onclick = function(event) {
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../js/calendar-sync.js?v=1.3"></script>
-<script src="../js/mini-calendar.js?v=1.3"></script>
-<script src="../js/detalles_asignatura.js?v=1.3"></script>
+<script src="../js/calendar-sync.js?v=2.0"></script>
+<script src="../js/mini-calendar.js?v=2.0"></script>
+<script src="../js/detalles_asignatura.js?v=2.0"></script>
 </body>
 </html>

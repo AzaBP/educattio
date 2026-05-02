@@ -265,6 +265,288 @@ input[type="color"]::-moz-color-swatch {
     background: #e74c3c;
 }
 
+/* Estilos para el modal de añadir clase */
+.color-opcion {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid white;
+    box-shadow: 0 0 0 1px #e2e8f0;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.8rem;
+}
+
+.color-opcion i {
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.color-opcion.active {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 2px #3b82f6;
+}
+
+.color-opcion.active i {
+    opacity: 1;
+}
+
+.icono-opcion {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    border-radius: 12px;
+    cursor: pointer;
+    color: #64748b;
+    font-size: 1.2rem;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.icono-opcion:hover {
+    background: #f1f5f9;
+    color: #3b82f6;
+}
+
+.icono-opcion.active {
+    background: #eff6ff;
+    color: #3b82f6;
+    border-color: #3b82f6;
+    transform: scale(1.1);
+}
+
+.color-input-visible {
+    padding: 0;
+    border: 1px solid #e2e8f0 !important;
+    overflow: hidden;
+}
+
+.color-input-visible::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.color-input-visible::-webkit-color-swatch {
+    border: none;
+}
+
+/* =========================================
+   ESTILOS CABECERA MODERNA
+   ========================================= */
+.course-page-header-modern {
+    position: relative;
+    padding: 60px 40px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    color: white;
+    margin-bottom: 40px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.header-glass-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.2), transparent);
+    z-index: 1;
+}
+
+.header-main-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 30px;
+}
+
+.back-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    color: white;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.back-pill:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    transform: translateX(-5px);
+}
+
+.course-title-animate {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin: 0 0 15px 0;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    font-family: var(--font-serif);
+}
+
+.header-badges-row {
+    display: flex;
+    gap: 15px;
+}
+
+.modern-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.settings-glass-btn {
+    padding: 12px 24px;
+    background: white;
+    border: none;
+    border-radius: 12px;
+    color: #1e293b;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.settings-glass-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    background: #f8fafc;
+}
+
+/* OPCIONES DE TARJETA (TRES PUNTOS) */
+.premium-card-wrapper {
+    position: relative;
+    height: 100%;
+}
+
+.premium-card-wrapper .premium-card {
+    height: 100%;
+}
+
+.card-options {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 50;
+}
+
+.menu-dots {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.menu-dots:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: scale(1.05);
+}
+
+.dropdown-menu-aislado {
+    position: absolute;
+    top: 45px;
+    right: 0;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    width: 180px;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+    z-index: 1000;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-menu-aislado.show {
+    display: flex;
+}
+
+.dropdown-menu-aislado a {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    color: #475569;
+    text-decoration: none !important;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s;
+}
+
+.dropdown-menu-aislado a i {
+    width: 16px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.dropdown-menu-aislado a:hover {
+    background: #f1f5f9;
+    color: #2563eb;
+}
+
+.dropdown-menu-aislado a.delete {
+    color: #dc2626;
+    border-top: 1px solid #f1f5f9;
+}
+
+.dropdown-menu-aislado a.delete:hover {
+    background: #fef2f2;
+}
+
+.serif-title {
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.subtitle {
+    color: #64748b;
+    margin-top: 5px;
+}
+
 /* =========================================
    ESTILOS DETALLE DEL CURSO
    ========================================= */

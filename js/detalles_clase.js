@@ -150,25 +150,36 @@ function renderizarAsignaturas(asignaturas) {
            const card = document.createElement('div');
         card.className = 'col-md-4 mb-4';
         card.innerHTML = `
-            <div class="premium-card h-100" style="--accent-color: #4facfe; cursor: pointer;">
-                <div class="card-banner">
-                    <div class="card-icon"><i class="fas fa-book"></i></div>
-                    <div class="card-badge">Asignatura</div>
-                </div>
-                <div class="card-content">
-                    <h3 class="m-0">${asig.nombre_asignatura}</h3>
-                    <p class="text-muted small">Ver temas y evaluaciones</p>
-                    
-                    <div class="d-flex flex-wrap mb-3">
-                        ${htmlPeriodos}
+            <div class="premium-card-wrapper" style="position: relative; height: 100%;">
+                <div class="card-options-container">
+                    <button class="menu-dots-btn" onclick="toggleMenu(event, 'asig-${asig.id}')">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div id="dropdown-asig-${asig.id}" class="dropdown-options-menu">
+                        <a href="javascript:void(0)" onclick="editarAsignatura(${asig.id})"><i class="fas fa-edit"></i> Modificar</a>
+                        <a href="javascript:void(0)" onclick="eliminarAsignatura(${asig.id})" class="delete-option"><i class="fas fa-trash"></i> Eliminar</a>
                     </div>
+                </div>
+                <div class="premium-card h-100" style="--accent-color: #4facfe; cursor: pointer;">
+                    <div class="card-banner">
+                        <div class="card-icon"><i class="fas fa-book"></i></div>
+                        <div class="card-badge">Asignatura</div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="m-0">${asig.nombre_asignatura}</h3>
+                        <p class="text-muted small">Ver temas y evaluaciones</p>
+                        
+                        <div class="d-flex flex-wrap mb-3">
+                            ${htmlPeriodos}
+                        </div>
 
-                    <div class="card-footer mt-auto">
-                        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0" style="color: var(--accent-color); font-weight:600;" 
-                                onclick="event.stopPropagation(); abrirMatriculaAsig(${asig.id}, '${asig.nombre_asignatura.replace(/'/g, "\\'")}')">
-                            <i class="fas fa-users-cog"></i> Alumnos
-                        </button>
-                        <i class="fas fa-chevron-right"></i>
+                        <div class="card-footer mt-auto">
+                            <button type="button" class="btn btn-sm btn-link text-decoration-none p-0" style="color: var(--accent-color); font-weight:600;" 
+                                    onclick="event.stopPropagation(); abrirMatriculaAsig(${asig.id}, '${asig.nombre_asignatura.replace(/'/g, "\\'")}')">
+                                <i class="fas fa-users-cog"></i> Alumnos
+                            </button>
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
                     </div>
                 </div>
             </div>`;
@@ -238,17 +249,23 @@ function escapeHtml(text) {
 
 async function guardarAsignatura(e) {
     e.preventDefault();
+    const id = document.getElementById('editAsigId').value;
     const nombre = document.getElementById('nombreAsignatura').value;
+    const url = id ? 'controllers/editar_asignatura.php' : 'controllers/crear_asignatura.php';
+    const payload = { nombre_asignatura: nombre, clase_id: CLASE_ACTUAL_ID };
+    if (id) payload.id = id;
+
     try {
-        const response = await fetch('controllers/crear_asignatura.php', {
+        const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre_asignatura: nombre, clase_id: CLASE_ACTUAL_ID })
+            body: JSON.stringify(payload)
         });
         const res = await response.json();
         if (res.status === 'success') {
             cerrarModalAsignatura();
             document.getElementById('formAsignatura').reset();
+            document.getElementById('editAsigId').value = '';
             cargarDatosClase();
         } else { alert("Error: " + res.message); }
     } catch (error) { console.error(error); }

@@ -64,7 +64,7 @@ if (!$clase_id) {
 }
 
 // OBTENER DATOS BÁSICOS DE LA CLASE (Para el título y el botón de volver)
-$sql = "SELECT c.nombre_clase, c.curso_id, cur.nombre_centro 
+$sql = "SELECT c.nombre_clase, c.curso_id, cur.nombre_centro, cur.anio_academico 
         FROM clases c 
         JOIN cursos cur ON c.curso_id = cur.id 
         WHERE c.id = :clase_id";
@@ -89,22 +89,97 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
     
     <link rel="icon" type="image/png" href="../imagenes/dolphin.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/global.css">
-    <link rel="stylesheet" href="../css/portal_inicio_usuario.css">
-    <link rel="stylesheet" href="../css/detalles_curso.css">
-    <link rel="stylesheet" href="../css/calendario.css">
+    <link rel="stylesheet" href="../css/global.css?v=2.2">
+    <link rel="stylesheet" href="../css/detalles_clase.css?v=2.2">
+    <link rel="stylesheet" href="../css/portal_inicio_usuario.css?v=2.2">
+    <link rel="stylesheet" href="../css/calendario.css?v=2.2">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
+        /* REFUERZO DE ESTILOS PREMIUM PARA ESTA VISTA */
+        .course-page-header-modern {
+            position: relative;
+            background: linear-gradient(135deg, #0f172a 0%, #334155 100%) !important;
+            padding: 3.5rem 2rem !important;
+            border-radius: 24px !important;
+            color: white !important;
+            margin-bottom: 2.5rem !important;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.15);
+            overflow: hidden;
+        }
+
+        .header-glass-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at top right, rgba(255,255,255,0.1), transparent);
+            pointer-events: none;
+        }
+
+        .header-main-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .course-title-animate {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin: 0.5rem 0;
+            letter-spacing: -0.02em;
+        }
+
+        .back-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            color: white !important;
+            text-decoration: none !important;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .back-pill:hover { background: rgba(255,255,255,0.2); transform: translateX(-5px); }
+
+        .header-badges-row { display: flex; gap: 12px; }
+        .modern-badge {
+            padding: 6px 14px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         /* Estilos específicos para las pestañas de esta vista */
-        .nav-tabs .nav-link { color: #6b7280; font-weight: 600; border: none; padding: 15px 25px; }
-        .nav-tabs .nav-link.active { color: #3b82f6; border-bottom: 3px solid #3b82f6; background: transparent; }
-        .tab-content { padding: 30px 0; }
-        .btn-add-element { border: 2px dashed #cbd5e1; background: transparent; color: #64748b; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .btn-add-element:hover { border-color: #3b82f6; color: #3b82f6; background: #eff6ff; }
-        .card-clickable:hover { transform: translateY(-2px); transition: transform 0.2s ease; }
-        .card-clickable .badge { font-size: 0.8rem; padding: 0.35em 0.75em; }
-        .card-clickable .btn-link { color: #2563eb; }
+        .nav-tabs { border-bottom: 1px solid #e2e8f0; margin-bottom: 2rem; }
+        .nav-tabs .nav-link { color: #64748b; font-weight: 600; border: none; padding: 12px 24px; transition: 0.3s; }
+        .nav-tabs .nav-link.active { color: #2563eb; border-bottom: 3px solid #2563eb; background: transparent; }
+        .nav-tabs .nav-link:hover:not(.active) { color: #1e293b; background: #f1f5f9; border-radius: 10px 10px 0 0; }
+        
+        .tab-content { padding: 0; }
+        .btn-add-element { border: 2px dashed #e2e8f0; background: white; color: #64748b; border-radius: 20px; padding: 2.5rem; text-align: center; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-add-element:hover { border-color: #2563eb; color: #2563eb; background: #eff6ff; transform: translateY(-3px); }
+        
+        /* DOTS MENU */
+        .premium-card-wrapper { position: relative; }
+        .card-options-container { position: absolute; top: 12px; right: 12px; z-index: 10; }
+        .menu-dots-btn { width: 34px; height: 34px; border-radius: 10px; background: rgba(255,255,255,0.9); border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .dropdown-options-menu {
+            position: absolute; top: 40px; right: 0; width: 170px; background: white; border-radius: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: none; flex-direction: column; padding: 8px; z-index: 100;
+        }
+        .dropdown-options-menu.show { display: flex; }
+        .dropdown-options-menu a { padding: 10px 14px; font-size: 0.9rem; color: #475569; display: flex; align-items: center; gap: 10px; border-radius: 10px; text-decoration: none; }
+        .dropdown-options-menu a:hover { background: #f1f5f9; color: #2563eb; }
     </style>
 </head>
 <body>
@@ -112,15 +187,23 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
         <?php include 'sidebar.php'; ?>
         
         <main class="main-content">
-            <header class="course-page-header">
-                <div class="header-top-row">
-                    <a href="detalles_curso.php?id=<?php echo $datos_clase['curso_id']; ?>" class="back-link">
-                        <i class="fas fa-arrow-left"></i> Volver a <?php echo htmlspecialchars($datos_clase['nombre_centro']); ?>
-                    </a>
-                </div>
-                <div class="header-content mt-3">
-                    <h1><?php echo htmlspecialchars($datos_clase['nombre_clase']); ?></h1>
-                    <p class="text-muted">Gestión de asignaturas y alumnado</p>
+            <!-- CABECERA PREMIUM -->
+            <header class="course-page-header-modern">
+                <div class="header-glass-overlay"></div>
+                <div class="header-main-content">
+                    <div class="header-left">
+                        <a href="detalles_curso.php?id=<?php echo $datos_clase['curso_id']; ?>" class="back-pill">
+                            <i class="fas fa-chevron-left"></i> Volver a <?php echo htmlspecialchars($datos_clase['nombre_centro']); ?>
+                        </a>
+                        <h1 class="course-title-animate"><?php echo htmlspecialchars($datos_clase['nombre_clase']); ?></h1>
+                        <div class="header-badges-row">
+                            <span class="modern-badge"><i class="fas fa-university"></i> <?php echo htmlspecialchars($datos_clase['nombre_centro']); ?></span>
+                            <span class="modern-badge"><i class="far fa-calendar-alt"></i> <?php echo htmlspecialchars($datos_clase['anio_academico']); ?></span>
+                        </div>
+                    </div>
+                    <div class="header-right">
+                        <!-- Aquí se podrían añadir acciones rápidas de la clase -->
+                    </div>
                 </div>
             </header>
 
@@ -186,7 +269,59 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/mini-calendar.js"></script>
+    <script src="../js/detalles_clase.js"></script>
     <script>
+        function toggleMenu(event, id) {
+            event.preventDefault();
+            event.stopPropagation();
+            document.querySelectorAll('.dropdown-menu-aislado').forEach(m => {
+                if (m.id !== `dropdown-${id}`) m.classList.remove('show');
+            });
+            const menu = document.getElementById(`dropdown-${id}`);
+            if (menu) menu.classList.toggle('show');
+        }
+        function toggleMenu(event, id) {
+            event.preventDefault();
+            event.stopPropagation();
+            document.querySelectorAll('.dropdown-options-menu').forEach(m => {
+                if (m.id !== `dropdown-${id}`) m.classList.remove('show');
+            });
+            const menu = document.getElementById(`dropdown-${id}`);
+            if (menu) menu.classList.toggle('show');
+        }
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown-options-menu').forEach(m => m.classList.remove('show'));
+        });
+        
+        async function editarAsignatura(id) {
+            try {
+                const res = await fetch(`controllers/get_detalles_asignatura.php?id=${id}`);
+                const data = await res.json();
+                if (data.status === 'success') {
+                    document.getElementById('editAsigId').value = data.asignatura.id;
+                    document.getElementById('nombreAsignatura').value = data.asignatura.nombre_asignatura;
+                    document.getElementById('modalAsigTitle').innerText = 'Modificar Asignatura';
+                    document.getElementById('btnSaveAsig').innerText = 'Actualizar';
+                    abrirModalNuevaAsignatura();
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function eliminarAsignatura(id) {
+            if (!confirm('¿Seguro que quieres eliminar esta asignatura? Se borrarán todos los temas y notas.')) return;
+            try {
+                const res = await fetch('controllers/eliminar_asignatura.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id })
+                });
+                const data = await res.json();
+                if (data.status === 'success') cargarDatosClase();
+                else alert('Error: ' + data.message);
+            } catch (e) { console.error(e); }
+        }
+        
         // Guardamos el ID de la clase para usarlo en nuestras funciones AJAX futuras
         const CLASE_ACTUAL_ID = <?php echo $clase_id; ?>;
     </script>
@@ -194,17 +329,18 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
 <div id="modalAsignatura" class="modal-overlay" style="display: none;">
     <div class="modal-content" style="max-width: 450px;">
         <div class="modal-header">
-            <h3>Nueva Asignatura</h3>
+            <h3 id="modalAsigTitle">Nueva Asignatura</h3>
             <button class="close-btn" onclick="cerrarModalAsignatura()"><i class="fas fa-times"></i></button>
         </div>
         <form id="formAsignatura" onsubmit="guardarAsignatura(event)">
+            <input type="hidden" id="editAsigId" value="">
             <div class="form-group mb-3">
                 <label>Nombre de la Asignatura</label>
                 <input type="text" id="nombreAsignatura" class="form-control" placeholder="Ej: Matemáticas II" required>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="cerrarModalAsignatura()">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Crear Asignatura</button>
+                <button type="submit" class="btn btn-primary" id="btnSaveAsig">Crear Asignatura</button>
             </div>
         </form>
     </div>
