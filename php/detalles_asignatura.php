@@ -301,16 +301,23 @@ try {
                         <div class="empty-state" id="temasEmpty">Añade los primeros temas para compartir el temario.</div>
                     <?php else: ?>
                         <?php foreach ($temas as $tema): ?>
-                            <div class="tema-card">
-                                <h4><?= htmlspecialchars($tema['titulo']) ?></h4>
-                                <p><?= nl2br(htmlspecialchars($tema['descripcion'])) ?></p>
-                                <?php if (!empty($tema['documento'])): ?>
-                                    <div class="mt-2">
-                                        <a href="../uploads/temarios/<?= htmlspecialchars($tema['documento']) ?>" target="_blank" class="btn btn-sm btn-outline-secondary">
-                                            <i class="fas fa-paperclip"></i> Ver documento
-                                        </a>
-                                    </div>
-                                <?php endif; ?>
+                            <div class="premium-card" style="--accent-color: #64748b; margin-bottom: 1.5rem;">
+                                <div class="card-banner" style="height: 40px;">
+                                    <div class="card-badge">Tema</div>
+                                </div>
+                                <div class="card-content">
+                                    <h3><?= htmlspecialchars($tema['titulo']) ?></h3>
+                                    <p><?= nl2br(htmlspecialchars($tema['descripcion'])) ?></p>
+                                    
+                                    <?php if (!empty($tema['documento'])): ?>
+                                        <div class="card-footer">
+                                            <a href="../uploads/temarios/<?= htmlspecialchars($tema['documento']) ?>" target="_blank" style="color: var(--accent-color); text-decoration: none;">
+                                                <i class="fas fa-paperclip"></i> Ver documento
+                                            </a>
+                                            <i class="fas fa-file-download"></i>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>

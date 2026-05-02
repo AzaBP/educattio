@@ -144,17 +144,17 @@ try {
                     <div class="empty-state">Aún no has creado ningún curso. Pulsa "Añadir curso" para empezar.</div>
                 <?php else: ?>
                     <?php foreach ($cursos_activos as $curso): ?>
-                        <a href="detalles_curso.php?id=<?php echo $curso['id']; ?>" class="class-card">
-                            <div class="card-banner" style="background: linear-gradient(135deg, <?php echo htmlspecialchars($curso['color'] ?: '#ff7a59'); ?> 0%, rgba(255,255,255,0.14) 100%);">
-                                <span class="subject-tag"><?php echo htmlspecialchars($curso['nombre_centro']); ?></span>
-                                <span class="course-badge"><?php echo htmlspecialchars($curso['anio_academico']); ?></span>
+                        <a href="detalles_curso.php?id=<?php echo $curso['id']; ?>" class="premium-card" style="--accent-color: <?php echo $curso['color'] ?? '#4facfe'; ?>;">
+                            <div class="card-banner">
+                                <div class="card-icon"><i class="fas fa-university"></i></div>
+                                <div class="card-badge"><?php echo htmlspecialchars($curso['anio_academico']); ?></div>
                             </div>
-                            <div class="card-body">
-                                <h3><?php echo htmlspecialchars($curso['poblacion'] . ', ' . $curso['provincia']); ?></h3>
-                                <p class="teacher-name">Curso activo en el año académico</p>
+                            <div class="card-content">
+                                <h3><?php echo htmlspecialchars($curso['nombre_centro']); ?></h3>
+                                <p><?php echo htmlspecialchars($curso['poblacion'] . ', ' . $curso['provincia']); ?></p>
                                 <div class="card-footer">
-                                    <span class="tasks-pending">Ver detalles</span>
-                                    <i class="fas fa-arrow-right folder-icon"></i>
+                                    <span>Ver curso</span>
+                                    <i class="fas fa-chevron-right"></i>
                                 </div>
                             </div>
                         </a>

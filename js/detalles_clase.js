@@ -147,39 +147,37 @@ function renderizarAsignaturas(asignaturas) {
                     </button>
                 </div>`;
         }
-
-        const card = document.createElement('div');
+           const card = document.createElement('div');
         card.className = 'col-md-4 mb-4';
         card.innerHTML = `
-            <div class="card card-clickable h-100 shadow-sm border-0" style="border-radius: 18px; cursor: pointer;">
-                <div class="card-body d-flex flex-column">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div>
-                            <h5 class="card-title fw-bold m-0" style="font-family: 'Georgia', serif; color: #1f2937;">${asig.nombre_asignatura}</h5>
-                            <p class="text-muted mb-0" style="font-size: 0.95rem;">Ver temas y evaluaciones</p>
-                        </div>
-                        <span class="badge bg-primary">Asignatura</span>
-                    </div>
-
+            <div class="premium-card h-100" style="--accent-color: #4facfe; cursor: pointer;">
+                <div class="card-banner">
+                    <div class="card-icon"><i class="fas fa-book"></i></div>
+                    <div class="card-badge">Asignatura</div>
+                </div>
+                <div class="card-content">
+                    <h3 class="m-0">${asig.nombre_asignatura}</h3>
+                    <p class="text-muted small">Ver temas y evaluaciones</p>
+                    
                     <div class="d-flex flex-wrap mb-3">
                         ${htmlPeriodos}
                     </div>
 
-                    <div class="mt-auto">
-                        ${htmlSugerencias}
-                        <hr class="my-2 opacity-25">
-                        <div class="text-start">
-                            <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 text-secondary" onclick="event.stopPropagation(); abrirMatriculaAsig(${asig.id}, '${asig.nombre_asignatura.replace(/'/g, "\\'")}')">
-                                <i class="fas fa-users-cog"></i> Gestionar Alumnos
-                            </button>
-                        </div>
+                    <div class="card-footer mt-auto">
+                        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0" style="color: var(--accent-color); font-weight:600;" 
+                                onclick="event.stopPropagation(); abrirMatriculaAsig(${asig.id}, '${asig.nombre_asignatura.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-users-cog"></i> Alumnos
+                        </button>
+                        <i class="fas fa-chevron-right"></i>
                     </div>
                 </div>
             </div>`;
 
-        card.querySelector('.card-clickable').addEventListener('click', () => {
+        card.querySelector('.premium-card').addEventListener('click', (e) => {
+            if (e.target.closest('button') || e.target.closest('.btn-group')) return;
             window.location.href = `detalles_asignatura.php?id=${asig.id}`;
         });
+     
         contenedor.appendChild(card);
     });
 }
