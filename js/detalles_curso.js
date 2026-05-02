@@ -1,4 +1,46 @@
 
+/* ==========================================
+   SISTEMA DE NOTIFICACIONES PREMIUM (EducattioUI)
+   ========================================== */
+window.EducattioUI = {
+    notify: function(message, type = 'success') {
+        const containerId = 'educattio-toast-container';
+        let container = document.getElementById(containerId);
+        if (!container) {
+            container = document.createElement('div');
+            container.id = containerId;
+            container.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;';
+            document.body.appendChild(container);
+        }
+        const toast = document.createElement('div');
+        const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+        const color = type === 'success' ? '#10b981' : '#ef4444';
+        toast.style.cssText = `background: white; color: #1f2937; padding: 12px 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 12px; min-width: 280px; border-left: 5px solid ${color}; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); font-family: sans-serif; font-size: 0.95rem;`;
+        toast.innerHTML = `<i class="fas ${icon}" style="color: ${color}; font-size: 1.2rem;"></i><span style="flex-grow: 1;">${message}</span><button style="background: none; border: none; color: #9ca3af; cursor: pointer;"><i class="fas fa-times"></i></button>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.style.transform = 'translateX(0)', 10);
+        const close = () => { toast.style.transform = 'translateX(120%)'; setTimeout(() => toast.remove(), 300); };
+        toast.querySelector('button').onclick = close;
+        setTimeout(close, 5000);
+    },
+    success: function(message) { this.notify(message, 'success'); },
+    error: function(message) { this.notify(message, 'error'); },
+    confirm: function(message, title = '¿Estás seguro?') {
+        return new Promise((resolve) => {
+            const modalId = 'educattio-confirm-modal';
+            let modalEl = document.getElementById(modalId);
+            if (modalEl) modalEl.remove();
+            const html = `<div class="modal fade" id="${modalId}" tabindex="-1" aria-hidden="true" style="z-index: 10000;"><div class="modal-dialog modal-dialog-centered"><div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 20px 50px rgba(0,0,0,0.2); background: white;"><div class="modal-header" style="border-bottom: none; padding: 25px 25px 10px;"><h4 class="modal-title fw-bold" style="color: #111827; margin: 0;">${title}</h4></div><div class="modal-body" style="padding: 10px 25px 25px; color: #4b5563;">${message}</div><div class="modal-footer" style="border-top: none; padding: 0 25px 25px; gap: 10px;"><button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 10px; padding: 10px 20px; font-weight: 600; background: #f3f4f6; border: none;">Cancelar</button><button type="button" id="${modalId}-confirm" class="btn btn-danger" style="border-radius: 10px; padding: 10px 20px; font-weight: 600; background: #ef4444; border: none; color: white;">Confirmar</button></div></div></div></div>`;
+            document.body.insertAdjacentHTML('beforeend', html);
+            modalEl = document.getElementById(modalId);
+            const bsModal = new bootstrap.Modal(modalEl);
+            document.getElementById(`${modalId}-confirm`).onclick = () => { bsModal.hide(); resolve(true); };
+            modalEl.addEventListener('hidden.bs.modal', () => { modalEl.remove(); resolve(false); }, { once: true });
+            bsModal.show();
+        });
+    }
+};
+
 // --- LÓGICA DE SELECCIÓN DE COLORES E ICONOS ---
 // Seleccionar Iconos
 document.querySelectorAll('.icono-opcion').forEach(item => {
@@ -59,42 +101,47 @@ function abrirModalEditarClase(id, nombre, materia, color, icono) {
         }
     });
 
-    // Cambiar título
+    // Cambiar título y setear modo edición
+    editClaseId = id;
     const tituloModal = document.getElementById('modalClaseLabel') || document.querySelector('#modalClase .modal-header h3');
     if (tituloModal) tituloModal.innerText = 'Modificar Clase';
     // Mostrar el modal usando Bootstrap Modal JS
-    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-        var miModal = new bootstrap.Modal(document.getElementById('modalClase'));
-        miModal.show();
-    } else {
-        openModalClase();
-    }
+    const el = document.getElementById('modalClase');
+    const modalInstance = bootstrap.Modal.getOrCreateInstance(el);
+    modalInstance.show();
 }
 
 // --- MODAL DE NUEVA CLASE ---
 function abrirModalNuevaClase() {
     // Vaciar los campos del nuevo modal
-    const idClase = document.getElementById('id_clase');
-    const nombreClase = document.getElementById('nombre_clase');
-    const materiaClase = document.getElementById('materia_clase');
-    const colorClase = document.getElementById('color_clase');
-    if (idClase) idClase.value = '';
-    if (nombreClase) nombreClase.value = '';
-    if (materiaClase) materiaClase.value = '';
-    if (colorClase) colorClase.value = '#3498db';
+    editClaseId = null;
+    const inputId = document.getElementById('inputIdClase');
+    const inputNombre = document.getElementById('inputNombreClase');
+    const inputMateria = document.getElementById('inputMateria');
+    
+    if (inputId) inputId.value = '';
+    if (inputNombre) inputNombre.value = '';
+    if (inputMateria) inputMateria.value = '';
+    
+    // Seleccionar color por defecto
+    document.querySelectorAll('.color-opcion').forEach(el => {
+        if (el.getAttribute('data-color') === '#3b82f6') el.classList.add('active');
+        else el.classList.remove('active');
+    });
+    // Seleccionar icono por defecto
+    document.querySelectorAll('.icono-opcion').forEach(el => {
+        if (el.getAttribute('data-icon') === 'fa-users') el.classList.add('active');
+        else el.classList.remove('active');
+    });
 
-    // Cambiar el título si existe
+    // Cambiar el título
     const tituloModal = document.getElementById('modalClaseLabel') || document.querySelector('#modalClase .modal-header h3');
     if (tituloModal) tituloModal.innerText = 'Añadir Nueva Clase';
 
     // Mostrar el modal usando Bootstrap Modal JS
-    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-        var miModal = new bootstrap.Modal(document.getElementById('modalClase'));
-        miModal.show();
-    } else {
-        // Fallback: mostrar con la clase .active
-        openModalClase();
-    }
+    const el = document.getElementById('modalClase');
+    const modalInstance = bootstrap.Modal.getOrCreateInstance(el);
+    modalInstance.show();
 }
 
 // Enlazar botón Editar con abrirModalEditarClase
@@ -111,10 +158,10 @@ async function prepararEdicion(id) {
                 data.clase.icono_clase
             );
         } else {
-            alert('No se pudo cargar la información de la clase.');
+            EducattioUI.error('No se pudo cargar la información de la clase.');
         }
     } catch (error) {
-        alert('Error al cargar la clase.');
+        EducattioUI.error('Error al cargar la clase.');
     }
 }
 // --- CONTRASTE YIQ PARA TEXTO SOBRE COLORES ---
@@ -148,11 +195,43 @@ function selectIconClase(icon, element) {
    GESTIÓN DE MODALES
    ========================================== */
 function openModalClase() {
-    document.getElementById('modalClase').classList.add('active');
+    const el = document.getElementById('modalClase');
+    const modalInstance = bootstrap.Modal.getOrCreateInstance(el);
+    modalInstance.show();
 }
 
 function closeModalClase() {
-    document.getElementById('modalClase').classList.remove('active');
+    const el = document.getElementById('modalClase');
+    if (!el) return;
+
+    // 1. Intentar con la instancia de Bootstrap (la forma correcta)
+    try {
+        const modalInstance = bootstrap.Modal.getInstance(el);
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+    } catch (e) {
+        console.warn("Error al cerrar modal con Bootstrap:", e);
+    }
+
+    // 2. Limpieza manual garantizada (si Bootstrap falla o no está disponible)
+    el.classList.remove('show');
+    el.classList.remove('active');
+    
+    // Pequeño timeout para permitir que la animación de Bootstrap termine
+    setTimeout(() => {
+        el.style.display = 'none';
+        el.setAttribute('aria-hidden', 'true');
+        el.removeAttribute('aria-modal');
+        
+        // Eliminar backdrops residuales
+        document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+        
+        // Desbloquear el scroll del body
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+    }, 150);
 }
 
 
@@ -281,16 +360,7 @@ async function cargarDatosPantalla(id) {
 }
 
 
-// Función para decidir si el texto debe ser blanco o negro según el fondo
-function getContrasteYIQ(hexcolor){
-    hexcolor = hexcolor.replace("#", "");
-    const r = parseInt(hexcolor.substr(0,2),16);
-    const g = parseInt(hexcolor.substr(2,2),16);
-    const b = parseInt(hexcolor.substr(4,2),16);
-    const yiq = ((r*299)+(g*587)+(b*114))/1000;
-    // Usar texto oscuro si el fondo es claro
-    return (yiq >= 128) ? '#333333' : '#ffffff';
-}
+// La función getContrasteYIQ ya está definida al inicio del archivo.
 
 function renderizarTarjetasClases(clases) {
     const contenedor = document.querySelector('.groups-grid');
@@ -328,10 +398,10 @@ function renderizarTarjetasClases(clases) {
                             <i class="fas fa-ellipsis-v"></i>
                         </button>
                         <div id="dropdown-${id}" class="menu-opciones-aislado">
-                            <a href="#" class="item-opcion" onclick="event.stopPropagation(); prepararEdicion(${id})">
+                            <a href="javascript:void(0)" class="item-opcion" onclick="event.preventDefault(); event.stopPropagation(); prepararEdicion(${id})">
                                 <i class="fas fa-pen"></i> Modificar
                             </a>
-                            <a href="#" class="item-opcion delete-option" onclick="event.stopPropagation(); eliminarClase(${id})">
+                            <a href="javascript:void(0)" class="item-opcion delete-option" onclick="event.preventDefault(); event.stopPropagation(); eliminarClase(${id})">
                                 <i class="fas fa-trash"></i> Eliminar
                             </a>
                         </div>
@@ -385,7 +455,7 @@ async function guardarNuevaClase(e) {
     const iconoActivo = document.querySelector('.icono-opcion.active');
 
     if (!colorActivo || !iconoActivo) {
-        alert("Por favor, selecciona un color y un icono.");
+        EducattioUI.error("Por favor, selecciona un color y un icono.");
         return;
     }
 
@@ -412,11 +482,12 @@ async function guardarNuevaClase(e) {
             closeModalClase();
             document.getElementById('formCrearClase').reset();
             cargarDatosPantalla(cursoId);
+            EducattioUI.success(editClaseId ? "Clase modificada con éxito" : "Clase creada con éxito");
             // Resetear modo edición y título
             if (typeof editClaseId !== 'undefined') editClaseId = null;
             document.querySelector('#modalClase .modal-header h3').textContent = 'Crear Clase';
         } else {
-            alert("Error al guardar: " + resultado.message);
+            EducattioUI.error("Error al guardar: " + resultado.message);
         }
     } catch (error) {
         console.error("Error:", error);
@@ -424,7 +495,8 @@ async function guardarNuevaClase(e) {
 }
 
 async function eliminarClase(idClase) {
-    if (!confirm("¿Estás seguro de que quieres eliminar esta clase? Se borrarán todos sus alumnos y notas.")) {
+    const confirmacion = await EducattioUI.confirm("¿Estás seguro de que quieres eliminar esta clase? Se borrarán todos sus alumnos y notas.");
+    if (!confirmacion) {
         return;
     }
 
@@ -439,8 +511,9 @@ async function eliminarClase(idClase) {
         if (resultado.status === 'success') {
             const urlParams = new URLSearchParams(window.location.search);
             cargarDatosPantalla(urlParams.get('id')); // Recargar la lista
+            EducattioUI.success("Clase eliminada correctamente");
         } else {
-            alert("Error al eliminar: " + resultado.message);
+            EducattioUI.error("Error al eliminar: " + resultado.message);
         }
     } catch (error) {
         console.error("Error:", error);
@@ -527,16 +600,17 @@ async function guardarAjustesCurso(e) {
             // Recargar la página para mostrar cambios
             location.reload();
         } else {
-            alert('Error al guardar cambios: ' + result.message);
+            EducattioUI.error('Error al guardar cambios: ' + result.message);
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Error al guardar cambios');
+        EducattioUI.error('Error al guardar cambios');
     }
 }
 
 async function eliminarCurso() {
-    if (!confirm('¿Estás seguro de que quieres eliminar este curso? Se borrarán todas las clases y alumnos asociados. Esta acción no se puede deshacer.')) {
+    const confirmacion = await EducattioUI.confirm('¿Estás seguro de que quieres eliminar este curso? Se borrarán todas las clases y alumnos asociados. Esta acción no se puede deshacer.');
+    if (!confirmacion) {
         return;
     }
     
@@ -554,11 +628,11 @@ async function eliminarCurso() {
             // Redirigir a la lista de cursos
             window.location.href = 'portal_cursos.html';
         } else {
-            alert('Error al eliminar curso: ' + result.message);
+            EducattioUI.error('Error al eliminar curso: ' + result.message);
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Error al eliminar curso');
+        EducattioUI.error('Error al eliminar curso');
     }
 }
 function inicializarCalendario(cursoId) {
@@ -688,10 +762,10 @@ async function guardarEvento(e) {
                 window.calendarSync.notifyRefresh();
             }
         } else {
-            alert('Error al guardar el evento');
+            EducattioUI.error('Error al guardar el evento');
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Error al guardar el evento');
+        EducattioUI.error('Error al guardar el evento');
     }
 }
