@@ -139,6 +139,9 @@ try {
 
                 <div class="form-actions-bar">
                     <a href="portal_inicio_usuario.php" class="btn btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">Cancelar</a>
+                    <a href="exportar_cv.php" class="btn btn-outline-primary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; border: 2px solid var(--accent-color); color: var(--accent-color); background: white;">
+                        <i class="fas fa-file-pdf"></i> Descargar CV (PDF)
+                    </a>
                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 </div>
             </form>

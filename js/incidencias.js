@@ -34,8 +34,16 @@ document.addEventListener('DOMContentLoaded', () => {
         exportarIncidenciaPDF();
     });
 
+    const exportListBtn = document.getElementById('btnExportarListaPDF');
+
+    exportListBtn.addEventListener('click', () => {
+        exportarListaIncidenciasPDF();
+    });
+
     cargarIncidencias();
 });
+
+let incidenciasActuales = []; // Para guardar los datos cargados
 
 async function cargarClases(cursoId) {
     const claseSelect = document.getElementById('claseSelect');
@@ -124,18 +132,19 @@ async function cargarIncidencias() {
         const data = await response.json();
         const tbody = document.getElementById('incidenciasTableBody');
         if (data.status === 'success' && Array.isArray(data.incidencias)) {
+            incidenciasActuales = data.incidencias; // Guardamos para exportar
             if (data.incidencias.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No hay incidencias registradas.</td></tr>';
                 return;
             }
             tbody.innerHTML = data.incidencias.map(inc => `
                 <tr>
-                    <td>${escapeHtml(inc.fecha_incidencia)}</td>
+                    <td><span class="badge bg-light text-dark">${escapeHtml(inc.fecha_incidencia)}</span></td>
                     <td>${escapeHtml(inc.nombre_centro)}</td>
-                    <td>${escapeHtml(inc.nombre_clase)}</td>
+                    <td><span class="fw-bold text-primary">${escapeHtml(inc.nombre_clase)}</span></td>
                     <td>${escapeHtml(inc.nombre_alumno || '---')}</td>
-                    <td>${escapeHtml(inc.tipo)}</td>
-                    <td>${escapeHtml(inc.descripcion)}</td>
+                    <td><span class="badge bg-info text-white">${escapeHtml(inc.tipo)}</span></td>
+                    <td class="small">${escapeHtml(inc.descripcion)}</td>
                 </tr>
             `).join('');
         } else {
@@ -156,28 +165,107 @@ function exportarIncidenciaPDF() {
     const descripcion = document.getElementById('descripcionIncidencia').value.trim();
 
     if (!cursoSelect.value || !claseSelect.value || !descripcion) {
-        alert('Para exportar, completa el curso, la clase y la descripción.');
+        alert('Para exportar, completa el curso, la clase y la descripción de la incidencia actual.');
         return;
     }
 
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
-    const fecha = new Date().toLocaleString();
-    const alumnoTexto = alumnoSelect.value ? alumnoSelect.options[alumnoSelect.selectedIndex].text : 'Sin alumno específico';
+    const doc = new jsPDF();
+    
+    const centro = cursoSelect.options[cursoSelect.selectedIndex].text;
+    const clase = claseSelect.options[claseSelect.selectedIndex].text;
+    const alumno = alumnoSelect.value ? alumnoSelect.options[alumnoSelect.selectedIndex].text : 'Sin alumno específico';
+    const fecha = new Date().toLocaleDateString();
 
-    doc.setFontSize(16);
-    doc.text('Incidencia Educattio', 40, 50);
+    // DISEÑO DEL PDF
+    doc.setFillColor(15, 23, 42); 
+    doc.rect(0, 0, 210, 45, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text('EDUCATTIO', 105, 20, { align: 'center' });
+    doc.setFontSize(14);
+    doc.text('REPORTE DE INCIDENCIA', 105, 32, { align: 'center' });
+
+    doc.setTextColor(30, 41, 59);
     doc.setFontSize(11);
-    doc.text(`Fecha: ${fecha}`, 40, 80);
-    doc.text(`Curso: ${cursoSelect.options[cursoSelect.selectedIndex].text}`, 40, 100);
-    doc.text(`Clase: ${claseSelect.options[claseSelect.selectedIndex].text}`, 40, 120);
-    doc.text(`Alumno: ${alumnoTexto}`, 40, 140);
-    doc.text(`Tipo: ${tipoSelect.value}`, 40, 160);
-    doc.text('Descripción:', 40, 190);
+    doc.text(`Generado el: ${fecha}`, 15, 60);
 
-    const splitDescripcion = doc.splitTextToSize(descripcion, 500);
-    doc.text(splitDescripcion, 40, 210);
-    doc.save('incidencia_educattio.pdf');
+    const dataRows = [
+        ['CENTRO / CURSO', centro],
+        ['CLASE / GRUPO', clase],
+        ['ALUMNO', alumno],
+        ['TIPO', tipoSelect.value]
+    ];
+
+    doc.autoTable({
+        startY: 65,
+        body: dataRows,
+        theme: 'plain',
+        styles: { fontSize: 10, cellPadding: 6 },
+        columnStyles: { 0: { fontStyle: 'bold', cellWidth: 50 } }
+    });
+
+    const currentY = doc.lastAutoTable.finalY + 15;
+    doc.setFillColor(248, 250, 252);
+    doc.rect(15, currentY, 180, 10, 'F');
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.text('DESCRIPCIÓN DE LA INCIDENCIA:', 15, currentY + 7);
+    
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    const splitText = doc.splitTextToSize(descripcion, 175);
+    doc.text(splitText, 18, currentY + 20);
+
+    doc.setFontSize(8);
+    doc.setTextColor(148, 163, 184);
+    doc.text('Documento oficial generado por la plataforma Educattio', 105, 285, { align: 'center' });
+
+    doc.save(`incidencia_${clase.replace(/\s+/g, '_')}.pdf`);
+}
+
+function exportarListaIncidenciasPDF() {
+    if (!window.incidenciasActuales || window.incidenciasActuales.length === 0) {
+        alert('No hay historial de incidencias para exportar.');
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('l', 'mm', 'a4'); 
+    const fecha = new Date().toLocaleDateString();
+
+    doc.setFillColor(30, 41, 59);
+    doc.rect(0, 0, 297, 40, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    doc.text('EDUCATTIO - HISTORIAL DE INCIDENCIAS', 148.5, 25, { align: 'center' });
+
+    const head = [['FECHA', 'CENTRO / CURSO', 'CLASE', 'ALUMNO', 'TIPO', 'DESCRIPCIÓN']];
+    const body = window.incidenciasActuales.map(inc => [
+        inc.fecha_incidencia,
+        inc.nombre_centro,
+        inc.nombre_clase,
+        inc.nombre_alumno || 'General',
+        inc.tipo,
+        inc.descripcion
+    ]);
+
+    doc.autoTable({
+        startY: 50,
+        head: head,
+        body: body,
+        theme: 'striped',
+        headStyles: { fillColor: [37, 99, 235], fontSize: 10, halign: 'center' },
+        styles: { fontSize: 9, cellPadding: 4, valign: 'middle' },
+        columnStyles: {
+            5: { cellWidth: 80 }
+        }
+    });
+
+    doc.save(`historial_incidencias_${fecha}.pdf`);
 }
 
 function escapeHtml(text) {

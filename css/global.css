@@ -209,3 +209,24 @@ body {
         transform: translate(0, 0);
     }
 }
+
+.btn-outline-primary {
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: 600;
+    border: 2px solid #2563eb;
+    color: #2563eb;
+    background: transparent;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-outline-primary:hover {
+    background: #2563eb;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}

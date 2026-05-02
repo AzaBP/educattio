@@ -21,19 +21,29 @@ try {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/portal_inicio_usuario.css">
-    <link rel="stylesheet" href="../css/incidencias.css">
+    <link rel="stylesheet" href="../css/incidencias.css?v=2.5">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="dashboard-layout">
         <?php include 'sidebar.php'; ?>
         <main class="main-content">
-            <div class="page-header-flex mb-4">
-                <div>
-                    <h1>Incidencias</h1>
-                    <p class="text-muted">Registra y exporta incidentes de centro, curso y alumno.</p>
+            <!-- CABECERA PREMIUM -->
+            <header class="course-page-header-modern mb-4">
+                <div class="header-glass-overlay"></div>
+                <div class="header-main-content">
+                    <div class="header-left">
+                        <h1 class="course-title-animate">Registro de Incidencias</h1>
+                        <p class="text-white-50 m-0">Gestiona y exporta reportes detallados sobre el centro, clases y alumnos.</p>
+                    </div>
+                    <div class="header-right">
+                        <div class="header-badges-row">
+                            <span class="modern-badge"><i class="fas fa-file-invoice"></i> Reportes oficiales</span>
+                            <span class="modern-badge"><i class="fas fa-shield-alt"></i> Registro seguro</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </header>
 
             <section class="incidencias-grid">
                 <div class="incidencias-form-card">
@@ -84,9 +94,14 @@ try {
                 </div>
 
                 <div class="incidencias-list-card">
-                    <div class="card-header mb-3">
-                        <h2>Incidencias registradas</h2>
-                        <p>Últimas entradas guardadas en tu cuenta.</p>
+                    <div class="card-header mb-3 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2>Incidencias registradas</h2>
+                            <p>Últimas entradas guardadas en tu cuenta.</p>
+                        </div>
+                        <button id="btnExportarListaPDF" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-file-export"></i> Exportar Historial
+                        </button>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">

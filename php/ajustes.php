@@ -1,7 +1,7 @@
 <?php
 session_start();
 // Asegúrate de que la ruta a conexion.php es correcta según tus carpetas
-include '../php/conexion.php'; 
+include 'conexion.php'; 
 
 // 1. SEGURIDAD: Si no está logueado, lo echamos al login
 if (!isset($_SESSION['usuario_id'])) {
@@ -13,8 +13,8 @@ $id_usuario = $_SESSION['usuario_id'];
 
 // 2. OBTENER LOS DATOS ACTUALES DEL USUARIO DE LA BASE DE DATOS
 try {
-    // Pedimos el nombre completo, el de usuario y el email
-    $sql = "SELECT nombre_completo, nombre_usuario, email FROM usuarios WHERE id = :id";
+    // Pedimos el nombre completo, el de usuario, el email y la foto
+    $sql = "SELECT nombre_completo, nombre_usuario, email, foto_perfil FROM usuarios WHERE id = :id";
     $stmt = $conexion->prepare($sql);
     $stmt->bindParam(':id', $id_usuario);
     $stmt->execute();

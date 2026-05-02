@@ -1,8 +1,30 @@
 <?php
-// 1. Detectar en qué página estamos para poner la clase "active" automáticamente
+// 1. SEGURIDAD Y DATOS: Si no tenemos los datos del usuario, los buscamos para el sidebar
+if (!isset($datos_usuario) || !isset($datos_usuario['foto_perfil'])) {
+    if (isset($_SESSION['usuario_id'])) {
+        try {
+            // Asegurarnos de tener conexión
+            if (!isset($conexion)) {
+                include_once 'conexion.php';
+            }
+            $stmt_sidebar = $conexion->prepare("SELECT nombre_completo, nombre_usuario, foto_perfil FROM usuarios WHERE id = ?");
+            $stmt_sidebar->execute([$_SESSION['usuario_id']]);
+            $datos_usuario_sidebar = $stmt_sidebar->fetch(PDO::FETCH_ASSOC);
+            
+            // Si los encontramos, los usamos para el sidebar
+            if ($datos_usuario_sidebar) {
+                $datos_usuario = array_merge($datos_usuario ?? [], $datos_usuario_sidebar);
+            }
+        } catch (PDOException $e) {
+            // Fallback silencioso
+        }
+    }
+}
+
+// 2. Detectar en qué página estamos para poner la clase "active" automáticamente
 $pagina_actual = basename($_SERVER['PHP_SELF']);
 
-// 2. Determinar qué nombre mostrar debajo de la foto
+// 3. Determinar qué nombre mostrar debajo de la foto
 $nombre_sidebar = $_SESSION['nombre_usuario'] ?? 'Usuario';
 if (isset($datos_usuario['nombre_completo']) && trim($datos_usuario['nombre_completo']) !== '') {
     $nombre_sidebar = $datos_usuario['nombre_completo'];
@@ -10,7 +32,7 @@ if (isset($datos_usuario['nombre_completo']) && trim($datos_usuario['nombre_comp
     $nombre_sidebar = $datos_usuario['nombre_usuario'];
 }
 
-// 3. Determinar la foto de perfil
+// 4. Determinar la foto de perfil
 $foto_sidebar = '../uploads/perfil/default-avatar.png'; // Imagen por defecto
 if (!empty($datos_usuario['foto_perfil'])) {
     $foto_sidebar = '../' . ltrim($datos_usuario['foto_perfil'], '/');
