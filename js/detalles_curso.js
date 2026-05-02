@@ -325,7 +325,7 @@ async function verificarSesion() {
     }
 }
 
-function abrirMiniEventoCurso() {
+window.abrirMiniEventoCurso = function() {
     if (!window.miniCalendarCurso) return;
     if (!window.miniCalendarCurso.selectedDate) {
         const today = new Date();

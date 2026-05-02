@@ -38,10 +38,9 @@ try {
     $stmtEventos = $conexion->prepare('SELECT e.id, e.titulo, e.descripcion, e.tipo_evento, e.fecha, c.nombre_clase
                                         FROM eventos e
                                         JOIN clases c ON e.clase_id = c.id
-                                        WHERE e.clase_id = :clase_id
-                                        ORDER BY e.fecha ASC
-                                        LIMIT 5');
-    $stmtEventos->execute([':clase_id' => $asignatura['clase_id']]);
+                                        WHERE e.asignatura_id = :asignatura_id
+                                        ORDER BY e.fecha ASC');
+    $stmtEventos->execute([':asignatura_id' => $asignaturaId]);
     $eventos = $stmtEventos->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($eventos as &$evento) {

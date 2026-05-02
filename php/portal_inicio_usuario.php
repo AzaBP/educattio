@@ -172,9 +172,7 @@ try {
     </main>
 </div>
 
-<!-- ========================================= -->
-<!-- MODAL PARA CREAR CURSO (COPIADO DE portal_cursos.php) -->
-<!-- ========================================= -->
+<!-- MODAL PARA CREAR CURSO -->
 <div id="modalCurso" class="modal-overlay">
     <div class="modal-window">
         <div class="modal-header">
@@ -234,10 +232,10 @@ try {
     
 </div>
 
-
-
-<script src="../js/portal_inicio_usuario.js"></script>
-<script src="../js/notificaciones.js"></script>
+<script src="../js/portal_inicio_usuario.js?v=1.3"></script>
+<script src="../js/notificaciones.js?v=1.3"></script>
+<script src="../js/calendar-sync.js?v=1.3"></script>
+<script src="../js/mini-calendar.js?v=1.3"></script>
 
 <script>
     // ========================
@@ -248,11 +246,9 @@ try {
 
     window.openModalCurso = function() {
         if (modalCurso) modalCurso.style.display = 'flex';
-        // Resetear formulario
         formCurso.reset();
         document.getElementById('editCursoId').value = '';
         document.getElementById('inputColor').value = '#ff7a59';
-        // Resetear selección de color
         document.querySelectorAll('.color-dot').forEach(dot => dot.style.border = 'none');
     };
 
@@ -260,7 +256,6 @@ try {
         if (modalCurso) modalCurso.style.display = 'none';
     };
 
-    // Funciones para los colores
     window.selectPresetColor = function(color, element) {
         document.getElementById('inputColor').value = color;
         document.querySelectorAll('.color-dot').forEach(dot => dot.style.border = 'none');
@@ -271,10 +266,8 @@ try {
         document.querySelectorAll('.color-dot').forEach(dot => dot.style.border = 'none');
     };
 
-    // Envío del formulario vía AJAX
     formCurso.addEventListener('submit', function(e) {
         e.preventDefault();
-        
         const payload = {
             nombre_centro: document.getElementById('inputNombreCentro').value.trim(),
             poblacion: document.getElementById('inputPoblacion').value.trim(),
@@ -282,7 +275,6 @@ try {
             anio: document.getElementById('inputAnio').value.trim(),
             color: document.getElementById('inputColor').value
         };
-
         fetch('../php/guardar_curso.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -291,10 +283,7 @@ try {
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                alert('Curso creado correctamente');
                 closeModalCurso();
-                // Opcional: actualizar el contador de cursos activos sin recargar toda la página
-                // Por ahora recargamos para que se actualice el número
                 location.reload();
             } else {
                 alert('Error: ' + (data.error || 'No se pudo guardar el curso'));
@@ -306,13 +295,11 @@ try {
         });
     });
 
-    // Cerrar modal si se hace clic fuera
     window.onclick = function(event) {
         if (event.target === modalCurso) closeModalCurso();
     };
 
-    
-    // Calendario y reloj 
+    // Reloj
     function updateCalendarAndClock() {
         const now = new Date();
         const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -325,7 +312,7 @@ try {
     setInterval(updateCalendarAndClock, 1000);
     updateCalendarAndClock();
 
-    // Cargar notificaciones de eventos próximos
+    // Notificaciones de campana
     function cargarNotificaciones() {
         fetch('../php/obtener_notificaciones.php')
             .then(res => res.json())
@@ -362,12 +349,14 @@ try {
         });
     }
 
-    // Cargar cada 60 segundos
     cargarNotificaciones();
     setInterval(cargarNotificaciones, 60000);
-</script>
 
-<script src="../js/mini-calendar.js"></script>
+    // ========================
+    // MINI-CALENDARIO del portal
+    // Muestra TODOS los eventos del usuario (sin filtro de curso/clase)
+    // ========================
+</script>
 
 </body>
 </html>

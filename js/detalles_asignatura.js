@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.miniCalendarAsignatura = new MiniCalendar(miniContainer, {
         claseId: claseId,
+        asignaturaId: asignaturaId,
         onEventCreate: () => {
             refreshSubjectEvents(asignaturaId);
         }
@@ -28,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function abrirMiniEventoAsignatura() {
+window.abrirMiniEventoAsignatura = function() {
     if (!window.miniCalendarAsignatura) return;
     if (!window.miniCalendarAsignatura.selectedDate) {
         const today = new Date();
@@ -41,7 +42,7 @@ function abrirMiniEventoAsignatura() {
     window.miniCalendarAsignatura.openEventModal();
 }
 
-function toggleSection(sectionId) {
+window.toggleSection = function(sectionId) {
     const section = document.getElementById(sectionId);
     if (!section) return;
     section.classList.toggle('hidden');
@@ -87,22 +88,17 @@ function renderEventos(eventos) {
     }
 
     eventos.forEach(evento => {
-        const card = document.createElement('div');
-        card.className = 'event-card';
-        card.innerHTML = `
-            <div class="event-card-header">
-                <strong>${escapeHtml(evento.titulo)}</strong>
-                <span class="badge bg-secondary">${escapeHtml(evento.tipo_evento)}</span>
+        const item = document.createElement('div');
+        item.className = 'mini-event-item';
+        item.innerHTML = `
+            <div>
+                <div class="mini-event-title">${escapeHtml(evento.titulo)}</div>
+                <small style="color:#6b7280;">${escapeHtml(evento.fecha_formateada)} · ${escapeHtml(evento.nombre_clase)}</small>
+                <p style="margin:4px 0 0; font-size:0.8rem; color:#4b5563;">${escapeHtml(evento.descripcion || '')}</p>
             </div>
-            <div class="event-card-body">
-                <p>${escapeHtml(evento.descripcion || 'Sin descripción')}</p>
-                <div class="event-meta">
-                    <span><i class="fas fa-calendar-day"></i> ${escapeHtml(evento.fecha_formateada)}</span>
-                    <span><i class="fas fa-school"></i> ${escapeHtml(evento.nombre_clase)}</span>
-                </div>
-            </div>
+            <span class="mini-event-type ${(evento.tipo_evento || '').toLowerCase()}">${escapeHtml(evento.tipo_evento || '')}</span>
         `;
-        container.appendChild(card);
+        container.appendChild(item);
     });
 }
 

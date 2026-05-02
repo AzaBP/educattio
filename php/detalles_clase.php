@@ -270,8 +270,8 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
     </div>
 </div>
 
-<script src="../js/calendar-sync.js"></script>
-<script src="../js/mini-calendar.js"></script>
-<script src="../js/detalles_clase.js"></script>
+<script src="../js/calendar-sync.js?v=1.3"></script>
+<script src="../js/mini-calendar.js?v=1.3"></script>
+<script src="../js/detalles_clase.js?v=1.3"></script>
 </body>
 </html>

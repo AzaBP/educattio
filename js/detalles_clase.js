@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function abrirMiniEventoClase() {
+window.abrirMiniEventoClase = function() {
     if (!window.miniCalendarClase) return;
     if (!window.miniCalendarClase.selectedDate) {
         const today = new Date();

@@ -156,12 +156,10 @@ try {
 // 4.3 Eventos próximos (para la clase o asignatura? Usaremos eventos de la clase)
 try {
     $sqlEventos = "SELECT * FROM eventos 
-                   WHERE clase_id = :clase_id 
-                     AND fecha >= NOW() 
-                   ORDER BY fecha ASC 
-                   LIMIT 5";
+                   WHERE asignatura_id = :asignatura_id 
+                   ORDER BY fecha ASC";
     $stmtEventos = $conexion->prepare($sqlEventos);
-    $stmtEventos->execute([':clase_id' => $clase_id]);
+    $stmtEventos->execute([':asignatura_id' => $asignatura_id]);
     $eventos = $stmtEventos->fetchAll(PDO::FETCH_ASSOC);
     $totalEventos = count($eventos);
 } catch (PDOException $e) {
@@ -274,15 +272,13 @@ try {
                         <div class="empty-state" id="eventosEmpty">No hay eventos programados para esta asignatura.</div>
                     <?php else: ?>
                         <?php foreach ($eventos as $evento): ?>
-                            <div class="event-item">
-                                <div class="event-date">
-                                    <span class="event-day"><?= date('d', strtotime($evento['fecha'])) ?></span>
-                                    <span class="event-month"><?= date('M', strtotime($evento['fecha'])) ?></span>
+                            <div class="mini-event-item">
+                                <div>
+                                    <div class="mini-event-title"><?= htmlspecialchars($evento['titulo']) ?></div>
+                                    <small style="color:#6b7280;"><?= date('d/m/Y H:i', strtotime($evento['fecha'])) ?></small>
+                                    <p style="margin:4px 0 0; font-size:0.8rem; color:#4b5563;"><?= htmlspecialchars($evento['descripcion'] ?? '') ?></p>
                                 </div>
-                                <div class="event-info">
-                                    <strong><?= htmlspecialchars($evento['titulo']) ?></strong>
-                                    <p><?= htmlspecialchars($evento['descripcion']) ?></p>
-                                </div>
+                                <span class="mini-event-type <?= strtolower($evento['tipo_evento'] ?? '') ?>"><?= htmlspecialchars($evento['tipo_evento'] ?? '') ?></span>
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
@@ -563,8 +559,8 @@ window.onclick = function(event) {
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../js/calendar-sync.js"></script>
-<script src="../js/mini-calendar.js"></script>
-<script src="../js/detalles_asignatura.js"></script>
+<script src="../js/calendar-sync.js?v=1.3"></script>
+<script src="../js/mini-calendar.js?v=1.3"></script>
+<script src="../js/detalles_asignatura.js?v=1.3"></script>
 </body>
 </html>

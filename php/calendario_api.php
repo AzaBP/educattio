@@ -17,11 +17,11 @@ if ($method === 'GET') {
     $start = $_GET['start'] ?? null;
     $end = $_GET['end'] ?? null;
     
-    $sql = "SELECT e.id, e.titulo, e.descripcion, e.fecha, e.tipo_evento, e.clase_id,
-                   c.nombre_clase, c.materia_principal, cu.id AS curso_id, cu.nombre_centro, cu.anio_academico, cu.poblacion, cu.provincia
+    $sql = "SELECT e.id, e.titulo, e.descripcion, e.fecha, e.tipo_evento, e.clase_id, e.asignatura_id, e.curso_id,
+                   c.nombre_clase, c.materia_principal, cu.nombre_centro, cu.anio_academico, cu.poblacion, cu.provincia
             FROM eventos e
             LEFT JOIN clases c ON e.clase_id = c.id
-            LEFT JOIN cursos cu ON c.curso_id = cu.id
+            LEFT JOIN cursos cu ON (e.curso_id = cu.id OR c.curso_id = cu.id)
             WHERE e.usuario_id = :user_id";
     $params = [':user_id' => $userId];
     
@@ -78,7 +78,7 @@ if ($method === 'POST') {
 
     if (!empty($input['id'])) {
         // Actualizar (admite actualización parcial: solo fecha al arrastrar/resize)
-        $stmtCurrent = $conexion->prepare("SELECT titulo, fecha, tipo_evento, descripcion, clase_id FROM eventos WHERE id = :id AND usuario_id = :user_id");
+        $stmtCurrent = $conexion->prepare("SELECT titulo, fecha, tipo_evento, descripcion, clase_id, asignatura_id FROM eventos WHERE id = :id AND usuario_id = :user_id");
         $stmtCurrent->execute([':id' => $input['id'], ':user_id' => $userId]);
         $current = $stmtCurrent->fetch(PDO::FETCH_ASSOC);
         if (!$current) {
@@ -93,8 +93,9 @@ if ($method === 'POST') {
         $tipo = $input['tipo'] ?? $current['tipo_evento'] ?? 'Reunión';
         $descripcion = array_key_exists('descripcion', $input) ? $input['descripcion'] : ($current['descripcion'] ?? '');
         $claseId = array_key_exists('clase_id', $input) ? $input['clase_id'] : $current['clase_id'];
+        $asignaturaId = array_key_exists('asignatura_id', $input) ? $input['asignatura_id'] : ($current['asignatura_id'] ?? null);
 
-        $sql = "UPDATE eventos SET titulo = :titulo, fecha = :fecha, tipo_evento = :tipo, descripcion = :descripcion, clase_id = :clase_id WHERE id = :id AND usuario_id = :user_id";
+        $sql = "UPDATE eventos SET titulo = :titulo, fecha = :fecha, tipo_evento = :tipo, descripcion = :descripcion, clase_id = :clase_id, asignatura_id = :asignatura_id, curso_id = :curso_id WHERE id = :id AND usuario_id = :user_id";
         $stmt = $conexion->prepare($sql);
         $ok = $stmt->execute([
             ':id' => $input['id'],
@@ -103,6 +104,8 @@ if ($method === 'POST') {
             ':tipo' => $tipo,
             ':descripcion' => $descripcion,
             ':clase_id' => $claseId,
+            ':asignatura_id' => $asignaturaId,
+            ':curso_id' => $input['curso_id'] ?? $current['curso_id'],
             ':user_id' => $userId
         ]);
         header('Content-Type: application/json');
@@ -118,7 +121,7 @@ if ($method === 'POST') {
             exit;
         }
 
-        $sql = "INSERT INTO eventos (usuario_id, titulo, fecha, tipo_evento, descripcion, clase_id) VALUES (:user_id, :titulo, :fecha, :tipo, :descripcion, :clase_id)";
+        $sql = "INSERT INTO eventos (usuario_id, titulo, fecha, tipo_evento, descripcion, clase_id, asignatura_id, curso_id) VALUES (:user_id, :titulo, :fecha, :tipo, :descripcion, :clase_id, :asignatura_id, :curso_id)";
         $stmt = $conexion->prepare($sql);
         $ok = $stmt->execute([
             ':user_id' => $userId,
@@ -126,7 +129,9 @@ if ($method === 'POST') {
             ':fecha' => $fecha,
             ':tipo' => $input['tipo'] ?? 'Reunión',
             ':descripcion' => $input['descripcion'] ?? '',
-            ':clase_id' => $input['clase_id'] ?? null
+            ':clase_id' => $input['clase_id'] ?? null,
+            ':asignatura_id' => $input['asignatura_id'] ?? null,
+            ':curso_id' => $input['curso_id'] ?? null
         ]);
         header('Content-Type: application/json');
         echo json_encode([

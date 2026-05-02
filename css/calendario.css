@@ -296,6 +296,29 @@
     background: #f39c12;
 }
 
+.mini-event-item {
+    transition: transform 0.2s;
+}
+.mini-event-item.selectable-event {
+    cursor: pointer;
+}
+.mini-event-item:hover {
+    transform: translateX(4px);
+}
+.source-badge {
+    font-size: 0.65rem;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: #f1f5f9;
+    color: #64748b;
+    margin-left: 5px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.source-badge.asignatura { background: #e0f2fe; color: #0369a1; }
+.source-badge.clase { background: #f0fdf4; color: #15803d; }
+.source-badge.curso { background: #fefce8; color: #a16207; }
+
 /* === MODAL === */
 .modal-overlay {
     display: none;

@@ -181,3 +181,6 @@ ALTER TABLE usuarios ADD COLUMN foto_perfil VARCHAR(255) DEFAULT NULL;
 
 --para los documentos de las asignaturas
 ALTER TABLE temas_asignatura ADD COLUMN documento VARCHAR(255) NULL;
+
+-- Se ha añadido la columna asignatura_id a la tabla eventos mediante una auto-migración automática en el backend.
+ALTER TABLE eventos ADD COLUMN asignatura_id INT NULL;

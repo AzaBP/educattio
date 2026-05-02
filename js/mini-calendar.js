@@ -1,16 +1,22 @@
 /**
- * Mini Calendar Component
- * Uso: new MiniCalendar(containerElement, options)
+ * MiniCalendar - Componente de mini-calendario reutilizable
+ *
+ * Opciones:
+ *   cursoId      → filtra eventos por curso
+ *   claseId      → filtra eventos por clase
+ *   asignaturaId → filtra eventos por asignatura (resuelve clase internamente)
+ *   onEventCreate, onEventClick, onDateSelect → callbacks
  */
 class MiniCalendar {
     constructor(containerSelector, options = {}) {
-        this.container = typeof containerSelector === 'string' 
-            ? document.querySelector(containerSelector) 
+        this.container = typeof containerSelector === 'string'
+            ? document.querySelector(containerSelector)
             : containerSelector;
-        
+
         this.options = {
             cursoId: null,
             claseId: null,
+            asignaturaId: null,
             onEventClick: null,
             onDateSelect: null,
             onEventCreate: null,
@@ -20,31 +26,26 @@ class MiniCalendar {
         this.currentDate = new Date();
         this.selectedDate = null;
         this.events = [];
-        
+
         this.init();
     }
 
     init() {
         this.render();
         this.loadEvents();
-        this.attachEventListeners();
-        this.setupSyncListener();
-    }
 
-    setupSyncListener() {
+        // Suscribirse a cambios globales si existe calendarSync
         if (window.calendarSync) {
             window.calendarSync.subscribe((data) => {
-                if (
-                    data.type === 'event-created' ||
-                    data.type === 'event-updated' ||
-                    data.type === 'event-deleted' ||
-                    data.type === 'refresh-request'
-                ) {
-                    // Recargar eventos cuando hay cambios
+                if (['event-created', 'event-updated', 'event-deleted', 'refresh-request'].includes(data.type)) {
                     this.loadEvents();
                 }
             });
         }
+
+        // Seleccionar hoy por defecto para mostrar eventos próximos
+        const today = new Date();
+        this.selectedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     }
 
     render() {
@@ -58,29 +59,45 @@ class MiniCalendar {
                         <button class="mini-next" title="Mes siguiente">&gt;</button>
                     </div>
                 </div>
-                
+
                 <div class="mini-calendar-grid">
                     ${this.getDaysOfWeek()}
                     ${this.getDaysOfMonth()}
                 </div>
-                
+
                 <div class="mini-calendar-events">
                     <h4>Eventos del día</h4>
                     <div class="mini-events-list">
                         <div class="mini-event-item no-events">Selecciona una fecha</div>
                     </div>
-                    <button class="btn-save" style="width:100%; margin-top:1rem;" onclick="this.closest('.mini-calendar').miniCalendarObj.openEventModal()">
+                    <button class="btn-save" style="width:100%; margin-top:1rem;" id="mini-add-event-btn">
                         <i class="fas fa-plus"></i> Añadir evento
                     </button>
                 </div>
             </div>
         `;
-        
+
         this.container.innerHTML = html;
         this.container.miniCalendarObj = this;
-        // Make the button work by binding the object to the inner div as well
         const innerDiv = this.container.querySelector('.mini-calendar');
         if (innerDiv) innerDiv.miniCalendarObj = this;
+
+        // Bind the add button after render
+        const addBtn = this.container.querySelector('#mini-add-event-btn');
+        if (addBtn) {
+            addBtn.addEventListener('click', () => this.openEventModal());
+        }
+        
+        this.attachEventListeners();
+        this.updateEventsList();
+    }
+
+    renderGrid() {
+        const grid = this.container.querySelector('.mini-calendar-grid');
+        if (grid) {
+            grid.innerHTML = this.getDaysOfWeek() + this.getDaysOfMonth();
+            this._attachDayClicks();
+        }
     }
 
     getDaysOfWeek() {
@@ -98,14 +115,13 @@ class MiniCalendar {
 
         let html = '';
 
-        // Días del mes anterior
+        // Días del mes anterior (relleno)
         for (let i = startingDayOfWeek - 1; i >= 0; i--) {
             const prevDate = new Date(year, month, -i);
             html += `<div class="mini-calendar-day other-month">${prevDate.getDate()}</div>`;
         }
 
         // Días del mes actual
-        const today = new Date();
         for (let day = 1; day <= daysInMonth; day++) {
             const date = new Date(year, month, day);
             const dateStr = this.formatDate(date);
@@ -118,7 +134,7 @@ class MiniCalendar {
             </div>`;
         }
 
-        // Días del próximo mes
+        // Días del próximo mes (relleno)
         const totalCells = startingDayOfWeek + daysInMonth;
         const remainingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
         for (let day = 1; day <= remainingCells; day++) {
@@ -147,91 +163,144 @@ class MiniCalendar {
     }
 
     eventsOnDate(dateStr) {
-        return this.events.filter(e => e.fecha.split('T')[0] === dateStr);
+        return this.events.filter(e => {
+            if (!e.fecha) return false;
+            // Manejar formatos "YYYY-MM-DD HH:MM:SS" (SQL) o "YYYY-MM-DDTHH:MM:SS" (ISO)
+            const datePart = e.fecha.includes(' ') ? e.fecha.split(' ')[0] : e.fecha.split('T')[0];
+            return datePart === dateStr;
+        });
+    }
+
+    /**
+     * Construye la URL del endpoint unificado según los filtros disponibles.
+     */
+    buildEventsUrl() {
+        // Detectar si estamos en /php/ o en la raíz para usar rutas relativas correctas
+        const base = window.location.pathname.includes('/php/') ? 'api_eventos.php' : 'php/api_eventos.php';
+        const params = new URLSearchParams();
+
+        if (this.options.asignaturaId) {
+            params.set('asignatura_id', this.options.asignaturaId);
+        } else if (this.options.claseId) {
+            params.set('clase_id', this.options.claseId);
+        } else if (this.options.cursoId) {
+            params.set('curso_id', this.options.cursoId);
+        }
+        // Sin parámetros → todos los eventos del usuario
+
+        return `${base}?${params.toString()}`;
     }
 
     loadEvents() {
-        let url = '../php/calendar_widget.php?action=events';
-        if (this.options.cursoId) url += `&curso_id=${this.options.cursoId}`;
-        if (this.options.claseId) url += `&clase_id=${this.options.claseId}`;
+        const url = this.buildEventsUrl();
 
         fetch(url)
             .then(res => res.json())
             .then(data => {
                 if (data.status === 'success') {
                     this.events = data.events || [];
+                    this.renderGrid();
                     this.updateEventsList();
                 }
             })
-            .catch(e => console.error('Error cargando eventos:', e));
+            .catch(e => console.error('MiniCalendar: Error cargando eventos:', e));
     }
 
     updateEventsList() {
         if (!this.selectedDate) return;
-        
+
         const dayEvents = this.eventsOnDate(this.selectedDate);
         const listEl = this.container.querySelector('.mini-events-list');
-        
+        if (!listEl) return;
+
         if (dayEvents.length === 0) {
-            listEl.innerHTML = '<div class="mini-event-item no-events">Sin eventos</div>';
+            listEl.innerHTML = '<div class="mini-event-item no-events">Sin eventos para este día</div>';
         } else {
-            listEl.innerHTML = dayEvents.map(e => `
-                <div class="mini-event-item">
-                    <div>
-                        <div class="mini-event-title">${e.titulo}</div>
-                        <small style="color:#6b7280;">${new Date(e.fecha).toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'})}</small>
+            listEl.innerHTML = dayEvents.map(e => {
+                const hora = e.fecha && e.fecha.includes(' ')
+                    ? e.fecha.split(' ')[1].substring(0, 5)
+                    : '';
+                
+                // Mostrar de dónde viene el evento
+                let sourceHtml = '';
+                if (e.source_name) {
+                    const badgeClass = (e.source_type || 'General').toLowerCase();
+                    sourceHtml = `<span class="source-badge ${badgeClass}">${this._esc(e.source_name)}</span>`;
+                }
+
+                return `
+                    <div class="mini-event-item selectable-event" data-id="${e.id}">
+                        <div style="flex-grow: 1;">
+                            <div class="mini-event-title">${this._esc(e.titulo)}</div>
+                            <small style="color:#6b7280; display:block; margin-top:2px;">
+                                ${hora ? '<i class="far fa-clock"></i> ' + hora : ''}
+                                ${sourceHtml}
+                            </small>
+                        </div>
+                        <span class="mini-event-type ${(e.tipo_evento || '').toLowerCase()}">${this._esc(e.tipo_evento || '')}</span>
                     </div>
-                    <span class="mini-event-type ${e.tipo_evento.toLowerCase()}">${e.tipo_evento}</span>
-                </div>
-            `).join('');
+                `;
+            }).join('');
+
+            // Attach clicks to events
+            listEl.querySelectorAll('.selectable-event').forEach(item => {
+                item.addEventListener('click', () => {
+                    const eventId = item.dataset.id;
+                    const event = this.events.find(ev => ev.id == eventId);
+                    if (event) this.openViewModal(event);
+                });
+            });
         }
     }
 
+    _esc(text) {
+        if (!text) return '';
+        return text.toString().replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+    }
+
     attachEventListeners() {
-        // Navegación
-        this.container.querySelector('.mini-prev').addEventListener('click', () => {
+        this.container.querySelector('.mini-prev')?.addEventListener('click', () => {
             this.currentDate.setMonth(this.currentDate.getMonth() - 1);
             this.render();
-            this.attachEventListeners();
             this.loadEvents();
         });
 
-        this.container.querySelector('.mini-next').addEventListener('click', () => {
+        this.container.querySelector('.mini-next')?.addEventListener('click', () => {
             this.currentDate.setMonth(this.currentDate.getMonth() + 1);
             this.render();
-            this.attachEventListeners();
             this.loadEvents();
         });
 
-        this.container.querySelector('.mini-today').addEventListener('click', () => {
+        this.container.querySelector('.mini-today')?.addEventListener('click', () => {
             this.currentDate = new Date();
             this.render();
-            this.attachEventListeners();
             this.loadEvents();
         });
 
-        // Seleccionar día
+        this._attachDayClicks();
+    }
+
+    _attachDayClicks() {
         this.container.querySelectorAll('.mini-calendar-day:not(.other-month)').forEach(dayEl => {
             dayEl.addEventListener('click', () => {
                 const date = dayEl.dataset.date;
+                if (!date) return;
                 this.selectedDate = date;
                 this.container.querySelectorAll('.mini-calendar-day').forEach(d => d.classList.remove('selected'));
                 dayEl.classList.add('selected');
                 this.updateEventsList();
-                if (this.options.onDateSelect) {
-                    this.options.onDateSelect(date);
-                }
+                if (this.options.onDateSelect) this.options.onDateSelect(date);
             });
         });
     }
 
     openEventModal() {
         if (!this.selectedDate) {
-            alert('Selecciona una fecha primero');
-            return;
+            // Seleccionar hoy automáticamente si no hay fecha seleccionada
+            const today = new Date();
+            this.selectedDate = this.formatDate(today);
         }
-        
-        // Buscar o crear modal en la página
+
         let modal = document.getElementById('miniEventModal');
         if (!modal) {
             modal = document.createElement('div');
@@ -241,57 +310,63 @@ class MiniCalendar {
         }
 
         modal.innerHTML = `
-            <div class="modal-window">
+            <div class="modal-window" style="max-width:480px;">
                 <div class="modal-header">
-                    <h3>Nuevo Evento - ${this.selectedDate}</h3>
-                    <button class="close-btn" onclick="document.getElementById('miniEventModal').classList.remove('active')">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    <h3><i class="fas fa-calendar-plus" style="color:#3b82f6;margin-right:8px;"></i>Nuevo Evento · ${this.selectedDate}</h3>
+                    <button class="close-btn" id="miniEventModalCloseBtn"><i class="fas fa-times"></i></button>
                 </div>
                 <form id="miniEventForm">
                     <div class="form-group">
-                        <label>Título</label>
-                        <input type="text" class="form-control" name="titulo" required>
+                        <label>Título *</label>
+                        <input type="text" class="form-control" name="titulo" placeholder="Ej: Examen Tema 3" required autofocus>
                     </div>
                     <div class="form-group">
                         <label>Tipo</label>
                         <select class="form-control" name="tipo">
-                            <option value="Examen">Examen</option>
-                            <option value="Festivo">Festivo</option>
-                            <option value="Excursión">Excursión</option>
-                            <option value="Reunión">Reunión</option>
+                            <option value="Examen">📝 Examen</option>
+                            <option value="Festivo">🎉 Festivo</option>
+                            <option value="Excursión">🚌 Excursión</option>
+                            <option value="Reunión">👥 Reunión</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Descripción</label>
-                        <textarea class="form-control" name="descripcion" rows="3"></textarea>
+                        <textarea class="form-control" name="descripcion" rows="2" placeholder="Opcional..."></textarea>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn-cancel" onclick="document.getElementById('miniEventModal').classList.remove('active')">Cancelar</button>
-                        <button type="submit" class="btn-save">Guardar</button>
+                        <button type="button" class="btn-cancel" id="miniEventModalCancelBtn">Cancelar</button>
+                        <button type="submit" class="btn-save">Guardar evento</button>
                     </div>
                 </form>
             </div>
         `;
 
-        modal.classList.add('active');
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.classList.remove('active');
-        });
+        modal.style.display = 'flex';
 
-        document.getElementById('miniEventForm').addEventListener('submit', (e) => {
+        const closeModal = () => { modal.style.display = 'none'; };
+        modal.querySelector('#miniEventModalCloseBtn').onclick  = closeModal;
+        modal.querySelector('#miniEventModalCancelBtn').onclick = closeModal;
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+        modal.querySelector('#miniEventForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const formData = new FormData(document.getElementById('miniEventForm'));
+            const formData = new FormData(modal.querySelector('#miniEventForm'));
             const payload = {
-                titulo: formData.get('titulo'),
-                fecha: this.selectedDate + 'T12:00:00',
-                tipo: formData.get('tipo'),
+                id:          formData.get('id') || null,
+                titulo:      formData.get('titulo'),
+                fecha:       this.selectedDate + 'T12:00:00',
+                tipo:        formData.get('tipo'),
                 descripcion: formData.get('descripcion'),
-                clase_id: this.options.claseId || null,
-                curso_id: this.options.cursoId || null
+                clase_id:    this.options.claseId       || null,
+                curso_id:    this.options.cursoId       || null,
+                asignatura_id: this.options.asignaturaId || null
             };
 
-            fetch('../php/calendario_api.php', {
+            const apiUrl = window.location.pathname.includes('/php/')
+                ? 'calendario_api.php'
+                : 'php/calendario_api.php';
+
+            fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -299,35 +374,149 @@ class MiniCalendar {
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    modal.classList.remove('active');
+                    closeModal();
                     this.loadEvents();
-                    this.updateEventsList();
-                    
-                    // Notificar a otros calendarios
+
                     if (window.calendarSync) {
-                        window.calendarSync.notifyEventCreated({
-                            ...payload,
-                            id: data.id
-                        });
+                        window.calendarSync.notifyEventCreated({ ...payload, id: data.id });
                     }
-                    
-                    // Actualizar calendario principal si existe
                     if (window.appCalendar) window.appCalendar.refetchEvents();
                     if (window.detallesCursoCalendar) window.detallesCursoCalendar.refetchEvents();
-                    
-                    if (this.options.onEventCreate) {
-                        this.options.onEventCreate(data);
-                    }
-                } else {
-                    alert(data.message || 'Error al guardar el evento');
+
+                    if (this.options.onEventCreate) this.options.onEventCreate(data);
                 }
             })
-            .catch(() => {
-                alert('Error de red al guardar el evento');
-            });
+            .catch(() => alert('Error de red al guardar el evento'));
         });
+    }
+
+    openViewModal(event) {
+        let modal = document.getElementById('miniViewEventModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'miniViewEventModal';
+            modal.className = 'modal-overlay';
+            document.body.appendChild(modal);
+        }
+
+        const hora = event.fecha && event.fecha.includes(' ') ? event.fecha.split(' ')[1].substring(0, 5) : '';
+
+        modal.innerHTML = `
+            <div class="modal-window" style="max-width:480px;">
+                <div class="modal-header">
+                    <h3><i class="fas fa-info-circle" style="color:#3b82f6;margin-right:8px;"></i>Detalles del Evento</h3>
+                    <button class="close-btn" id="miniViewModalCloseBtn"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="event-view-content" style="padding: 10px 0;">
+                    <div style="margin-bottom:15px;">
+                        <label style="font-weight:700; color:#4b5563; font-size:0.8rem; text-transform:uppercase;">Título</label>
+                        <div style="font-size:1.1rem; font-weight:600; color:#111827;">${this._esc(event.titulo)}</div>
+                    </div>
+                    <div style="display:flex; gap:20px; margin-bottom:15px;">
+                        <div>
+                            <label style="font-weight:700; color:#4b5563; font-size:0.8rem; text-transform:uppercase;">Fecha</label>
+                            <div>${this._esc(this.formatDate(new Date(event.fecha)))}</div>
+                        </div>
+                        ${hora ? `<div>
+                            <label style="font-weight:700; color:#4b5563; font-size:0.8rem; text-transform:uppercase;">Hora</label>
+                            <div>${this._esc(hora)}</div>
+                        </div>` : ''}
+                    </div>
+                    <div style="margin-bottom:15px;">
+                        <label style="font-weight:700; color:#4b5563; font-size:0.8rem; text-transform:uppercase;">Origen</label>
+                        <div>
+                            <span class="source-badge ${(event.source_type || 'General').toLowerCase()}">${this._esc(event.source_name || 'General')}</span>
+                            <small style="color:#6b7280; margin-left:5px;">(${this._esc(event.source_type || 'General')})</small>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:15px;">
+                        <label style="font-weight:700; color:#4b5563; font-size:0.8rem; text-transform:uppercase;">Tipo</label>
+                        <div><span class="mini-event-type ${(event.tipo_evento || '').toLowerCase()}">${this._esc(event.tipo_evento || 'Reunión')}</span></div>
+                    </div>
+                    <div style="margin-bottom:15px;">
+                        <label style="font-weight:700; color:#4b5563; font-size:0.8rem; text-transform:uppercase;">Descripción</label>
+                        <div style="background:#f9fafc; padding:10px; border-radius:8px; font-size:0.9rem; color:#4b5563; min-height:40px; white-space: pre-wrap;">${this._esc(event.descripcion || 'Sin descripción')}</div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="margin-top:20px; gap:10px;">
+                    <button class="btn-cancel btn-delete" id="miniViewModalDeleteBtn" style="flex:none; width:auto; padding: 0 15px; background: #fee2e2; border-color: #fecaca; color: #dc2626;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <div style="flex-grow:1;"></div>
+                    <button class="btn-cancel" id="miniViewModalEditBtn">Modificar</button>
+                    <button class="btn-save" id="miniViewModalCloseBtnBottom">Cerrar</button>
+                </div>
+            </div>
+        `;
+
+        modal.style.display = 'flex';
+
+        const closeModal = () => { modal.style.display = 'none'; };
+        modal.querySelector('#miniViewModalCloseBtn').onclick = closeModal;
+        modal.querySelector('#miniViewModalCloseBtnBottom').onclick = closeModal;
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+        // Botón Eliminar
+        modal.querySelector('#miniViewModalDeleteBtn').onclick = () => {
+            this.deleteEvent(event.id);
+            closeModal();
+        };
+
+        // Botón Editar
+        modal.querySelector('#miniViewModalEditBtn').onclick = () => {
+            closeModal();
+            this.openEditModal(event);
+        };
+    }
+
+    openEditModal(event) {
+        this.openEventModal();
+        const modal = document.getElementById('miniEventModal');
+        if (!modal) return;
+
+        modal.querySelector('h3').innerHTML = `<i class="fas fa-edit" style="color:#3b82f6;margin-right:8px;"></i>Modificar Evento`;
+        const form = modal.querySelector('#miniEventForm');
+        form.querySelector('[name="titulo"]').value = event.titulo;
+        form.querySelector('[name="tipo"]').value = event.tipo_evento;
+        form.querySelector('[name="descripcion"]').value = event.descripcion || '';
+        
+        let idInput = form.querySelector('[name="id"]');
+        if (!idInput) {
+            idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'id';
+            form.appendChild(idInput);
+        }
+        idInput.value = event.id;
+    }
+
+    deleteEvent(eventId) {
+        if (!confirm('¿Estás seguro de que deseas eliminar este evento?')) return;
+
+        const apiUrl = window.location.pathname.includes('/php/')
+            ? 'calendario_api.php'
+            : 'php/calendario_api.php';
+
+        fetch(apiUrl, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: eventId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                this.loadEvents();
+                if (window.calendarSync) {
+                    window.calendarSync.notifyEventDeleted(eventId);
+                }
+                if (window.appCalendar) window.appCalendar.refetchEvents();
+            } else {
+                alert('Error al eliminar el evento');
+            }
+        })
+        .catch(() => alert('Error de red al eliminar el evento'));
     }
 }
 
-// Exponer el componente en global para poder inicializarlo desde otras vistas
+// Exponer globalmente
 window.MiniCalendar = MiniCalendar;
