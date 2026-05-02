@@ -75,10 +75,15 @@ $nombre_usuario = $_SESSION['nombre_usuario'];
                 </select>
             </div>
             <div class="form-group">
-                <label>Clase (opcional, si es específica de una clase)</label>
+                <label>Clase (opcional)</label>
                 <select id="eventClass" class="form-control">
                     <option value="">General (todas las clases)</option>
-                    <!-- Aquí cargar las clases del usuario via AJAX -->
+                </select>
+            </div>
+            <div class="form-group" id="eventAsigContainer" style="display:none;">
+                <label>Asignatura (opcional)</label>
+                <select id="eventAsignatura" class="form-control">
+                    <option value="">Toda la clase</option>
                 </select>
             </div>
             <div class="form-group">

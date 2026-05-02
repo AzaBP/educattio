@@ -221,23 +221,27 @@ class MiniCalendar {
                     ? e.fecha.split(' ')[1].substring(0, 5)
                     : '';
                 
-                // Mostrar de dónde viene el evento
+                // Mostrar de dónde viene el evento (Migas de pan)
+                let breadcrumbParts = [];
+                if (e.nombre_centro) breadcrumbParts.push(e.nombre_centro);
+                if (e.nombre_clase) breadcrumbParts.push(e.nombre_clase);
+                if (e.nombre_asignatura) breadcrumbParts.push(e.nombre_asignatura);
+                
                 let sourceHtml = '';
-                if (e.source_name) {
-                    const badgeClass = (e.source_type || 'General').toLowerCase();
-                    sourceHtml = `<span class="source-badge ${badgeClass}">${this._esc(e.source_name)}</span>`;
+                if (breadcrumbParts.length > 0) {
+                    const breadcrumbText = breadcrumbParts.join(' <i class="fas fa-chevron-right" style="font-size:0.6rem;opacity:0.5;margin:0 2px;"></i> ');
+                    sourceHtml = `<span class="source-breadcrumb">${breadcrumbText}</span>`;
                 }
 
                 return `
                     <div class="mini-event-item selectable-event" data-id="${e.id}">
                         <div style="flex-grow: 1;">
                             <div class="mini-event-title">${this._esc(e.titulo)}</div>
-                            <small style="color:#6b7280; display:block; margin-top:2px;">
-                                ${hora ? '<i class="far fa-clock"></i> ' + hora : ''}
+                            <small style="color:#6b7280; display:block; margin-top:2px; font-size:0.75rem;">
+                                ${hora ? '<i class="far fa-clock"></i> ' + hora + ' · ' : ''}
                                 ${sourceHtml}
                             </small>
                         </div>
-                        <span class="mini-event-type ${(e.tipo_evento || '').toLowerCase()}">${this._esc(e.tipo_evento || '')}</span>
                     </div>
                 `;
             }).join('');
@@ -320,6 +324,21 @@ class MiniCalendar {
                         <label>Título *</label>
                         <input type="text" class="form-control" name="titulo" placeholder="Ej: Examen Tema 3" required autofocus>
                     </div>
+                    
+                    <div id="miniMetadataSelectors">
+                        <div class="form-group">
+                            <label>Clase</label>
+                            <select class="form-control" name="clase_id" id="miniEventClaseSelect">
+                                <option value="">General (Personal)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="miniEventAsigContainer" style="display:none;">
+                            <label>Asignatura</label>
+                            <select class="form-control" name="asignatura_id" id="miniEventAsigSelect">
+                                <option value="">Toda la clase</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label>Tipo</label>
                         <select class="form-control" name="tipo">
@@ -348,18 +367,27 @@ class MiniCalendar {
         modal.querySelector('#miniEventModalCancelBtn').onclick = closeModal;
         modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
+        // Cargar metadatos si no estamos en un contexto fijo
+        const metadataSelectors = modal.querySelector('#miniMetadataSelectors');
+        if (this.options.claseId || this.options.asignaturaId) {
+            metadataSelectors.style.display = 'none';
+        } else {
+            this._loadMetadata(modal);
+        }
+
         modal.querySelector('#miniEventForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const formData = new FormData(modal.querySelector('#miniEventForm'));
+            const selectedOpt = modal.querySelector('#miniEventClaseSelect')?.selectedOptions[0];
             const payload = {
                 id:          formData.get('id') || null,
                 titulo:      formData.get('titulo'),
                 fecha:       this.selectedDate + 'T12:00:00',
                 tipo:        formData.get('tipo'),
                 descripcion: formData.get('descripcion'),
-                clase_id:    this.options.claseId       || null,
-                curso_id:    this.options.cursoId       || null,
-                asignatura_id: this.options.asignaturaId || null
+                clase_id:    this.options.claseId       || formData.get('clase_id') || null,
+                curso_id:    this.options.cursoId       || (selectedOpt ? selectedOpt.dataset.cursoId : null),
+                asignatura_id: this.options.asignaturaId || formData.get('asignatura_id') || null
             };
 
             const apiUrl = window.location.pathname.includes('/php/')
@@ -424,9 +452,10 @@ class MiniCalendar {
                     </div>
                     <div style="margin-bottom:15px;">
                         <label style="font-weight:700; color:#4b5563; font-size:0.8rem; text-transform:uppercase;">Origen</label>
-                        <div>
-                            <span class="source-badge ${(event.source_type || 'General').toLowerCase()}">${this._esc(event.source_name || 'General')}</span>
-                            <small style="color:#6b7280; margin-left:5px;">(${this._esc(event.source_type || 'General')})</small>
+                        <div style="font-size:0.9rem;">
+                            ${event.nombre_centro ? `${this._esc(event.nombre_centro)}` : ''}
+                            ${event.nombre_clase ? ` <i class="fas fa-chevron-right" style="font-size:0.65rem;opacity:0.5;"></i> ${this._esc(event.nombre_clase)}` : ''}
+                            ${event.nombre_asignatura ? ` <i class="fas fa-chevron-right" style="font-size:0.65rem;opacity:0.5;"></i> ${this._esc(event.nombre_asignatura)}` : ''}
                         </div>
                     </div>
                     <div style="margin-bottom:15px;">
@@ -515,6 +544,50 @@ class MiniCalendar {
             }
         })
         .catch(() => alert('Error de red al eliminar el evento'));
+    }
+
+    _loadMetadata(modal) {
+        const claseSelect = modal.querySelector('#miniEventClaseSelect');
+        const asigSelect = modal.querySelector('#miniEventAsigSelect');
+        const asigContainer = modal.querySelector('#miniEventAsigContainer');
+        const base = window.location.pathname.includes('/php/') ? 'obtener_metadatos_evento.php' : 'php/obtener_metadatos_evento.php';
+
+        fetch(`${base}?type=all`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    data.clases.forEach(clase => {
+                        const opt = document.createElement('option');
+                        opt.value = clase.id;
+                        opt.dataset.cursoId = clase.curso_id;
+                        opt.textContent = `${clase.nombre_centro} - ${clase.nombre_clase}`;
+                        claseSelect.appendChild(opt);
+                    });
+
+                    this._allAsignaturas = data.asignaturas;
+
+                    claseSelect.onchange = () => {
+                        const selectedClase = claseSelect.value;
+                        asigSelect.innerHTML = '<option value="">Toda la clase</option>';
+                        if (selectedClase) {
+                            const filtered = this._allAsignaturas.filter(a => a.clase_id == selectedClase);
+                            if (filtered.length > 0) {
+                                filtered.forEach(a => {
+                                    const opt = document.createElement('option');
+                                    opt.value = a.id;
+                                    opt.textContent = a.nombre_asignatura;
+                                    asigSelect.appendChild(opt);
+                                });
+                                asigContainer.style.display = 'block';
+                            } else {
+                                asigContainer.style.display = 'none';
+                            }
+                        } else {
+                            asigContainer.style.display = 'none';
+                        }
+                    };
+                }
+            });
     }
 }
 

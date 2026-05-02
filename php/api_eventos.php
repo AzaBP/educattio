@@ -111,7 +111,9 @@ try {
             'clase_id'       => $ev['clase_id'],
             'asignatura_id'  => $ev['asignatura_id'],
             'curso_id'       => $ev['curso_id'],
-            'nombre_clase'   => $ev['nombre_clase'] ?? 'General',
+            'nombre_clase'   => $ev['nombre_clase'],
+            'nombre_asignatura' => $ev['nombre_asignatura'],
+            'nombre_centro'  => $ev['nombre_centro'],
             'source_type'    => $sourceType,
             'source_name'    => $sourceName
         ];

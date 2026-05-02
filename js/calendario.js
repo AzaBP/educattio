@@ -64,6 +64,13 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('eventDesc').value = event.extendedProps.description || '';
             if (event.extendedProps.clase_id) {
                 document.getElementById('eventClass').value = event.extendedProps.clase_id;
+                // Disparar cambio para cargar asignaturas
+                document.getElementById('eventClass').dispatchEvent(new Event('change'));
+                if (event.extendedProps.asignatura_id) {
+                    setTimeout(() => {
+                        document.getElementById('eventAsignatura').value = event.extendedProps.asignatura_id;
+                    }, 300);
+                }
             }
         } else {
             modalTitle.innerText = 'Nuevo Evento';
@@ -111,8 +118,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const tipo = document.getElementById('eventType').value;
         const desc = document.getElementById('eventDesc').value;
         const clase_id = document.getElementById('eventClass').value || null;
+        const asignatura_id = document.getElementById('eventAsignatura').value || null;
         
-        const payload = { id: id || undefined, titulo, fecha, tipo, descripcion: desc, clase_id };
+        const payload = { id: id || undefined, titulo, fecha, tipo, descripcion: desc, clase_id, asignatura_id };
         fetch('../php/calendario_api.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -161,18 +169,42 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Cargar clases del usuario
-    fetch('../php/controllers/get_clases.php')
+    // Cargar clases del usuario y configurar dependencias
+    fetch('../php/obtener_metadatos_evento.php?type=all')
         .then(res => res.json())
         .then(data => {
-            if (data.status === 'success' && data.clases) {
-                const select = document.getElementById('eventClass');
+            if (data.success) {
+                const classSelect = document.getElementById('eventClass');
+                const asigSelect = document.getElementById('eventAsignatura');
+                const asigContainer = document.getElementById('eventAsigContainer');
+
                 data.clases.forEach(clase => {
                     const opt = document.createElement('option');
                     opt.value = clase.id;
-                    opt.textContent = clase.nombre_clase + ' - ' + clase.materia_principal;
-                    select.appendChild(opt);
+                    opt.textContent = `${clase.nombre_centro} - ${clase.nombre_clase}`;
+                    classSelect.appendChild(opt);
                 });
+
+                classSelect.onchange = () => {
+                    const selectedClase = classSelect.value;
+                    asigSelect.innerHTML = '<option value="">Toda la clase</option>';
+                    if (selectedClase) {
+                        const filtered = data.asignaturas.filter(a => a.clase_id == selectedClase);
+                        if (filtered.length > 0) {
+                            filtered.forEach(a => {
+                                const opt = document.createElement('option');
+                                opt.value = a.id;
+                                opt.textContent = a.nombre_asignatura;
+                                asigSelect.appendChild(opt);
+                            });
+                            asigContainer.style.display = 'block';
+                        } else {
+                            asigContainer.style.display = 'none';
+                        }
+                    } else {
+                        asigContainer.style.display = 'none';
+                    }
+                };
             }
         });
     
