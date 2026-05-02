@@ -3,9 +3,100 @@
 .calendar-container {
     background: white;
     border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    margin-bottom: 2rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+.calendar-layout-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.calendar-side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.side-panel-card {
+    background: white;
+    border-radius: 18px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+}
+
+.side-panel-card h3 {
+    font-size: 1rem;
+    color: #1f2937;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Filtros */
+.filter-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.filter-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #4b5563;
+    cursor: pointer;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+.dot.examen { background: #e74c3c; }
+.dot.festivo { background: #3498db; }
+.dot.excursion { background: #2ecc71; }
+.dot.reunion { background: #f39c12; }
+
+/* Lista de próximos */
+.upcoming-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.upcoming-item {
+    padding: 0.75rem;
+    border-radius: 10px;
+    background: #f8fafc;
+    border-left: 4px solid #cbd5e1;
+    transition: transform 0.2s;
+}
+
+.upcoming-item:hover {
+    transform: translateX(4px);
+    background: #f1f5f9;
+}
+
+.upcoming-item.examen { border-left-color: #e74c3c; }
+.upcoming-item.festivo { border-left-color: #3498db; }
+.upcoming-item.excursion { border-left-color: #2ecc71; }
+.upcoming-item.reunion { border-left-color: #f39c12; }
+
+.upcoming-title {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #111827;
+}
+
+.upcoming-date {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 2px;
 }
 
 /* FullCalendar Customization */

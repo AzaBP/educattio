@@ -16,7 +16,11 @@ document.addEventListener('DOMContentLoaded', function() {
         events: function(fetchInfo, successCallback, failureCallback) {
             fetch(`../php/calendario_api.php?start=${fetchInfo.startStr}&end=${fetchInfo.endStr}`)
                 .then(response => response.json())
-                .then(data => successCallback(data))
+                .then(data => {
+                    const activeTypes = Array.from(document.querySelectorAll('.filter-item input:checked')).map(i => i.dataset.type);
+                    const filtered = data.filter(e => activeTypes.includes(e.tipo));
+                    successCallback(filtered);
+                })
                 .catch(error => failureCallback(error));
         },
         eventClick: function(info) {
@@ -34,6 +38,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     calendar.render();
     window.appCalendar = calendar;
+    
+    // Cargar lista inicial
+    updateUpcomingList();
+
+    // Filtros
+    document.querySelectorAll('.filter-item input').forEach(input => {
+        input.addEventListener('change', () => {
+            calendar.refetchEvents();
+        });
+    });
 
     // Configurar escucha de cambios en otros calendarios
     if (window.calendarSync) {
@@ -45,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 data.type === 'refresh-request'
             ) {
                 calendar.refetchEvents();
+                updateUpcomingList();
             }
         });
     }
@@ -131,6 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 window.appCalendar.refetchEvents();
                 closeModal();
+                updateUpcomingList();
                 
                 // Notificar sincronización
                 if (window.calendarSync) {
@@ -163,6 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.appCalendar.refetchEvents();
                 return;
             }
+            updateUpcomingList();
             if (window.calendarSync) {
                 window.calendarSync.notifyEventUpdated(eventId, { fecha: dateStr });
             }
@@ -212,4 +229,40 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('eventModal').addEventListener('click', function(e) {
         if (e.target === this) closeModal();
     });
+
+    function updateUpcomingList() {
+        const listContainer = document.getElementById('upcomingEventsList');
+        if (!listContainer) return;
+
+        fetch('../php/api_eventos.php')
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success' && data.events) {
+                    const now = new Date();
+                    const upcoming = data.events
+                        .filter(e => {
+                            const d = e.fecha.includes('T') ? e.fecha : e.fecha.replace(' ', 'T');
+                            return new Date(d) >= now;
+                        })
+                        .slice(0, 5);
+
+                    if (upcoming.length === 0) {
+                        listContainer.innerHTML = '<p style="color:#94a3b8; font-size:0.8rem; text-align:center; padding: 1rem;">No hay eventos próximos</p>';
+                        return;
+                    }
+
+                    listContainer.innerHTML = upcoming.map(e => `
+                        <div class="upcoming-item ${(e.tipo_evento || '').toLowerCase()}">
+                            <div class="upcoming-title">${e.titulo}</div>
+                            <div class="upcoming-date">
+                                <i class="far fa-calendar"></i> ${e.fecha_formateada}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            })
+            .catch(() => {
+                listContainer.innerHTML = '<p style="color:red; font-size:0.8rem;">Error al cargar eventos</p>';
+            });
+    }
 });

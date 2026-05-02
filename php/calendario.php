@@ -42,8 +42,31 @@ $nombre_usuario = $_SESSION['nombre_usuario'];
             <p>Gestiona tus eventos: exámenes, festivos, excursiones, reuniones.</p>
         </header>
         
-        <div class="calendar-container">
-            <div id="calendar"></div>
+        <div class="calendar-layout-grid">
+            <div class="calendar-main-area">
+                <div class="calendar-container">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+            
+            <aside class="calendar-side-panel">
+                <div class="side-panel-card">
+                    <h3><i class="fas fa-filter"></i> Filtros Rápidos</h3>
+                    <div class="filter-list">
+                        <label class="filter-item"><input type="checkbox" checked data-type="Examen"> <span class="dot examen"></span> Exámenes</label>
+                        <label class="filter-item"><input type="checkbox" checked data-type="Festivo"> <span class="dot festivo"></span> Festivos</label>
+                        <label class="filter-item"><input type="checkbox" checked data-type="Excursión"> <span class="dot excursion"></span> Excursiones</label>
+                        <label class="filter-item"><input type="checkbox" checked data-type="Reunión"> <span class="dot reunion"></span> Reuniones</label>
+                    </div>
+                </div>
+
+                <div class="side-panel-card">
+                    <h3><i class="fas fa-bolt"></i> Próximos Eventos</h3>
+                    <div id="upcomingEventsList" class="upcoming-list">
+                        <p class="loading-text">Cargando...</p>
+                    </div>
+                </div>
+            </aside>
         </div>
     </main>
 </div>

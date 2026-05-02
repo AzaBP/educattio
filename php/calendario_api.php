@@ -78,7 +78,7 @@ if ($method === 'POST') {
 
     if (!empty($input['id'])) {
         // Actualizar (admite actualización parcial: solo fecha al arrastrar/resize)
-        $stmtCurrent = $conexion->prepare("SELECT titulo, fecha, tipo_evento, descripcion, clase_id, asignatura_id FROM eventos WHERE id = :id AND usuario_id = :user_id");
+        $stmtCurrent = $conexion->prepare("SELECT titulo, fecha, tipo_evento, descripcion, clase_id, asignatura_id, curso_id FROM eventos WHERE id = :id AND usuario_id = :user_id");
         $stmtCurrent->execute([':id' => $input['id'], ':user_id' => $userId]);
         $current = $stmtCurrent->fetch(PDO::FETCH_ASSOC);
         if (!$current) {
