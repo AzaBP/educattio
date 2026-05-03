@@ -36,11 +36,6 @@ try {
                         <h1 class="course-title-animate">Registro de Incidencias</h1>
                         <p class="text-white-50 m-0">Gestiona y exporta reportes detallados sobre el centro, clases y alumnos.</p>
                     </div>
-                    <div class="header-right">
-                        <div class="header-badges-row">
-                            <span class="modern-badge"><i class="fas fa-file-invoice"></i> Reportes oficiales</span>
-                            <span class="modern-badge"><i class="fas fa-shield-alt"></i> Registro seguro</span>
-                        </div>
                     </div>
                 </div>
             </header>
