@@ -58,49 +58,6 @@ $numEvaluaciones = $stmtEval->fetchColumn();
     <link rel="stylesheet" href="../css/calendario.css?v=1.7">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .menu-dots {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .menu-dots:hover { background: rgba(255, 255, 255, 0.3); transform: scale(1.1); }
-        
-        .dropdown-menu-aislado {
-            position: absolute;
-            top: 40px;
-            right: 0;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            width: 160px;
-            display: none;
-            flex-direction: column;
-            overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.05);
-            z-index: 1000;
-        }
-        .dropdown-menu-aislado.show { display: flex; }
-        .dropdown-menu-aislado a {
-            padding: 12px 16px;
-            font-size: 0.9rem;
-            color: #374151;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: background 0.2s;
-        }
-        .dropdown-menu-aislado a:hover { background: #f9fafb; color: #3b82f6; }
-        .dropdown-menu-aislado a.delete { color: #ef4444; }
-        .dropdown-menu-aislado a.delete:hover { background: #fef2f2; }
     </style>
 </head>
 <body>
@@ -122,7 +79,7 @@ $numEvaluaciones = $stmtEval->fetchColumn();
                         </div>
                     </div>
                     <div class="header-right">
-                        <button class="settings-glass-btn" onclick="openAjustesModal()">
+                        <button class="settings-glass-btn" onclick="new bootstrap.Modal(document.getElementById('modalAjustesCurso')).show()">
                             <i class="fas fa-sliders-h"></i> Ajustes del Curso
                         </button>
                     </div>
@@ -145,13 +102,6 @@ $numEvaluaciones = $stmtEval->fetchColumn();
                             <div>
                                 <strong><?php echo $numAlumnos; ?> Alumnos</strong>
                                 <span>Total en tus clases</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="icon-box red"><i class="fas fa-tasks"></i></div>
-                            <div>
-                                <strong><?php echo $numEvaluaciones; ?> Evaluaciones</strong>
-                                <span>Programadas este año</span>
                             </div>
                         </li>
                     </ul>
@@ -223,34 +173,78 @@ $numEvaluaciones = $stmtEval->fetchColumn();
     </div>
 
     <!-- MODAL AJUSTES DEL CURSO -->
-    <div id="modalAjustesCurso" class="modal fade" tabindex="-1">
+    <div class="modal fade" id="modalAjustesCurso" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content premium-modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title fw-bold">Ajustes del Curso</h3>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-content" style="background: white; border-radius: 16px; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                <div class="modal-header" style="border-bottom: none; padding: 25px 30px 0 30px; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 class="modal-title fw-bold" style="font-family: 'Georgia', serif; font-size: 1.6rem; color: #1f2937; margin: 0;">Ajustes del Curso</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="actualizar_curso.php" method="POST">
-                    <input type="hidden" name="id" value="<?php echo $curso_id; ?>">
-                    <div class="modal-body p-4">
+
+                <form id="formAjustesCurso">
+                    <input type="hidden" id="ajusteCursoId" value="<?php echo $curso_id; ?>">
+                    
+                    <div class="modal-body" style="padding: 20px 30px;">
                         <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label class="form-label">Nombre del Centro</label>
-                                <input type="text" name="nombre_centro" class="form-control" value="<?php echo htmlspecialchars($curso['nombre_centro']); ?>" required>
+                            <div class="col-12 mb-4">
+                                <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Centro Educativo</label>
+                                <div class="d-flex align-items-center" style="display: flex; align-items: center; border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
+                                    <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                        <i class="fas fa-building" style="color: #6b7280; font-size: 1.1rem;"></i>
+                                    </div>
+                                    <input type="text" id="ajusteNombreCentro" class="form-control" value="<?php echo htmlspecialchars($curso['nombre_centro']); ?>" style="border: none !important; box-shadow: none !important; padding: 0 !important; background: transparent !important; width: 100%; font-size: 0.95rem; outline: none;" required>
+                                </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Año Académico</label>
-                                <input type="text" name="anio_academico" class="form-control" value="<?php echo htmlspecialchars($curso['anio_academico']); ?>" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-4">
+                                <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Población</label>
+                                <div class="d-flex align-items-center" style="display: flex; align-items: center; border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
+                                    <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                        <i class="fas fa-city" style="color: #6b7280; font-size: 1.1rem;"></i>
+                                    </div>
+                                    <input type="text" id="ajustePoblacion" class="form-control" value="<?php echo htmlspecialchars($curso['poblacion'] ?? ''); ?>" style="border: none !important; box-shadow: none !important; padding: 0 !important; background: transparent !important; width: 100%; font-size: 0.95rem; outline: none;" required>
+                                </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Provincia</label>
-                                <input type="text" name="provincia" class="form-control" value="<?php echo htmlspecialchars($curso['provincia']); ?>">
+                            <div class="col-12 col-md-6 mb-4">
+                                <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Provincia</label>
+                                <div class="d-flex align-items-center" style="display: flex; align-items: center; border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
+                                    <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                        <i class="fas fa-map-marker-alt" style="color: #6b7280; font-size: 1.1rem;"></i>
+                                    </div>
+                                    <input type="text" id="ajusteProvincia" class="form-control" value="<?php echo htmlspecialchars($curso['provincia'] ?? ''); ?>" style="border: none !important; box-shadow: none !important; padding: 0 !important; background: transparent !important; width: 100%; font-size: 0.95rem; outline: none;" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-4">
+                                <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Año Lectivo</label>
+                                <div class="d-flex align-items-center" style="display: flex; align-items: center; border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
+                                    <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                        <i class="far fa-calendar-alt" style="color: #6b7280; font-size: 1.1rem;"></i>
+                                    </div>
+                                    <input type="text" id="ajusteAnio" class="form-control" value="<?php echo htmlspecialchars($curso['anio_academico']); ?>" style="border: none !important; box-shadow: none !important; padding: 0 !important; background: transparent !important; width: 100%; font-size: 0.95rem; outline: none;" required>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 mb-4">
+                                <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 12px; display: block;">Color Distintivo</label>
+                                <div class="d-flex flex-wrap align-items-center gap-2" style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;">
+                                    <div class="color-dot-ajuste" data-color="#ff7a59" style="background:#ff7a59; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;"></div>
+                                    <div class="color-dot-ajuste" data-color="#4a90e2" style="background:#4a90e2; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;"></div>
+                                    <div class="color-dot-ajuste" data-color="#47b39d" style="background:#47b39d; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;"></div>
+                                    <div class="color-dot-ajuste" data-color="#ffc107" style="background:#ffc107; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;"></div>
+                                    <div style="width: 1px; height: 24px; background: #d1d5db; margin: 0 8px;"></div>
+                                    <input type="color" id="ajusteColor" value="<?php echo htmlspecialchars($curso['color'] ?? '#ff7a59'); ?>" style="width: 38px; height: 38px; padding: 0; border: none; background: transparent; cursor: pointer;">
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+
+                    <div class="modal-footer" style="border-top: none; padding: 0 30px 25px; display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="background-color: #f3f4f6; color: #4b5563; border: none; border-radius: 10px; font-weight: 600; padding: 10px 20px; cursor: pointer;">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" style="background-color: #3b82f6; border: none; border-radius: 10px; color: white; font-weight: 600; padding: 10px 25px; cursor: pointer;">Guardar Cambios</button>
                     </div>
                 </form>
             </div>

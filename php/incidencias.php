@@ -80,6 +80,8 @@ try {
                                 <option value="Conducta">Conducta</option>
                                 <option value="Salud">Salud</option>
                                 <option value="Organización">Organización</option>
+                                <option value="Ausencia">Ausencia</option>
+                                <option value="Retraso">Retraso</option>
                             </select>
                         </div>
                         <div class="mb-3">

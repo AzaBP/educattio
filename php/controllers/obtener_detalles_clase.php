@@ -11,7 +11,7 @@ if (!$clase_id) {
 
 try {
     // 1. Obtener Asignaturas y sus Periodos
-    $sql_asig = "SELECT id, nombre_asignatura FROM asignaturas WHERE clase_id = :id";
+    $sql_asig = "SELECT id, nombre_asignatura, color_asignatura, icono_asignatura FROM asignaturas WHERE clase_id = :id";
     $stmt = $conexion->prepare($sql_asig);
     $stmt->execute([':id' => $clase_id]);
     $asignaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);

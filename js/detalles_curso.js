@@ -43,6 +43,65 @@ function initModalLogic() {
             });
         }
     });
+
+    // Lógica para el selector de colores de Ajustes del Curso
+    const ajusteDots = document.querySelectorAll('.color-dot-ajuste');
+    const ajusteInput = document.getElementById('ajusteColor');
+    
+    if (ajusteInput && ajusteDots.length > 0) {
+        // Inicializar el dot activo
+        ajusteDots.forEach(d => {
+            if (d.getAttribute('data-color') === ajusteInput.value) {
+                d.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.5)';
+            }
+        });
+
+        ajusteDots.forEach(dot => {
+            dot.addEventListener('click', function() {
+                ajusteDots.forEach(d => d.style.boxShadow = 'none');
+                this.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.5)';
+                ajusteInput.value = this.getAttribute('data-color');
+            });
+        });
+
+        ajusteInput.addEventListener('input', function() {
+            ajusteDots.forEach(d => d.style.boxShadow = 'none');
+        });
+    }
+
+    // Lógica para enviar el formulario de Ajustes del Curso
+    const formAjustes = document.getElementById('formAjustesCurso');
+    if (formAjustes) {
+        formAjustes.onsubmit = async function(e) {
+            e.preventDefault();
+            const payload = {
+                id: document.getElementById('ajusteCursoId').value,
+                nombre_centro: document.getElementById('ajusteNombreCentro').value,
+                poblacion: document.getElementById('ajustePoblacion').value,
+                provincia: document.getElementById('ajusteProvincia').value,
+                anio: document.getElementById('ajusteAnio').value,
+                color: document.getElementById('ajusteColor').value
+            };
+
+            try {
+                const response = await fetch('guardar_curso.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Error al guardar ajustes: ' + (data.error || 'Desconocido'));
+                }
+            } catch (error) {
+                console.error("Error en la solicitud:", error);
+                alert("Error de red. Inténtalo de nuevo.");
+            }
+        };
+    }
 }
 
 document.getElementById('formCrearClase').onsubmit = async function (e) {

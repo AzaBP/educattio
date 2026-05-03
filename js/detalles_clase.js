@@ -160,9 +160,9 @@ function renderizarAsignaturas(asignaturas) {
                         <a href="javascript:void(0)" onclick="eliminarAsignatura(${asig.id})" class="delete-option"><i class="fas fa-trash"></i> Eliminar</a>
                     </div>
                 </div>
-                <div class="premium-card h-100" style="--accent-color: #4facfe; cursor: pointer;">
-                    <div class="card-banner">
-                        <div class="card-icon"><i class="fas fa-book"></i></div>
+                <div class="premium-card h-100" style="--accent-color: ${asig.color_asignatura || '#4facfe'}; cursor: pointer;">
+                    <div class="card-banner" style="background: ${asig.color_asignatura || '#4facfe'} !important;">
+                        <div class="card-icon"><i class="fas ${asig.icono_asignatura || 'fa-book'}"></i></div>
                         <div class="card-badge">Asignatura</div>
                     </div>
                     <div class="card-content">

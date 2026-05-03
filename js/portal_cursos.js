@@ -169,31 +169,33 @@ function renderizarCursos(cursos) {
     // 3. Generamos las tarjetas respetando tu maquetación
     let htmlCursos = '';
     cursos.forEach(curso => {
-        const bgColor = curso.color || '#ff7a59';
-        const textColor = getContrasteYIQ(bgColor);
+        const bgColor = curso.color || '#4facfe';
         htmlCursos += `
-            <article class="course-card" onclick="window.location.href='detalles_curso.php?id=${curso.id}'">
-                <div class="course-header" style="background: linear-gradient(135deg, ${bgColor} 0%, rgba(255,255,255,0.2) 100%); color: ${textColor};">
-                    <span class="subject-tag" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(5px);">${curso.nombre_centro}</span>
-                    <div class="card-menu">
-                        <button class="menu-btn" style="color: ${textColor};" onclick="event.stopPropagation(); toggleMenuCurso(event, ${curso.id})">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                        <div id="menu-curso-${curso.id}" class="dropdown-menu">
-                            <a href="#" onclick="event.stopPropagation(); abrirModalEditar(${curso.id})"><i class="fas fa-pen"></i> Modificar</a>
-                            <a href="#" class="delete-option" onclick="event.stopPropagation(); eliminarCurso(${curso.id})"><i class="fas fa-trash"></i> Eliminar</a>
+            <div class="premium-card-wrapper" style="position: relative;">
+                <div class="card-options-container">
+                    <button class="menu-dots-btn" onclick="toggleMenuCurso(event, ${curso.id})">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div id="menu-curso-${curso.id}" class="dropdown-options-menu">
+                        <a href="javascript:void(0)" onclick="event.stopPropagation(); abrirModalEditar(${curso.id})"><i class="fas fa-edit"></i> Modificar</a>
+                        <a href="javascript:void(0)" class="delete-option" onclick="event.stopPropagation(); eliminarCurso(${curso.id})"><i class="fas fa-trash"></i> Eliminar</a>
+                    </div>
+                </div>
+                <a href="detalles_curso.php?id=${curso.id}" class="premium-card" style="--accent-color: ${bgColor};">
+                    <div class="card-banner">
+                        <div class="card-icon"><i class="fas fa-university"></i></div>
+                        <div class="card-badge">${curso.anio_academico}</div>
+                    </div>
+                    <div class="card-content">
+                        <h3>${curso.nombre_centro}</h3>
+                        <p>${curso.poblacion}, ${curso.provincia}</p>
+                        <div class="card-footer">
+                            <span>Ver curso</span>
+                            <i class="fas fa-chevron-right"></i>
                         </div>
                     </div>
-                </div>
-                <div class="course-body">
-                    <h3>CURSO ${curso.anio_academico}</h3>
-                    <p class="teacher-name">${curso.poblacion}, ${curso.provincia}</p>
-                    <div class="card-footer">
-                        <span class="tasks-pending">Gestionar clases</span>
-                        <i class="fas fa-folder-open folder-icon"></i>
-                    </div>
-                </div>
-            </article>
+                </a>
+            </div>
         `;
     });
 
@@ -202,13 +204,13 @@ function renderizarCursos(cursos) {
 
 async function guardarNuevoCurso(e) {
     e.preventDefault();
-    console.log("Intentando guardar curso..."); // DEBUG
+    console.log("Intentando guardar curso...");
 
     const idEdicion = document.getElementById('editCursoId').value;
-    const url = idEdicion ? 'controllers/actualizar_curso.php' : 'controllers/crear_curso.php';
+    const url = 'guardar_curso.php'; // Usamos el controlador unificado
 
     const datos = {
-        centro: document.getElementById('inputNombreCentro').value,
+        nombre_centro: document.getElementById('inputNombreCentro').value,
         anio: document.getElementById('inputAnio').value,
         poblacion: document.getElementById('inputPoblacion').value,
         provincia: document.getElementById('inputProvincia').value,
@@ -216,7 +218,7 @@ async function guardarNuevoCurso(e) {
     };
     if (idEdicion) datos.id = idEdicion;
 
-    console.log("Datos capturados:", datos); // DEBUG
+    console.log("Datos capturados:", datos);
 
     try {
         const response = await fetch(url, {
@@ -225,32 +227,28 @@ async function guardarNuevoCurso(e) {
             body: JSON.stringify(datos)
         });
 
-        const textoRespuesta = await response.text(); // Leemos como texto primero por si hay errores PHP
-        console.log("Respuesta bruta del servidor:", textoRespuesta); // DEBUG
+        const resultado = await response.json();
 
-        const resultado = JSON.parse(textoRespuesta);
-
-        if (resultado.status === 'success') {
+        if (resultado.success) {
             console.log("¡Éxito!"); 
             closeModal();
             document.getElementById('formCrearCurso').reset();
-            // Limpiar el campo oculto tras editar
             document.getElementById('editCursoId').value = '';
-            // Restaurar el título
             document.querySelector('.modal-header h3').innerText = "Crear nuevo curso";
             cargarCursos();
         } else {
-            alert("Error del servidor: " + resultado.message);
+            alert("Error: " + (resultado.error || 'No se pudo guardar el curso'));
         }
     } catch (error) {
         console.error("Error en la petición FETCH:", error);
+        alert("Error de red al intentar guardar el curso.");
     }
 }
 
 function toggleMenuCurso(event, id) {
     event.stopPropagation();
     // Cierra todos los menús desplegables activos
-    document.querySelectorAll('.menu-opciones-aislado.show, .dropdown-menu.show').forEach(menu => {
+    document.querySelectorAll('.menu-opciones-aislado.show, .dropdown-options-menu.show').forEach(menu => {
         if (menu.id !== `menu-curso-${id}`) {
             menu.classList.remove('show');
         }
@@ -264,7 +262,7 @@ function toggleMenuCurso(event, id) {
 
 // Cerrar menús al hacer clic fuera (siempre solo uno abierto)
 document.addEventListener('click', function(event) {
-    document.querySelectorAll('.menu-opciones-aislado.show, .dropdown-menu.show').forEach(menu => {
+    document.querySelectorAll('.menu-opciones-aislado.show, .dropdown-options-menu.show').forEach(menu => {
         menu.classList.remove('show');
     });
 });
@@ -272,7 +270,7 @@ document.addEventListener('click', function(event) {
 // Asegurar que solo un menú puede estar abierto a la vez, incluso tras renderizarCursos
 document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('click', function(event) {
-        document.querySelectorAll('.menu-opciones-aislado.show, .dropdown-menu.show').forEach(menu => {
+        document.querySelectorAll('.menu-opciones-aislado.show, .dropdown-options-menu.show').forEach(menu => {
             menu.classList.remove('show');
         });
     }, true);
