@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  # Servicio de Base de Datos
+  db:
+    image: mysql:8.0
+    container_name: educattio_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: educattio
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./educattio_BD.sql:/docker-entrypoint-initdb.d/init.sql
+      - db_data:/var/lib/mysql
+
+  # Servicio Web (PHP + Apache)
+  web:
+    build: .
+    container_name: educattio_web
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASS=root
+      - DB_NAME=educattio
+    depends_on:
+      - db
+
+volumes:
+  db_data:
