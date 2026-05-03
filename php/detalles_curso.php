@@ -364,7 +364,7 @@ $numEvaluaciones = $stmtEval->fetchColumn();
 
         async function editarClase(id) {
             try {
-                const res = await fetch(`controllers/obtener_detalles_clase.php?id=${id}`);
+                const res = await fetch(`controllers/get_clase_info.php?id=${id}`);
                 const data = await res.json();
                 if (data.status === 'success') {
                     const c = data.clase;

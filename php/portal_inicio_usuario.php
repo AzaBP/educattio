@@ -61,6 +61,8 @@ try {
     <title>Educattio - Portal Inicio</title>
     
     <link rel="icon" type="image/png" href="../imagenes/dolphin.png">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/portal_inicio_usuario.css?v=1.2">
     <link rel="stylesheet" href="../css/calendario.css?v=1.2">
@@ -246,19 +248,20 @@ try {
                 <?php else: ?>
                     <?php foreach ($cursos_activos as $curso): ?>
                         <div class="premium-card-wrapper" style="position: relative;">
-                            <div class="card-options-container">
-                                <button class="menu-dots-btn" onclick="toggleMenu(event, 'curso-<?php echo $curso['id']; ?>')">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
-                                <div id="dropdown-curso-<?php echo $curso['id']; ?>" class="dropdown-options-menu">
-                                    <a href="javascript:void(0)" onclick="editarCurso(<?php echo $curso['id']; ?>)"><i class="fas fa-edit"></i> Modificar</a>
-                                    <a href="javascript:void(0)" onclick="eliminarCurso(<?php echo $curso['id']; ?>)" class="delete-option"><i class="fas fa-trash"></i> Eliminar</a>
-                                </div>
-                            </div>
+                            
                             <a href="detalles_curso.php?id=<?php echo $curso['id']; ?>" class="premium-card" style="--accent-color: <?php echo $curso['color'] ?? '#4facfe'; ?>;">
                                 <div class="card-banner">
                                     <div class="card-icon"><i class="fas fa-university"></i></div>
                                     <div class="card-badge"><?php echo htmlspecialchars($curso['anio_academico']); ?></div>
+                                    <div class="card-options-container">
+                                        <button class="menu-dots-btn" onclick="toggleMenu(event, 'curso-<?php echo $curso['id']; ?>')">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <div id="dropdown-curso-<?php echo $curso['id']; ?>" class="dropdown-options-menu">
+                                            <a href="javascript:void(0)" onclick="editarCurso(<?php echo $curso['id']; ?>)"><i class="fas fa-edit"></i> Modificar</a>
+                                            <a href="javascript:void(0)" onclick="eliminarCurso(<?php echo $curso['id']; ?>)" class="delete-option"><i class="fas fa-trash"></i> Eliminar</a>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="card-content">
                                     <h3><?php echo htmlspecialchars($curso['nombre_centro']); ?></h3>
@@ -284,21 +287,21 @@ try {
     </main>
 </div>
 
-<!-- MODAL PARA CREAR CURSO -->
-<div id="modalCurso" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center;">
-    <div class="modal-dialog" style="width: 100%; max-width: 800px; margin: 1.75rem auto;">
-        <div class="modal-content" style="background: white; border-radius: 16px; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.1); animation: modalSlideUp 0.3s ease-out;">
+<!-- MODAL PARA CREAR/MODIFICAR CURSO -->
+<div class="modal fade" id="modalCurso" tabindex="-1" aria-labelledby="modalCursoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="background: white; border-radius: 16px; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
             <div class="modal-header" style="border-bottom: none; padding: 25px 30px 0 30px; display: flex; justify-content: space-between; align-items: center;">
                 <h3 class="modal-title fw-bold" id="modalCursoLabel" style="font-family: 'Georgia', serif; font-size: 1.6rem; color: #1f2937; margin: 0;">Crear nuevo curso</h3>
-                <button type="button" class="btn-close" onclick="closeModalCurso()" aria-label="Close" style="background: none; border: none; font-size: 1.5rem; color: #9ca3af; cursor: pointer;">&times;</button>
+                <button type="button" class="btn-close" onclick="closeModalCurso()" aria-label="Close"></button>
             </div>
 
             <form id="formCrearCurso">
                 <input type="hidden" id="editCursoId" value="">
                 
                 <div class="modal-body" style="padding: 20px 30px;">
-                    <div class="row" style="display: flex; flex-wrap: wrap; margin-right: -10px; margin-left: -10px;">
-                        <div class="col-12 mb-4" style="width: 100%; padding: 0 10px; margin-bottom: 1.5rem;">
+                    <div class="row">
+                        <div class="col-12 mb-4">
                             <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Centro Educativo</label>
                             <div class="d-flex align-items-center" style="display: flex; align-items: center; border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
                                 <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
@@ -309,8 +312,8 @@ try {
                         </div>
                     </div>
 
-                    <div class="row" style="display: flex; flex-wrap: wrap; margin-right: -10px; margin-left: -10px;">
-                        <div class="col-12 col-md-6 mb-4" style="width: 50%; padding: 0 10px; margin-bottom: 1.5rem; box-sizing: border-box;">
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-4">
                             <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Población</label>
                             <div class="d-flex align-items-center" style="display: flex; align-items: center; border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
                                 <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
@@ -319,7 +322,7 @@ try {
                                 <input type="text" id="inputPoblacion" class="form-control" placeholder="Ej: Zaragoza" style="border: none !important; box-shadow: none !important; padding: 0 !important; background: transparent !important; width: 100%; font-size: 0.95rem; outline: none;" required>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6 mb-4" style="width: 50%; padding: 0 10px; margin-bottom: 1.5rem; box-sizing: border-box;">
+                        <div class="col-12 col-md-6 mb-4">
                             <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Provincia</label>
                             <div class="d-flex align-items-center" style="display: flex; align-items: center; border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
                                 <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
@@ -330,8 +333,8 @@ try {
                         </div>
                     </div>
 
-                    <div class="row" style="display: flex; flex-wrap: wrap; margin-right: -10px; margin-left: -10px;">
-                        <div class="col-12 col-md-6 mb-4" style="width: 50%; padding: 0 10px; margin-bottom: 1.5rem; box-sizing: border-box;">
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-4">
                             <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Año Lectivo</label>
                             <div class="d-flex align-items-center" style="display: flex; align-items: center; border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
                                 <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
@@ -340,7 +343,7 @@ try {
                                 <input type="text" id="inputAnio" class="form-control" value="2025-2026" style="border: none !important; box-shadow: none !important; padding: 0 !important; background: transparent !important; width: 100%; font-size: 0.95rem; outline: none;" required>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6 mb-4" style="width: 50%; padding: 0 10px; margin-bottom: 1.5rem; box-sizing: border-box;">
+                        <div class="col-12 col-md-6 mb-4">
                             <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 12px; display: block;">Color Distintivo</label>
                             <div class="d-flex flex-wrap align-items-center gap-2" style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;">
                                 <div class="color-dot" data-color="#ff7a59" onclick="selectPresetColor('#ff7a59', this)" style="background:#ff7a59; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;"></div>
@@ -362,9 +365,6 @@ try {
         </div>
     </div>
 </div>
-<style>
-@keyframes modalSlideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-</style>
 
 <script src="../js/portal_inicio_usuario.js?v=1.3"></script>
 <script src="../js/notificaciones.js?v=1.3"></script>
@@ -403,6 +403,7 @@ try {
     formCurso.addEventListener('submit', function(e) {
         e.preventDefault();
         const payload = {
+            id: document.getElementById('editCursoId').value,
             nombre_centro: document.getElementById('inputNombreCentro').value.trim(),
             poblacion: document.getElementById('inputPoblacion').value.trim(),
             provincia: document.getElementById('inputProvincia').value.trim(),
@@ -533,25 +534,36 @@ try {
         } catch (e) { console.error(e); }
     }
 
-    function openModalCurso() {
+    window.openModalCurso = function() {
         const m = document.getElementById('modalCurso');
-        if(m) m.style.display = 'flex';
-    }
+        if (m) {
+            const modal = bootstrap.Modal.getInstance(m) || new bootstrap.Modal(m);
+            modal.show();
+        }
+    };
 
-    function closeModalCurso() {
+    window.closeModalCurso = function() {
         const m = document.getElementById('modalCurso');
-        if(m) m.style.display = 'none';
-        document.getElementById('formCrearCurso').reset();
+        if (m) {
+            const modal = bootstrap.Modal.getInstance(m);
+            if (modal) modal.hide();
+        }
+        formCurso.reset();
         document.getElementById('editCursoId').value = '';
         const modalH3 = document.querySelector('#modalCurso h3');
         if(modalH3) modalH3.innerText = 'Crear nuevo curso';
         const btnSave = document.getElementById('btnGuardarCurso');
-        if(btnSave) btnSave.innerText = 'Guardar';
-    }
+        if(btnSave) btnSave.innerText = 'Guardar Curso';
+        
+        document.getElementById('inputColor').value = '#ff7a59';
+        document.querySelectorAll('.color-dot').forEach(dot => dot.style.border = 'none');
+    };
 
     cargarNotificaciones();
     setInterval(cargarNotificaciones, 60000);
 </script>
 
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

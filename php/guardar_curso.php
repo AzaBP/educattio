@@ -16,6 +16,7 @@ if (!$data) {
 }
 
 $usuario_id = $_SESSION['usuario_id'];
+$curso_id = isset($data['id']) && $data['id'] !== '' ? intval($data['id']) : null;
 $nombre_centro = trim($data['nombre_centro'] ?? '');
 $poblacion = trim($data['poblacion'] ?? '');
 $provincia = trim($data['provincia'] ?? '');
@@ -28,18 +29,34 @@ if (empty($nombre_centro) || empty($poblacion) || empty($provincia) || empty($an
 }
 
 try {
-    $sql = "INSERT INTO cursos (nombre_centro, poblacion, provincia, anio_academico, color, usuario_id) 
-            VALUES (:centro, :poblacion, :provincia, :anio, :color, :usuario_id)";
-    $stmt = $conexion->prepare($sql);
-    $stmt->execute([
-        ':centro' => $nombre_centro,
-        ':poblacion' => $poblacion,
-        ':provincia' => $provincia,
-        ':anio' => $anio,
-        ':color' => $color,
-        ':usuario_id' => $usuario_id
-    ]);
-    echo json_encode(['success' => true, 'id' => $conexion->lastInsertId()]);
+    if ($curso_id) {
+        $sql = "UPDATE cursos SET nombre_centro = :centro, poblacion = :poblacion, provincia = :provincia, 
+                anio_academico = :anio, color = :color WHERE id = :curso_id AND usuario_id = :usuario_id";
+        $stmt = $conexion->prepare($sql);
+        $stmt->execute([
+            ':centro' => $nombre_centro,
+            ':poblacion' => $poblacion,
+            ':provincia' => $provincia,
+            ':anio' => $anio,
+            ':color' => $color,
+            ':curso_id' => $curso_id,
+            ':usuario_id' => $usuario_id
+        ]);
+        echo json_encode(['success' => true, 'id' => $curso_id]);
+    } else {
+        $sql = "INSERT INTO cursos (nombre_centro, poblacion, provincia, anio_academico, color, usuario_id) 
+                VALUES (:centro, :poblacion, :provincia, :anio, :color, :usuario_id)";
+        $stmt = $conexion->prepare($sql);
+        $stmt->execute([
+            ':centro' => $nombre_centro,
+            ':poblacion' => $poblacion,
+            ':provincia' => $provincia,
+            ':anio' => $anio,
+            ':color' => $color,
+            ':usuario_id' => $usuario_id
+        ]);
+        echo json_encode(['success' => true, 'id' => $conexion->lastInsertId()]);
+    }
 } catch (PDOException $e) {
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }

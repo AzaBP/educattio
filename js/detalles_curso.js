@@ -60,6 +60,11 @@ document.getElementById('formCrearClase').onsubmit = async function (e) {
         color: color,
         icono: icono
     };
+    
+    const claseId = document.getElementById('inputIdClase').value;
+    if (claseId) {
+        payload.id = claseId;
+    }
 
     try {
         const response = await fetch('guardar_clase.php', {
@@ -100,7 +105,16 @@ document.addEventListener('DOMContentLoaded', () => {
 function abrirModalNuevaClase() {
     const modalEl = document.getElementById('modalClase');
     if (modalEl) {
-        const bsModal = new bootstrap.Modal(modalEl);
+        document.getElementById('formCrearClase').reset();
+        document.getElementById('inputIdClase').value = '';
+        document.getElementById('inputColorClase').value = '#3b82f6';
+        document.getElementById('inputIconoClase').value = 'fa-users';
+        document.getElementById('modalClaseLabel').innerText = 'Añadir Nueva Clase';
+        
+        document.querySelectorAll('.color-opcion').forEach((o, i) => o.classList.toggle('active', i === 0));
+        document.querySelectorAll('.icono-opcion').forEach((o, i) => o.classList.toggle('active', i === 0));
+
+        const bsModal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
         bsModal.show();
     }
 }
