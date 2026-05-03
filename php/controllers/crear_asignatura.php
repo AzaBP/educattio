@@ -12,8 +12,10 @@ try {
     $conexion->beginTransaction(); // Usamos transacción para asegurar que se guardan ambas cosas
 
     // 1. Crear asignatura
-    $stmt = $conexion->prepare("INSERT INTO asignaturas (nombre_asignatura, clase_id) VALUES (?, ?)");
-    $stmt->execute([trim($data['nombre_asignatura']), $data['clase_id']]);
+    $color = $data['color_asignatura'] ?? '#4facfe';
+    $icono = $data['icono_asignatura'] ?? 'fa-book';
+    $stmt = $conexion->prepare("INSERT INTO asignaturas (nombre_asignatura, clase_id, color_asignatura, icono_asignatura) VALUES (?, ?, ?, ?)");
+    $stmt->execute([trim($data['nombre_asignatura']), $data['clase_id'], $color, $icono]);
     $asig_id = $conexion->lastInsertId();
 
     // 2. Crear el periodo "Final" automáticamente

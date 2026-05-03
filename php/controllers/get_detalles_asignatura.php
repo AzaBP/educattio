@@ -9,7 +9,7 @@ if (!$asignaturaId) {
 }
 
 try {
-    $sql = "SELECT a.id, a.nombre_asignatura, a.clase_id, c.nombre_clase, c.curso_id, cu.nombre_centro, cu.anio_academico, cu.poblacion, cu.provincia
+    $sql = "SELECT a.id, a.nombre_asignatura, a.clase_id, a.color_asignatura, a.icono_asignatura, c.nombre_clase, c.curso_id, cu.nombre_centro, cu.anio_academico, cu.poblacion, cu.provincia
             FROM asignaturas a
             JOIN clases c ON a.clase_id = c.id
             JOIN cursos cu ON c.curso_id = cu.id

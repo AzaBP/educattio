@@ -408,8 +408,49 @@ function renderizarAsignaturas(asignaturas) {
 
 // --- OTROS ---
 
+// --- ASIGNATURAS: ICONOS Y COLORES ---
+const iconosAsig = ['fa-book', 'fa-calculator', 'fa-flask', 'fa-palette', 'fa-music', 'fa-running', 'fa-globe', 'fa-laptop-code', 'fa-microscope', 'fa-brain'];
+const coloresAsig = ['#4facfe', '#43e97b', '#fa709a', '#f6d365', '#667eea', '#f093fb', '#5ee7df', '#fccb90'];
+
+function renderizarPickersAsig(prefijo, colorSel, iconoSel) {
+    const colorCont = document.getElementById(`${prefijo}-color-asig-container`);
+    const iconoCont = document.getElementById(`${prefijo}-icono-asig-container`);
+    
+    if (colorCont) {
+        colorCont.innerHTML = coloresAsig.map(c => `
+            <div class="color-circle ${c === colorSel ? 'selected' : ''}" 
+                 style="background-color: ${c}" 
+                 onclick="seleccionarColorAsig('${prefijo}', '${c}')"></div>
+        `).join('');
+    }
+    
+    if (iconoCont) {
+        iconoCont.innerHTML = iconosAsig.map(i => `
+            <div class="icon-btn ${i === iconoSel ? 'selected' : ''}" 
+                 onclick="seleccionarIconoAsig('${prefijo}', '${i}')">
+                <i class="fas ${i}"></i>
+            </div>
+        `).join('');
+    }
+}
+
+window.seleccionarColorAsig = (prefijo, color) => {
+    const hidden = document.getElementById(prefijo === 'nuevo' ? 'nuevoColorAsig' : 'editColorAsig');
+    if (hidden) hidden.value = color;
+    renderizarPickersAsig(prefijo, color, document.getElementById(prefijo === 'nuevo' ? 'nuevoIconoAsig' : 'editIconoAsig').value);
+};
+
+window.seleccionarIconoAsig = (prefijo, icono) => {
+    const hidden = document.getElementById(prefijo === 'nuevo' ? 'nuevoIconoAsig' : 'editIconoAsig');
+    if (hidden) hidden.value = icono;
+    renderizarPickersAsig(prefijo, document.getElementById(prefijo === 'nuevo' ? 'nuevoColorAsig' : 'editColorAsig').value, icono);
+};
+
 function abrirModalNuevaAsignatura() {
     document.getElementById('formNuevaAsignatura').reset();
+    document.getElementById('nuevoColorAsig').value = coloresAsig[0];
+    document.getElementById('nuevoIconoAsig').value = iconosAsig[0];
+    renderizarPickersAsig('nuevo', coloresAsig[0], iconosAsig[0]);
     showModal('modalNuevaAsignatura');
 }
 
@@ -418,8 +459,13 @@ async function editarAsignatura(id) {
         const res = await fetch(`controllers/get_detalles_asignatura.php?id=${id}`);
         const data = await res.json();
         if (data.status === 'success') {
-            document.getElementById('editAsigId').value = data.asignatura.id;
-            document.getElementById('editNombreAsignatura').value = data.asignatura.nombre_asignatura;
+            const asig = data.asignatura;
+            document.getElementById('editAsigId').value = asig.id;
+            document.getElementById('editNombreAsignatura').value = asig.nombre_asignatura;
+            document.getElementById('editColorAsig').value = asig.color_asignatura || coloresAsig[0];
+            document.getElementById('editIconoAsig').value = asig.icono_asignatura || iconosAsig[0];
+            
+            renderizarPickersAsig('edit', asig.color_asignatura || coloresAsig[0], asig.icono_asignatura || iconosAsig[0]);
             showModal('modalEditarAsignatura');
         }
     } catch (e) { console.error(e); }
@@ -460,8 +506,16 @@ async function guardarAsignatura(e, isEdit) {
     if (e) e.preventDefault();
     const id = isEdit ? document.getElementById('editAsigId').value : null;
     const nombre = isEdit ? document.getElementById('editNombreAsignatura').value : document.getElementById('nuevoNombreAsignatura').value;
+    const color = isEdit ? document.getElementById('editColorAsig').value : document.getElementById('nuevoColorAsig').value;
+    const icono = isEdit ? document.getElementById('editIconoAsig').value : document.getElementById('nuevoIconoAsig').value;
+    
     const url = isEdit ? 'controllers/editar_asignatura.php' : 'controllers/crear_asignatura.php';
-    const payload = { nombre_asignatura: nombre, clase_id: CLASE_ACTUAL_ID };
+    const payload = { 
+        nombre_asignatura: nombre, 
+        clase_id: CLASE_ACTUAL_ID,
+        color_asignatura: color,
+        icono_asignatura: icono
+    };
     if (isEdit) payload.id = id;
 
     try {

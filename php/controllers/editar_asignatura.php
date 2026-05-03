@@ -12,7 +12,9 @@ if (!isset($data['id']) || !isset($data['nombre_asignatura'])) {
 
 try {
     $dao = new AsignaturaDAO($conexion);
-    if ($dao->actualizar($data['id'], $data['nombre_asignatura'])) {
+    $color = $data['color_asignatura'] ?? null;
+    $icono = $data['icono_asignatura'] ?? null;
+    if ($dao->actualizar($data['id'], $data['nombre_asignatura'], $color, $icono)) {
         echo json_encode(['status' => 'success']);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Error al actualizar']);
