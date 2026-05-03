@@ -30,12 +30,10 @@ try {
         <main class="main-content">
             <!-- CABECERA PREMIUM -->
             <header class="course-page-header-modern mb-4">
-                <div class="header-glass-overlay"></div>
                 <div class="header-main-content">
                     <div class="header-left">
                         <h1 class="course-title-animate">Registro de Incidencias</h1>
                         <p class="text-white-50 m-0">Gestiona y exporta reportes detallados sobre el centro, clases y alumnos.</p>
-                    </div>
                     </div>
                 </div>
             </header>

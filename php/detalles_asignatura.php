@@ -430,12 +430,8 @@ try {
             <div class="box box-events">
                 <div class="box-header">
                     <div>
-                        <h2>Calendario & Eventos</h2>
-                        <p>Eventos próximos para esta clase</p>
+                        <h2>Calendario y Eventos</h2>
                     </div>
-                    <button class="btn btn-primary btn-sm" onclick="abrirMiniEventoAsignatura()">
-                        <i class="fas fa-plus"></i> Añadir evento
-                    </button>
                 </div>
                 <!-- Mini-calendario para crear eventos -->
                 <div

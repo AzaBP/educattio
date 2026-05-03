@@ -193,3 +193,9 @@ ALTER TABLE eventos ADD COLUMN asignatura_id INT NULL;
 ALTER TABLE asignaturas
     ADD COLUMN color_asignatura VARCHAR(20) NOT NULL DEFAULT '#3b82f6',
     ADD COLUMN icono_asignatura VARCHAR(50) NOT NULL DEFAULT 'fa-book';
+
+-- ============================================================
+-- MODIFICACIÓN: Soporte para fórmulas en el cuaderno
+-- ============================================================
+ALTER TABLE items_evaluacion 
+    ADD COLUMN formula VARCHAR(255) DEFAULT NULL;

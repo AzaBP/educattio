@@ -19,17 +19,20 @@ if(isset($datos['nombre_item']) && isset($datos['peso']) && isset($datos['period
     $periodo_id = intval($datos['periodo_evaluacion']); 
     $asignatura_id = $datos['asignatura_id']; 
 
+    $formula = isset($datos['formula']) ? trim($datos['formula']) : null;
+
     try {
-        // Insertamos usando la nueva columna periodo_id
-        $sql = "INSERT INTO items_evaluacion (titulo, peso, periodo_id, asignatura_id) 
-                VALUES (:titulo, :peso, :periodo, :asignatura)";
+        // Insertamos usando la nueva columna periodo_id y la columna formula
+        $sql = "INSERT INTO items_evaluacion (titulo, peso, periodo_id, asignatura_id, formula) 
+                VALUES (:titulo, :peso, :periodo, :asignatura, :formula)";
         $stmt = $conexion->prepare($sql);
         
         $stmt->execute([
             ':titulo' => $titulo,
             ':peso' => $peso,
             ':periodo' => $periodo_id,
-            ':asignatura' => $asignatura_id
+            ':asignatura' => $asignatura_id,
+            ':formula' => $formula
         ]);
         
         echo json_encode(['status' => 'success']);

@@ -91,15 +91,7 @@ try {
     }
 
     // 2. OBTENER LAS COLUMNAS SOLO DEL PERIODO ACTUAL
-    // CAMBIO AQUÍ: Eliminamos 'asignatura_id' de la tabla items_evaluacion porque ya se filtra por periodo_id
-    $sql_items = "SELECT id, titulo, peso FROM items_evaluacion WHERE periodo_id = :periodo_id";
-    $stmt_items = $conexion->prepare($sql_items);
-    $stmt_items->execute([':periodo_id' => $periodo_id_actual]);
-    $items_evaluacion = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
-    // === FIN LÓGICA CORREGIDA ===
-
-    // 2. OBTENER LAS COLUMNAS (ÍTEMS) SOLO DEL PERIODO ACTUAL
-    $sql_items = "SELECT id, titulo, peso FROM items_evaluacion 
+    $sql_items = "SELECT id, titulo, peso, formula FROM items_evaluacion 
                   WHERE asignatura_id = :asig_id AND periodo_id = :periodo_id";
     $stmt_items = $conexion->prepare($sql_items);
     $stmt_items->execute([
@@ -128,10 +120,10 @@ try {
     $stmt_al->execute([':asig_id' => $asignatura_id]);
     $alumnos = $stmt_al->fetchAll(PDO::FETCH_ASSOC);
 
-    // 4. OBTENER TODAS LAS NOTAS
-    $sql_notas = "SELECT alumno_id, item_id, nota FROM evaluaciones";
+    // 4. OBTENER SOLO LAS NOTAS DE ESTA ASIGNATURA
+    $sql_notas = "SELECT alumno_id, item_id, nota FROM evaluaciones WHERE asignatura_id = :asig_id";
     $stmt_notas = $conexion->prepare($sql_notas);
-    $stmt_notas->execute();
+    $stmt_notas->execute([':asig_id' => $asignatura_id]);
     $todas_las_notas = $stmt_notas->fetchAll(PDO::FETCH_ASSOC);
 
     // Organizar notas en una matriz
@@ -166,6 +158,175 @@ function obtenerNotaActual($alumno_id, $item_id, $matriz_notas) {
     <!-- jsPDF y autoTable (PDF) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.7.0/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        const ASIGNATURA_ACTUAL_ID = <?php echo $asignatura_id; ?>;
+    </script>
+    <style>
+        .excel-formula-bar {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            transition: 0.3s;
+        }
+
+        .excel-formula-bar:focus-within {
+            border-color: #2563eb;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.1);
+        }
+
+        .fx-label {
+            background: #f8fafc;
+            color: #64748b;
+            padding: 10px 18px;
+            font-weight: 800;
+            font-style: italic;
+            border-right: 1px solid #e2e8f0;
+            font-family: 'serif';
+        }
+
+        #excel-formula-input {
+            flex: 1;
+            border: none;
+            padding: 10px 15px;
+            outline: none;
+            font-size: 0.95rem;
+            color: #1e293b;
+        }
+
+        .btn-save-formula {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-save-formula:hover {
+            background: #1d4ed8;
+        }
+
+        .floating-toolbar {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 1000;
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes slideUp {
+            from { bottom: -100px; opacity: 0; }
+            to { bottom: 30px; opacity: 1; }
+        }
+
+        .toolbar-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .selection-badge {
+            background: #2563eb;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .divider {
+            width: 1px;
+            height: 24px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .tool-btn {
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .tool-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .btn-magic {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: white;
+        }
+
+        .btn-magic:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .clickable-header {
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .clickable-header:hover {
+            background: #f1f5f9 !important;
+        }
+
+        .clickable-header:active {
+            transform: scale(0.98);
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 10px 15px 10px 45px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .search-wrapper input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+    </style>
 </head>
 <body>
 
@@ -211,6 +372,40 @@ function obtenerNotaActual($alumno_id, $item_id, $matriz_notas) {
                 $clase_peso_total = (abs($suma_total_pesos - 1.0) > 0.001) ? 'weight-warning' : 'weight-ok';
                 ?>
 
+                <!-- BARRA DE FÓRMULAS TIPO EXCEL -->
+                <div class="excel-formula-bar mb-3">
+                    <div class="fx-label" id="fx-status">fx</div>
+                    <input type="text" id="excel-formula-input" placeholder="Escribe '=' para empezar una fórmula o selecciona una celda...">
+                    <button class="btn-save-formula" onclick="aplicarFormulaDesdeBarra()" title="Aplicar Cambios (Enter)">
+                        <i class="fas fa-check"></i>
+                    </button>
+                </div>
+
+                <!-- Barra de Herramientas Flotante para Celdas Seleccionadas -->
+                <div id="floating-formula-bar" class="floating-toolbar" style="display: none;">
+                    <div class="toolbar-content">
+                        <span id="seleccionadas-info" class="selection-badge">0 seleccionadas</span>
+                        <div class="divider"></div>
+                        <button class="tool-btn" onclick="aplicarOperacionRapida('sumar')" title="Añadir puntos extra">
+                            <i class="fas fa-plus-circle"></i> +Puntos
+                        </button>
+                        <button class="tool-btn btn-magic" onclick="crearColumnaDesdeSeleccion()" title="Crear nueva columna calculada">
+                            <i class="fas fa-wand-magic-sparkles"></i> Crear Media
+                        </button>
+                        <div class="divider"></div>
+                        <button class="tool-btn btn-close-toolbar" onclick="clearSelectedCells()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-controls mb-3">
+                    <div class="search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="filtroAlumno" placeholder="Buscar alumno...">
+                    </div>
+                </div>
+
                 <?php
                 // Calculamos la suma total de pesos para colorear la Media Final
                 $suma_total_pesos = 0;
@@ -226,11 +421,14 @@ function obtenerNotaActual($alumno_id, $item_id, $matriz_notas) {
                         <tr>
                             <th class="sticky-col">Alumno</th>
                             <?php foreach ($items_evaluacion as $item): ?>
-                                <th>
+                                <th class="clickable-header" onclick="insertarEnFormula('<?php echo htmlspecialchars($item['titulo'], ENT_QUOTES); ?>')" title="Haz clic para añadir esta columna a la fórmula">
                                     <div class="header-content" style="display: flex; flex-direction: column; align-items: center;">
                                         
                                         <div style="display: flex; align-items: center; gap: 6px;">
                                             <span class="item-title" style="font-weight: 600;">
+                                                <?php if (!empty($item['formula'])): ?>
+                                                    <i class="fas fa-calculator text-primary" title="Fórmula: <?= htmlspecialchars($item['formula']) ?>"></i>
+                                                <?php endif; ?>
                                                 <?php echo htmlspecialchars($item['titulo']); ?>
                                             </span>
                                             <span class="header-weight" style="font-size: 0.85em; color: #64748b;">
@@ -239,10 +437,10 @@ function obtenerNotaActual($alumno_id, $item_id, $matriz_notas) {
                                         </div>
                                         
                                         <div class="header-actions">
-                                            <button class="icon-btn" onclick="abrirModalEditar(<?php echo $item['id']; ?>, '<?php echo htmlspecialchars($item['titulo'], ENT_QUOTES); ?>', <?php echo $item['peso']; ?>)">
+                                            <button class="icon-btn" onclick="event.stopPropagation(); abrirModalEditar(<?php echo $item['id']; ?>, '<?php echo htmlspecialchars($item['titulo'], ENT_QUOTES); ?>', <?php echo $item['peso']; ?>, '<?php echo htmlspecialchars($item['formula'] ?? '', ENT_QUOTES); ?>')">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button class="icon-btn delete-btn" onclick="borrarColumna(<?php echo $item['id']; ?>)">
+                                            <button class="icon-btn delete-btn" onclick="event.stopPropagation(); borrarColumna(<?php echo $item['id']; ?>)">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
@@ -301,13 +499,15 @@ function obtenerNotaActual($alumno_id, $item_id, $matriz_notas) {
                                     $val_formateado = number_format((float)$val, 2, '.', '');
                                     ?>
                                     <input type="number" 
-                                        class="grade-input <?php echo $es_auto ? 'auto-grade' : ''; ?>" 
+                                        class="grade-input <?php echo ($es_auto || !empty($item['formula'])) ? 'auto-grade' : ''; ?>" 
                                         data-alumno="<?php echo $alumno['id']; ?>" 
                                         data-item="<?php echo $item['id']; ?>" 
                                         data-peso="<?php echo $item['peso']; ?>"
+                                        data-formula="<?php echo htmlspecialchars($item['formula'] ?? ''); ?>"
+                                        data-titulo="<?php echo htmlspecialchars($item['titulo']); ?>"
                                         value="<?php echo $val_formateado; ?>" 
                                         step="0.01" min="0" max="10"
-                                        <?php echo $es_auto ? 'readonly tabindex="-1"' : ''; ?>>
+                                        <?php echo ($es_auto || !empty($item['formula'])) ? 'readonly tabindex="-1"' : ''; ?>>
                                 </td>
                             <?php endforeach; ?>
                             <td class="final-grade" id="media-<?php echo $alumno['id']; ?>" style="font-weight: bold; background: #f8fafc; color: #1e293b; text-align: center;">0.00</td>
@@ -352,7 +552,13 @@ function obtenerNotaActual($alumno_id, $item_id, $matriz_notas) {
                 
                 <div class="form-group">
                     <label>Peso / Porcentaje</label>
-                    <input type="number" id="pesoColumna" step="0.05" min="0.05" max="1.00" required placeholder="Ej: 0.20 para 20%">
+                    <input type="number" id="pesoColumna" step="0.01" min="0.00" max="1.00" required placeholder="Ej: 0.20 para 20%">
+                </div>
+
+                <div class="form-group">
+                    <label>Fórmula Matemática (Opcional)</label>
+                    <input type="text" id="formulaColumna" placeholder="Ej: ([Control 1] + [Control 2]) / 2">
+                    <small style="color: #64748b; font-size: 0.8rem;">Usa los nombres de otras columnas entre corchetes.</small>
                 </div>
                 
                 <div class="modal-footer">
@@ -380,7 +586,12 @@ function obtenerNotaActual($alumno_id, $item_id, $matriz_notas) {
                 
                 <div class="form-group">
                     <label>Peso / Porcentaje (Ej: 0.20)</label>
-                    <input type="number" id="editPesoColumna" step="0.01" min="0.01" max="1.00" required>
+                    <input type="number" id="editPesoColumna" step="0.01" min="0.00" max="1.00" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Fórmula Matemática</label>
+                    <input type="text" id="editFormulaColumna" placeholder="Ej: [Examen] * 0.7 + [Trabajo] * 0.3">
                 </div>
                 
                 <div class="modal-footer">
