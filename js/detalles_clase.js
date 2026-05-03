@@ -1,4 +1,9 @@
-// --- EDICIÓN DE ALUMNO ---
+// --- ALUMNOS ---
+const iconosDisponibles = [
+    'alumna_01.png', 'alumna_02.png', 'alumna_03.png', 'alumna_04.png', 'alumna_05.png', 'alumna_06.png',
+    'alumno_01.png', 'alumno_02.png', 'alumno_03.png', 'alumno_04.png'
+];
+
 function parseDatosPersonales(datos) {
     if (!datos) return { telefono: '', contacto: '', alergias: '', enfermedades: '' };
     try {
@@ -8,9 +13,35 @@ function parseDatosPersonales(datos) {
     }
 }
 
+function abrirModalNuevoAlumno() {
+    document.getElementById('formAlumno').reset();
+    document.getElementById('fotoNuevoAlumno').value = '';
+    renderizarIconosNuevo();
+    showModal('modalAlumno');
+}
+
+function renderizarIconosNuevo() {
+    const seleccionado = document.getElementById('fotoNuevoAlumno').value;
+    document.getElementById('lista-iconos-nuevo').innerHTML = iconosDisponibles.map(icono => `
+        <img src="../icons/${icono}" 
+             class="avatar-option ${icono === seleccionado ? 'selected' : ''}" 
+             onclick="seleccionarIconoNuevo('${icono}')" alt="Icono">
+    `).join('');
+}
+
+function seleccionarIconoNuevo(icono) {
+    document.getElementById('fotoNuevoAlumno').value = icono;
+    renderizarIconosNuevo();
+}
+
 async function abrirEditarAlumno(id) {
+    // Usamos los datos ya cargados en window.ULTIMOS_ALUMNOS
     const alumno = window.ULTIMOS_ALUMNOS?.find(a => a.id == id);
-    if (!alumno) return;
+    if (!alumno) {
+        alert("No se encontró la información del alumno.");
+        return;
+    }
+
     const datos = parseDatosPersonales(alumno.datos_personales);
     document.getElementById('editAlumnoId').value = alumno.id;
     document.getElementById('editNombreAlumno').value = alumno.nombre_alumno;
@@ -19,12 +50,9 @@ async function abrirEditarAlumno(id) {
     document.getElementById('editAlergiasAlumno').value = datos.alergias || '';
     document.getElementById('editFotoAlumno').value = alumno.foto || '';
     document.getElementById('editObsAlumno').value = alumno.observaciones || '';
+    
     renderizarIconosEditar();
-    document.getElementById('modalEditarAlumno').style.display = 'flex';
-}
-
-function cerrarModalEditarAlumno() {
-    document.getElementById('modalEditarAlumno').style.display = 'none';
+    showModal('modalEditarAlumno');
 }
 
 function renderizarIconosEditar() {
@@ -41,6 +69,38 @@ function seleccionarIconoEditar(icono) {
     renderizarIconosEditar();
 }
 
+async function guardarAlumno(e) {
+    e.preventDefault();
+    const nombre = document.getElementById('nombreAlumno').value;
+    const obs = document.getElementById('obsAlumno').value;
+    const foto = document.getElementById('fotoNuevoAlumno').value;
+    const telefono = document.getElementById('telefonoAlumno').value;
+    const contacto = document.getElementById('contactoAlumno').value;
+    const alergias = document.getElementById('alergiasAlumno').value;
+
+    try {
+        const response = await fetch('controllers/crear_alumno.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                nombre_alumno: nombre, 
+                observaciones: obs, 
+                foto: foto, 
+                clase_id: CLASE_ACTUAL_ID, 
+                telefono, 
+                contacto, 
+                alergias 
+            })
+        });
+        const res = await response.json();
+        if (res.status === 'success') {
+            hideModal('modalAlumno');
+            document.getElementById('formAlumno').reset();
+            cargarDatosClase();
+        } else { alert("Error: " + res.message); }
+    } catch (error) { console.error(error); }
+}
+
 async function guardarEdicionAlumno(e) {
     e.preventDefault();
     const id = document.getElementById('editAlumnoId').value;
@@ -50,46 +110,203 @@ async function guardarEdicionAlumno(e) {
     const telefono = document.getElementById('editTelefonoAlumno').value;
     const contacto = document.getElementById('editContactoAlumno').value;
     const alergias = document.getElementById('editAlergiasAlumno').value;
+
     try {
         const response = await fetch('controllers/editar_alumno.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, nombre_alumno: nombre, observaciones: obs, foto, telefono, contacto, alergias })
+            body: JSON.stringify({ 
+                id: id, 
+                nombre_alumno: nombre, 
+                observaciones: obs, 
+                foto: foto, 
+                clase_id: CLASE_ACTUAL_ID, 
+                telefono, 
+                contacto, 
+                alergias 
+            })
         });
         const res = await response.json();
         if (res.status === 'success') {
-            cerrarModalEditarAlumno();
+            hideModal('modalEditarAlumno');
             cargarDatosClase();
         } else { alert("Error: " + res.message); }
     } catch (error) { console.error(error); }
 }
-document.addEventListener('DOMContentLoaded', () => {
-    cargarDatosClase();
 
-    // Inicializar mini-calendario para la clase
-    if (window.MiniCalendar && CLASE_ACTUAL_ID) {
-        window.miniCalendarClase = new MiniCalendar('#miniCalendarClaseContainer', {
-            claseId: CLASE_ACTUAL_ID,
-            onEventCreate: () => {
-                // Recargar si es necesario
-                console.log('Evento creado en la clase');
-            }
+async function eliminarAlumnoModal() {
+    const id = document.getElementById('editAlumnoId').value;
+    if (!id || !confirm('¿Seguro que quieres eliminar este alumno? Se borrarán sus datos y matriculaciones.')) return;
+    try {
+        const res = await fetch('controllers/eliminar_alumno.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id })
         });
-    }
-});
-
-window.abrirMiniEventoClase = function () {
-    if (!window.miniCalendarClase) return;
-    if (!window.miniCalendarClase.selectedDate) {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        window.miniCalendarClase.selectedDate = `${year}-${month}-${day}`;
-    }
-    window.miniCalendarClase.updateEventsList();
-    window.miniCalendarClase.openEventModal();
+        const data = await res.json();
+        if (data.status === 'success') {
+            hideModal('modalEditarAlumno');
+            cargarDatosClase();
+        } else { alert('Error: ' + data.message); }
+    } catch (e) { console.error(e); }
 }
+
+// --- TABLA Y RENDERIZADO ---
+
+function renderizarAlumnos(alumnos) {
+    const cuerpo = document.getElementById('cuerpo-tabla-alumnos');
+    cuerpo.innerHTML = '';
+    
+    if (!alumnos || alumnos.length === 0) {
+        cuerpo.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">No hay alumnos matriculados en esta clase.</td></tr>';
+        return;
+    }
+
+    alumnos.forEach((alum, index) => {
+        const datos = parseDatosPersonales(alum.datos_personales);
+        const contactoHtml = (datos.contacto || datos.telefono) ? `
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                ${datos.contacto ? `<span class="fw-bold">${escapeHtml(datos.contacto)}</span>` : ''}
+                ${datos.telefono ? `<span class="text-muted" style="font-size:0.92rem;">${escapeHtml(datos.telefono)}</span>` : ''}
+            </div>` : '<span class="text-muted">Sin datos</span>';
+            
+        const saludHtml = (datos.alergias) ? `
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                <span>${escapeHtml(datos.alergias)}</span>
+            </div>` : '<span class="text-muted">Ninguna información</span>';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <div style="width:38px;height:38px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #e2e8f0;">
+                            ${alum.foto ? `<img src="../icons/${alum.foto}" alt="${alum.nombre_alumno}" style="width:100%;height:100%;object-fit:cover;">` : `<span style='font-weight:bold;color:#888;'>${alum.nombre_alumno.substring(0, 1).toUpperCase()}</span>`}
+                        </div>
+                        <div>
+                            <div class="fw-bold">${escapeHtml(alum.nombre_alumno)}</div>
+                            <div class="text-muted" style="font-size:0.85rem;">${alum.observaciones ? escapeHtml(alum.observaciones) : 'Alumno de la clase'}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>${contactoHtml}</td>
+                <td>${saludHtml}</td>
+                <td class="text-end">
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-secondary" title="Exportar Ficha" onclick="exportarAlumnoPDF(${alum.id})">
+                            <i class="fas fa-file-pdf"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary" onclick="abrirMatriculaAlum(${alum.id}, '${alum.nombre_alumno.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-book"></i> Asignaturas
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="abrirEditarAlumno(${alum.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                </td>`;
+        cuerpo.appendChild(tr);
+    });
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.toString().replace(/[&<>"]+/g, function (match) {
+        const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
+        return escape[match];
+    });
+}
+
+// --- PDF EXPORT ---
+
+function exportarAlumnosPDF() {
+    if (!window.ULTIMOS_ALUMNOS || window.ULTIMOS_ALUMNOS.length === 0) {
+        alert("No hay alumnos para exportar.");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const fecha = new Date().toLocaleDateString();
+
+    // Estética Premium (Simlar a incidencias)
+    doc.setFillColor(15, 23, 42); 
+    doc.rect(0, 0, 210, 40, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text('EDUCATTIO', 105, 20, { align: 'center' });
+    doc.setFontSize(14);
+    doc.text(`LISTADO DE ALUMNOS - ${document.querySelector('.course-title-animate').innerText}`, 105, 32, { align: 'center' });
+
+    const head = [['#', 'NOMBRE DEL ALUMNO', 'CONTACTO', 'ALERGIAS / SALUD', 'OBSERVACIONES']];
+    const body = window.ULTIMOS_ALUMNOS.map((alum, i) => {
+        const datos = parseDatosPersonales(alum.datos_personales);
+        return [
+            i + 1,
+            alum.nombre_alumno,
+            `${datos.contacto || ''}\n${datos.telefono || ''}`,
+            datos.alergias || 'Ninguna',
+            alum.observaciones || '---'
+        ];
+    });
+
+    doc.autoTable({
+        startY: 50,
+        head: head,
+        body: body,
+        theme: 'striped',
+        headStyles: { fillColor: [30, 41, 59], fontSize: 10 },
+        styles: { fontSize: 9, cellPadding: 4 }
+    });
+
+    doc.save(`lista_alumnos_${document.querySelector('.course-title-animate').innerText.replace(/\s+/g, '_')}.pdf`);
+}
+
+function exportarAlumnoPDF(id) {
+    const alum = window.ULTIMOS_ALUMNOS?.find(a => a.id == id);
+    if (!alum) return;
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const datos = parseDatosPersonales(alum.datos_personales);
+    const fecha = new Date().toLocaleDateString();
+
+    doc.setFillColor(15, 23, 42); 
+    doc.rect(0, 0, 210, 45, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text('EDUCATTIO', 105, 20, { align: 'center' });
+    doc.setFontSize(14);
+    doc.text('FICHA PERSONAL DEL ALUMNO', 105, 32, { align: 'center' });
+
+    doc.setTextColor(30, 41, 59);
+    doc.setFontSize(16);
+    doc.text(alum.nombre_alumno, 15, 60);
+    
+    doc.setFontSize(11);
+    doc.text(`Clase: ${document.querySelector('.course-title-animate').innerText}`, 15, 68);
+    doc.text(`Fecha de exportación: ${fecha}`, 15, 74);
+
+    const info = [
+        ['TELÉFONO DE CONTACTO', datos.telefono || 'No disponible'],
+        ['PERSONA DE CONTACTO', datos.contacto || 'No disponible'],
+        ['ALERGIAS / SALUD', datos.alergias || 'Sin información relevante'],
+        ['OBSERVACIONES', alum.observaciones || 'Sin observaciones adicionales']
+    ];
+
+    doc.autoTable({
+        startY: 85,
+        body: info,
+        theme: 'plain',
+        styles: { fontSize: 11, cellPadding: 8 },
+        columnStyles: { 0: { fontStyle: 'bold', cellWidth: 60 } }
+    });
+
+    doc.save(`ficha_${alum.nombre_alumno.replace(/\s+/g, '_')}.pdf`);
+}
+
+// --- ASIGNATURAS Y CALENDARIO ---
 
 async function cargarDatosClase() {
     try {
@@ -127,9 +344,8 @@ function renderizarAsignaturas(asignaturas) {
                 </div>`;
         });
 
-        let puedeSugerir = asig.periodos.length === 0 || (asig.periodos.length === 1 && asig.periodos[0].nombre_periodo === 'Final');
         let htmlSugerencias = '';
-        if (puedeSugerir) {
+        if (asig.periodos.length === 0 || (asig.periodos.length === 1 && asig.periodos[0].nombre_periodo === 'Final')) {
             htmlSugerencias = `
                 <div class="mt-3 text-end d-flex justify-content-end align-items-center flex-wrap gap-2" style="font-size: 0.85rem;">
                     <span class="text-muted me-1"><i class="fas fa-magic"></i> Añadir:</span>
@@ -147,6 +363,7 @@ function renderizarAsignaturas(asignaturas) {
                     </button>
                 </div>`;
         }
+
         const card = document.createElement('div');
         card.className = 'col-md-4 mb-4';
         card.innerHTML = `
@@ -168,11 +385,8 @@ function renderizarAsignaturas(asignaturas) {
                     <div class="card-content">
                         <h3 class="m-0">${asig.nombre_asignatura}</h3>
                         <p class="text-muted small">Ver temas y evaluaciones</p>
-                        
-                        <div class="d-flex flex-wrap mb-3">
-                            ${htmlPeriodos}
-                        </div>
-
+                        <div class="d-flex flex-wrap mb-3">${htmlPeriodos}</div>
+                        ${htmlSugerencias}
                         <div class="card-footer mt-auto">
                             <button type="button" class="btn btn-sm btn-link text-decoration-none p-0" style="color: var(--accent-color); font-weight:600;" 
                                     onclick="event.stopPropagation(); abrirMatriculaAsig(${asig.id}, '${asig.nombre_asignatura.replace(/'/g, "\\'")}')">
@@ -188,71 +402,65 @@ function renderizarAsignaturas(asignaturas) {
             if (e.target.closest('button') || e.target.closest('.btn-group')) return;
             window.location.href = `detalles_asignatura.php?id=${asig.id}`;
         });
-
         contenedor.appendChild(card);
     });
 }
 
-function renderizarAlumnos(alumnos) {
-    const cuerpo = document.getElementById('cuerpo-tabla-alumnos');
-    cuerpo.innerHTML = '';
-    alumnos.forEach((alum, index) => {
-        const datos = parseDatosPersonales(alum.datos_personales);
-        const contactoHtml = datos.contacto || datos.telefono ? `
-            <div style="display:flex;flex-direction:column;gap:4px;">
-                ${datos.contacto ? `<span class="fw-bold">${escapeHtml(datos.contacto)}</span>` : ''}
-                ${datos.telefono ? `<span class="text-muted" style="font-size:0.92rem;">${escapeHtml(datos.telefono)}</span>` : ''}
-            </div>` : '<span class="text-muted">Sin datos</span>';
-        const saludHtml = datos.alergias || datos.enfermedades ? `
-            <div style="display:flex;flex-direction:column;gap:4px;">
-                ${datos.alergias ? `<span><strong>Alergias:</strong> ${escapeHtml(datos.alergias)}</span>` : ''}
-                ${datos.enfermedades ? `<span><strong>Enf.:</strong> ${escapeHtml(datos.enfermedades)}</span>` : ''}
-            </div>` : '<span class="text-muted">Ninguna información</span>';
+// --- OTROS ---
 
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-                <td>${index + 1}</td>
-                <td>
-                    <div style="display:flex;align-items:center;gap:10px;">
-                        <div style="width:38px;height:38px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-                            ${alum.foto ? `<img src="../icons/${alum.foto}" alt="${alum.nombre_alumno}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : `<span style='font-weight:bold;color:#888;'>${alum.nombre_alumno.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}</span>`}
-                        </div>
-                        <div>
-                            <div class="fw-bold">${escapeHtml(alum.nombre_alumno)}</div>
-                            <div class="text-muted" style="font-size:0.9rem;">${alum.observaciones ? escapeHtml(alum.observaciones) : 'Sin observaciones'}</div>
-                        </div>
-                    </div>
-                </td>
-                <td>${contactoHtml}</td>
-                <td>${saludHtml}</td>
-                <td class="text-end">
-                    <button class="btn btn-sm btn-outline-primary" onclick="abrirMatriculaAlum(${alum.id}, '${alum.nombre_alumno.replace(/'/g, "\\'")}')">
-                        <i class="fas fa-book"></i> Asignaturas
-                    </button>
-                    <button class="btn btn-sm btn-outline-secondary ms-1" onclick="abrirEditarAlumno(${alum.id})">
-                        <i class="fas fa-edit"></i> Editar
-                    </button>
-                </td>`;
-        cuerpo.appendChild(tr);
-    });
+function abrirModalNuevaAsignatura() {
+    document.getElementById('formNuevaAsignatura').reset();
+    showModal('modalNuevaAsignatura');
 }
 
-function escapeHtml(text) {
-    if (!text) return '';
-    return text.toString().replace(/[&<>"]+/g, function (match) {
-        const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
-        return escape[match];
-    });
+async function editarAsignatura(id) {
+    try {
+        const res = await fetch(`controllers/get_detalles_asignatura.php?id=${id}`);
+        const data = await res.json();
+        if (data.status === 'success') {
+            document.getElementById('editAsigId').value = data.asignatura.id;
+            document.getElementById('editNombreAsignatura').value = data.asignatura.nombre_asignatura;
+            showModal('modalEditarAsignatura');
+        }
+    } catch (e) { console.error(e); }
 }
 
-// --- FUNCIONES DE GUARDADO ---
+async function eliminarAsignatura(id) {
+    if (!confirm('¿Seguro que quieres eliminar esta asignatura? Se borrarán todos los temas y notas.')) return;
+    try {
+        const res = await fetch('controllers/eliminar_asignatura.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id })
+        });
+        const data = await res.json();
+        if (data.status === 'success') cargarDatosClase();
+        else alert('Error: ' + data.message);
+    } catch (e) { console.error(e); }
+}
+
+async function eliminarAsignaturaModal() {
+    const id = document.getElementById('editAsigId').value;
+    if (!id || !confirm('¿Seguro que quieres eliminar esta asignatura?')) return;
+    try {
+        const res = await fetch('controllers/eliminar_asignatura.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+            hideModal('modalEditarAsignatura');
+            cargarDatosClase();
+        } else { alert('Error: ' + data.message); }
+    } catch (e) { console.error(e); }
+}
 
 async function guardarAsignatura(e, isEdit) {
-    e.preventDefault();
+    if (e) e.preventDefault();
     const id = isEdit ? document.getElementById('editAsigId').value : null;
     const nombre = isEdit ? document.getElementById('editNombreAsignatura').value : document.getElementById('nuevoNombreAsignatura').value;
     const url = isEdit ? 'controllers/editar_asignatura.php' : 'controllers/crear_asignatura.php';
-    
     const payload = { nombre_asignatura: nombre, clase_id: CLASE_ACTUAL_ID };
     if (isEdit) payload.id = id;
 
@@ -265,87 +473,10 @@ async function guardarAsignatura(e, isEdit) {
         const res = await response.json();
         if (res.status === 'success') {
             hideModal(isEdit ? 'modalEditarAsignatura' : 'modalNuevaAsignatura');
-            if(isEdit) document.getElementById('formEditarAsignatura').reset();
-            else document.getElementById('formNuevaAsignatura').reset();
             cargarDatosClase();
         } else { alert("Error: " + res.message); }
     } catch (error) { console.error(error); }
 }
-
-function eliminarAsignaturaModal() {
-    const id = document.getElementById('editAsigId').value;
-    if(id) {
-        eliminarAsignatura(id);
-        hideModal('modalEditarAsignatura');
-    }
-}
-
-async function guardarAlumno(e) {
-    e.preventDefault();
-    const nombre = document.getElementById('nombreAlumno').value;
-    const obs = document.getElementById('obsAlumno').value;
-    const foto = document.getElementById('fotoNuevoAlumno').value;
-    const telefono = document.getElementById('telefonoAlumno').value;
-    const contacto = document.getElementById('contactoAlumno').value;
-    const alergias = document.getElementById('alergiasAlumno').value;
-    try {
-        const response = await fetch('controllers/crear_alumno.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre_alumno: nombre, observaciones: obs, foto: foto, clase_id: CLASE_ACTUAL_ID, telefono, contacto, alergias })
-        });
-        const res = await response.json();
-        if (res.status === 'success') {
-            hideModal('modalAlumno');
-            document.getElementById('formAlumno').reset();
-            cargarDatosClase();
-        } else { alert("Error: " + res.message); }
-    } catch (error) { console.error(error); }
-}
-
-async function guardarEdicionAlumno(e) {
-    e.preventDefault();
-    const id = document.getElementById('editAlumnoId').value;
-    const nombre = document.getElementById('editNombreAlumno').value;
-    const obs = document.getElementById('editObsAlumno').value;
-    const foto = document.getElementById('editFotoAlumno').value;
-    const telefono = document.getElementById('editTelefonoAlumno').value;
-    const contacto = document.getElementById('editContactoAlumno').value;
-    const alergias = document.getElementById('editAlergiasAlumno').value;
-    
-    try {
-        const response = await fetch('controllers/editar_alumno.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: id, nombre_alumno: nombre, observaciones: obs, foto: foto, clase_id: CLASE_ACTUAL_ID, telefono, contacto, alergias })
-        });
-        const res = await response.json();
-        if (res.status === 'success') {
-            hideModal('modalEditarAlumno');
-            document.getElementById('formEditarAlumno').reset();
-            cargarDatosClase();
-        } else { alert("Error: " + res.message); }
-    } catch (error) { console.error(error); }
-}
-
-async function eliminarAlumnoModal() {
-    const id = document.getElementById('editAlumnoId').value;
-    if (!id || !confirm('¿Seguro que quieres eliminar este alumno? Se borrarán sus datos y matriculaciones.')) return;
-    try {
-        const res = await fetch('controllers/eliminar_alumno.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: id })
-        });
-        const data = await res.json();
-        if (data.status === 'success') {
-            hideModal('modalEditarAlumno');
-            cargarDatosClase();
-        } else { alert('Error: ' + data.message); }
-    } catch (e) { console.error(e); }
-}
-
-// --- FUNCIONES DE PERIODOS ---
 
 async function enviarPeriodos(asignaturaId, arrayNombres) {
     try {
@@ -355,25 +486,18 @@ async function enviarPeriodos(asignaturaId, arrayNombres) {
             body: JSON.stringify({ nombres_periodos: arrayNombres, asignatura_id: asignaturaId })
         });
         const res = await response.json();
-        if (res.status === 'success') {
-            cargarDatosClase();
-        } else { alert("Error: " + res.message); }
+        if (res.status === 'success') cargarDatosClase();
+        else alert("Error: " + res.message);
     } catch (error) { console.error(error); }
 }
 
 function crearPeriodoPersonalizado(asignaturaId) {
-    const nombre = prompt("Introduce el nombre del nuevo periodo (ej: Tema 1, Examen Final...):");
-    if (nombre && nombre.trim() !== '') {
-        enviarPeriodos(asignaturaId, [nombre.trim()]);
-    }
+    const nombre = prompt("Introduce el nombre del nuevo periodo:");
+    if (nombre && nombre.trim() !== '') enviarPeriodos(asignaturaId, [nombre.trim()]);
 }
 
-// Función para eliminar un periodo
 async function eliminarPeriodo(idPeriodo, nombrePeriodo) {
-    if (!confirm(`¿Estás seguro de que quieres eliminar el periodo "${nombrePeriodo}"? ADVERTENCIA: Se borrarán todas las pruebas y notas asociadas a este periodo.`)) {
-        return;
-    }
-
+    if (!confirm(`¿Eliminar el periodo "${nombrePeriodo}"?`)) return;
     try {
         const response = await fetch('controllers/eliminar_periodo.php', {
             method: 'POST',
@@ -381,27 +505,18 @@ async function eliminarPeriodo(idPeriodo, nombrePeriodo) {
             body: JSON.stringify({ id: idPeriodo })
         });
         const res = await response.json();
-
-        if (res.status === 'success') {
-            cargarDatosClase(); // Recargamos las tarjetas
-        } else {
-            alert("Error al eliminar: " + res.message);
-        }
-    } catch (error) {
-        console.error("Error:", error);
-    }
+        if (res.status === 'success') cargarDatosClase();
+        else alert("Error: " + res.message);
+    } catch (error) { console.error(error); }
 }
 
-// --- FUNCIONES DE MATRICULACIÓN SELECTIVA (OPCIÓN C) ---
 let gestionActual = { tipo: '', id: null };
-
 async function abrirMatriculaAsig(asigId, nombre) {
     gestionActual = { tipo: 'asig', id: asigId };
     document.getElementById('tituloModalGestion').innerText = nombre;
     document.getElementById('subtituloModal').innerText = "Selecciona qué alumnos cursan esta asignatura:";
-    mostrarCargandoMatricula();
+    document.getElementById('lista-checks-gestion').innerHTML = '<div class="p-3 text-center">Cargando...</div>';
     showModal('modalGestion');
-
     const res = await fetch('controllers/gestion_matricula.php', {
         method: 'POST',
         body: JSON.stringify({ accion: 'get_alumnos_por_asig', asig_id: asigId, clase_id: CLASE_ACTUAL_ID })
@@ -414,9 +529,8 @@ async function abrirMatriculaAlum(alumId, nombre) {
     gestionActual = { tipo: 'alum', id: alumId };
     document.getElementById('tituloModalGestion').innerText = nombre;
     document.getElementById('subtituloModal').innerText = "Selecciona en qué asignaturas está matriculado:";
-    mostrarCargandoMatricula();
+    document.getElementById('lista-checks-gestion').innerHTML = '<div class="p-3 text-center">Cargando...</div>';
     showModal('modalGestion');
-
     const res = await fetch('controllers/gestion_matricula.php', {
         method: 'POST',
         body: JSON.stringify({ accion: 'get_asig_por_alumno', alumno_id: alumId, clase_id: CLASE_ACTUAL_ID })
@@ -426,8 +540,7 @@ async function abrirMatriculaAlum(alumId, nombre) {
 }
 
 function renderizarChecksMatricula(items, idKey, textKey) {
-    const contenedor = document.getElementById('lista-checks-gestion');
-    contenedor.innerHTML = items.map(item => `
+    document.getElementById('lista-checks-gestion').innerHTML = items.map(item => `
         <label class="list-group-item d-flex justify-content-between align-items-center cursor-pointer">
             ${item[textKey]}
             <input class="form-check-input me-1" type="checkbox" value="${item[idKey]}" ${item.matriculado > 0 ? 'checked' : ''}>
@@ -436,120 +549,56 @@ function renderizarChecksMatricula(items, idKey, textKey) {
 }
 
 document.getElementById('btnGuardarGestion').onclick = async () => {
-    const checks = document.querySelectorAll('#lista-checks-gestion input:checked');
-    const ids = Array.from(checks).map(c => c.value);
-
+    const ids = Array.from(document.querySelectorAll('#lista-checks-gestion input:checked')).map(c => c.value);
     const body = { accion: 'guardar_matricula', lista_ids: ids };
     if (gestionActual.tipo === 'asig') body.asig_id = gestionActual.id;
     else body.alumno_id = gestionActual.id;
-
     const res = await fetch('controllers/gestion_matricula.php', { method: 'POST', body: JSON.stringify(body) });
     const data = await res.json();
     if (data.status === 'success') {
         hideModal('modalGestion');
         cargarDatosClase();
-        alert("Cambios guardados correctamente");
     }
 };
 
-function mostrarCargandoMatricula() { document.getElementById('lista-checks-gestion').innerHTML = '<div class="p-3 text-center">Cargando...</div>'; }
-
-// Control Modales Bootstrap Helper
 function showModal(id) {
     const el = document.getElementById(id);
-    if(el) {
-        const m = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
-        m.show();
-    }
+    if(el) { (bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el)).show(); }
 }
 function hideModal(id) {
     const el = document.getElementById(id);
-    if(el) {
-        const m = bootstrap.Modal.getInstance(el);
-        if(m) m.hide();
+    if(el) { const m = bootstrap.Modal.getInstance(el); if(m) m.hide(); }
+}
+
+window.abrirMiniEventoClase = function () {
+    if (!window.miniCalendarClase) return;
+    if (!window.miniCalendarClase.selectedDate) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        window.miniCalendarClase.selectedDate = `${year}-${month}-${day}`;
     }
+    window.miniCalendarClase.updateEventsList();
+    window.miniCalendarClase.openEventModal();
 }
 
-// Interfaz Asignaturas
-function abrirModalNuevaAsignatura() { 
-    document.getElementById('formNuevaAsignatura').reset();
-    showModal('modalNuevaAsignatura'); 
-}
-// Override global editarAsignatura since the old one was different
-window.editarAsignatura = async function(id) {
-    try {
-        const res = await fetch(`controllers/get_detalles_asignatura.php?id=${id}`);
-        const data = await res.json();
-        if (data.status === 'success') {
-            document.getElementById('editAsigId').value = data.asignatura.id;
-            document.getElementById('editNombreAsignatura').value = data.asignatura.nombre_asignatura;
-            showModal('modalEditarAsignatura');
-        }
-    } catch (e) { console.error(e); }
-}
+document.addEventListener('DOMContentLoaded', () => {
+    cargarDatosClase();
 
-const iconosDisponibles = [
-    'alumna_01.png', 'alumna_02.png', 'alumna_03.png', 'alumna_04.png', 'alumna_05.png', 'alumna_06.png',
-    'alumno_01.png', 'alumno_02.png', 'alumno_03.png', 'alumno_04.png'
-];
-
-function abrirModalNuevoAlumno() {
-    document.getElementById('formAlumno').reset();
-    document.getElementById('fotoNuevoAlumno').value = '';
-    renderizarIconosNuevo();
-    showModal('modalAlumno');
-}
-
-window.abrirEditarAlumno = async function(id) {
-    try {
-        // Obtenemos los alumnos actuales que ya están cargados en pantalla o pedimos al backend.
-        // Lo ideal es pedirlo al backend para tener la última versión.
-        const res = await fetch(`controllers/get_clase_data.php?clase_id=${CLASE_ACTUAL_ID}`);
-        const data = await res.json();
-        if (data.status === 'success') {
-            const alum = data.alumnos.find(a => a.id == id);
-            if(alum) {
-                document.getElementById('editAlumnoId').value = alum.id;
-                document.getElementById('editNombreAlumno').value = alum.nombre_alumno;
-                document.getElementById('editObsAlumno').value = alum.observaciones || '';
-                document.getElementById('editFotoAlumno').value = alum.foto || '';
-                
-                const datosPersonales = alum.datos_personales ? JSON.parse(alum.datos_personales) : {};
-                document.getElementById('editTelefonoAlumno').value = datosPersonales.telefono || '';
-                document.getElementById('editContactoAlumno').value = datosPersonales.contacto || '';
-                document.getElementById('editAlergiasAlumno').value = datosPersonales.alergias || '';
-                
-                renderizarIconosEditar();
-                showModal('modalEditarAlumno');
+    // Inicializar mini-calendario para la clase
+    if (window.MiniCalendar && typeof CLASE_ACTUAL_ID !== 'undefined') {
+        window.miniCalendarClase = new MiniCalendar('#miniCalendarClaseContainer', {
+            claseId: CLASE_ACTUAL_ID,
+            onEventCreate: () => {
+                console.log('Evento creado en la clase');
             }
-        }
-    } catch (e) { console.error(e); }
-}
+        });
+    }
 
-function renderizarIconosNuevo() {
-    const seleccionado = document.getElementById('fotoNuevoAlumno').value;
-    document.getElementById('lista-iconos-nuevo').innerHTML = iconosDisponibles.map(icono => `
-        <img src="../icons/${icono}" 
-             class="avatar-option ${icono === seleccionado ? 'selected' : ''}" 
-             onclick="seleccionarIconoNuevo('${icono}')" alt="Icono">
-    `).join('');
-}
-
-function seleccionarIconoNuevo(icono) {
-    document.getElementById('fotoNuevoAlumno').value = icono;
-    renderizarIconosNuevo();
-}
-
-function renderizarIconosEditar() {
-    const seleccionado = document.getElementById('editFotoAlumno').value;
-    document.getElementById('lista-iconos-editar').innerHTML = iconosDisponibles.map(icono => `
-        <img src="../icons/${icono}" 
-             class="avatar-option ${icono === seleccionado ? 'selected' : ''}" 
-             onclick="seleccionarIconoEditar('${icono}')" alt="Icono">
-    `).join('');
-}
-
-function seleccionarIconoEditar(icono) {
-    document.getElementById('editFotoAlumno').value = icono;
-    renderizarIconosEditar();
-}
+    // Re-vincular formularios por seguridad
+    const formA = document.getElementById('formAlumno');
+    if(formA) formA.addEventListener('submit', guardarAlumno);
+    const formE = document.getElementById('formEditarAlumno');
+    if(formE) formE.addEventListener('submit', guardarEdicionAlumno);
+});

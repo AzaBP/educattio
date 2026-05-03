@@ -201,7 +201,12 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
 
                 <div class="tab-pane fade" id="alumnos" role="tabpanel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3 class="m-0" style="font-size: 1.2rem; font-family: 'Georgia', serif;">Listado de la clase</h3>
+                        <div class="d-flex align-items-center gap-3">
+                            <h3 class="m-0" style="font-size: 1.2rem; font-family: 'Georgia', serif;">Listado de la clase</h3>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="exportarAlumnosPDF()" style="border-radius: 8px;">
+                                <i class="fas fa-file-pdf"></i> Exportar Lista
+                            </button>
+                        </div>
                         <button class="btn btn-primary" onclick="abrirModalNuevoAlumno()" style="border-radius: 8px;"><i class="fas fa-user-plus"></i> Añadir Alumno</button>
                     </div>
                     
@@ -227,18 +232,10 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../js/mini-calendar.js"></script>
-    <script src="../js/detalles_clase.js"></script>
     <script>
-        function toggleMenu(event, id) {
-            event.preventDefault();
-            event.stopPropagation();
-            document.querySelectorAll('.dropdown-menu-aislado').forEach(m => {
-                if (m.id !== `dropdown-${id}`) m.classList.remove('show');
-            });
-            const menu = document.getElementById(`dropdown-${id}`);
-            if (menu) menu.classList.toggle('show');
-        }
+        // Guardamos el ID de la clase para usarlo en nuestras funciones AJAX futuras
+        const CLASE_ACTUAL_ID = <?php echo $clase_id; ?>;
+        
         function toggleMenu(event, id) {
             event.preventDefault();
             event.stopPropagation();
@@ -251,37 +248,6 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
         document.addEventListener('click', () => {
             document.querySelectorAll('.dropdown-options-menu').forEach(m => m.classList.remove('show'));
         });
-        
-        async function editarAsignatura(id) {
-            try {
-                const res = await fetch(`controllers/get_detalles_asignatura.php?id=${id}`);
-                const data = await res.json();
-                if (data.status === 'success') {
-                    document.getElementById('editAsigId').value = data.asignatura.id;
-                    document.getElementById('nombreAsignatura').value = data.asignatura.nombre_asignatura;
-                    document.getElementById('modalAsigTitle').innerText = 'Modificar Asignatura';
-                    document.getElementById('btnSaveAsig').innerText = 'Actualizar';
-                    abrirModalNuevaAsignatura();
-                }
-            } catch (e) { console.error(e); }
-        }
-
-        async function eliminarAsignatura(id) {
-            if (!confirm('¿Seguro que quieres eliminar esta asignatura? Se borrarán todos los temas y notas.')) return;
-            try {
-                const res = await fetch('controllers/eliminar_asignatura.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: id })
-                });
-                const data = await res.json();
-                if (data.status === 'success') cargarDatosClase();
-                else alert('Error: ' + data.message);
-            } catch (e) { console.error(e); }
-        }
-        
-        // Guardamos el ID de la clase para usarlo en nuestras funciones AJAX futuras
-        const CLASE_ACTUAL_ID = <?php echo $clase_id; ?>;
     </script>
 
 <!-- MODAL NUEVA ASIGNATURA -->
@@ -503,6 +469,8 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
     </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.7.0/jspdf.plugin.autotable.min.js"></script>
 <script src="../js/calendar-sync.js?v=1.3"></script>
 <script src="../js/mini-calendar.js?v=1.3"></script>
 <script src="../js/detalles_clase.js?v=1.3"></script>
