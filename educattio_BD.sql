@@ -184,3 +184,12 @@ ALTER TABLE temas_asignatura ADD COLUMN documento VARCHAR(255) NULL;
 
 -- Se ha añadido la columna asignatura_id a la tabla eventos mediante una auto-migración automática en el backend.
 ALTER TABLE eventos ADD COLUMN asignatura_id INT NULL;
+
+-- ============================================================
+-- MODIFICACIÓN: Añadir personalización visual a asignaturas
+-- Ejecutar en phpMyAdmin o consola MySQL para activar el
+-- selector de color e icono en detalles_clase.php
+-- ============================================================
+ALTER TABLE asignaturas
+    ADD COLUMN color_asignatura VARCHAR(20) NOT NULL DEFAULT '#3b82f6',
+    ADD COLUMN icono_asignatura VARCHAR(50) NOT NULL DEFAULT 'fa-book';
