@@ -49,11 +49,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Educattio - Iniciar Sesión</title>
     <link rel="icon" type="image/png" href="../imagenes/dolphin.png">
-    <link rel="stylesheet" href="../css/inicio_web.css">
-    <link rel="stylesheet" href="../css/inicio_sesion.css">
-    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/global.css?v=1.2">
+    <link rel="stylesheet" href="../css/inicio_web.css?v=1.2">
+    <link rel="stylesheet" href="../css/inicio_sesion.css?v=1.2">
+    <!-- Fuentes premium -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 </head>
-<body class="login-page">
+<body class="auth-body login-page">
 
 <main class="login-container">
     <div class="login-card">

@@ -35,40 +35,45 @@
 
 .btn {
     text-decoration: none;
-    padding: 18px 25px;
-    border-radius: 50px;
+    padding: 16px 32px;
+    border-radius: 16px;
     font-weight: 600;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     text-align: center;
     font-size: 1.1rem;
     font-family: var(--font-sans);
     display: block;
+    backdrop-filter: blur(10px);
 }
 
 /* Estilo Botón Principal */
 .btn-primary {
     background-color: white;
     color: var(--accent-color);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .btn-primary:hover {
-    background-color: #333;
-    color: white;
-    transform: translateY(-3px);
+    background-color: white;
+    color: #ff5252;
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
 }
 
 /* Estilo Botón Secundario */
 .btn-secondary {
-    background-color: transparent;
+    background-color: rgba(255, 255, 255, 0.1);
     color: white;
-    border: 2px solid white;
+    border: 2px solid rgba(255, 255, 255, 0.5);
 }
 
 .btn-secondary:hover {
-    background-color: white;
-    color: var(--accent-color);
-    transform: translateY(-3px);
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border-color: white;
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 /* Animaciones específicas de esta página */
@@ -171,7 +176,7 @@ body::after {
 /* OPCIONAL: Ajuste para móviles
    (Para que el delfín no tape los botones en pantallas pequeñas) */
 @media (max-width: 768px) {
-    body {
+    body.auth-body {
         background-size: 200px, cover; /* Delfín más pequeño */
         background-position: right -50px bottom -50px, center; /* Un poco más escondido */
     }

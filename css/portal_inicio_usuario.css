@@ -56,16 +56,21 @@ body {
     flex-direction: column;
     align-items: center;
     margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 1.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    margin-top: 1rem;
 }
 
 .profile-link {
     position: relative;
-    display: block;
-    width: 80px;
-    height: 80px;
-    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 90px;
+    height: 90px;
+    margin-bottom: 1rem;
 }
 
 .sidebar-pic {
@@ -73,45 +78,57 @@ body {
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid rgba(255, 255, 255, 0.5);
-    transition: all 0.3s ease;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     background: white;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
 .edit-icon {
     position: absolute;
-    bottom: 0;
-    right: 0;
+    bottom: 2px;
+    right: 2px;
     background: white;
     color: var(--accent-color);
-    width: 25px;
-    height: 25px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 0.8rem;
-    opacity: 0;
-    transform: scale(0.8);
+    font-size: 0.85rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    opacity: 0.9;
+    transform: scale(0.9);
     transition: all 0.3s ease;
+    border: 2px solid var(--page-bg-end);
+    z-index: 2;
 }
 
 .profile-link:hover .sidebar-pic {
     border-color: white;
-    transform: scale(1.05);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transform: scale(1.08) rotate(3deg);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
 }
 
 .profile-link:hover .edit-icon {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1.1) rotate(-3deg);
+    background-color: var(--accent-color);
+    color: white;
 }
 
 .sidebar-user-name {
-    font-weight: 600;
-    font-size: 1.1rem;
+    font-weight: 700;
+    font-size: 1.15rem;
     text-align: center;
     color: white;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Navegación */
@@ -350,56 +367,56 @@ body {
     border: 1px solid #f1f5f9;
 }
 
-/* Tarjeta de añadir curso (Dashed) - Estilo portal_cursos */
+/* Tarjeta de añadir curso (Dashed) */
 .add-card-dashed {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 12px;
-    padding: 1.5rem;
-    border-radius: 20px;
+    gap: 15px;
+    padding: 2rem;
+    border-radius: 24px;
     border: 3px dashed #e2e8f0;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    color: #94a3b8;
-    background: rgba(255, 255, 255, 0.3);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    color: #64748b;
+    background: rgba(255, 255, 255, 0.5);
     text-decoration: none !important;
-    min-height: 140px;
-    /* Un poco más pequeña que en portal_cursos para el overview */
+    min-height: 200px;
 }
 
 .add-card-dashed:hover {
     background: #ffffff;
     border-color: var(--accent-color);
     color: var(--accent-color);
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-    text-decoration: none !important;
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 }
 
 .add-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: 2px solid #e2e8f0;
+    width: 60px;
+    height: 60px;
+    border-radius: 20px;
+    background: #f1f5f9;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    transition: all 0.3s ease;
+    font-size: 1.5rem;
+    color: #64748b;
+    transition: all 0.3s;
 }
 
 .add-card-dashed:hover .add-icon {
-    background-color: var(--accent-color);
-    border-color: var(--accent-color);
+    background: linear-gradient(135deg, var(--accent-color) 0%, #ff5252 100%);
     color: white;
+    transform: rotate(90deg);
+    box-shadow: 0 8px 16px rgba(255, 107, 107, 0.3);
 }
 
 .add-card-dashed h3 {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #94a3b8;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #475569;
     margin: 0;
     transition: color 0.3s;
 }
@@ -1153,135 +1170,207 @@ body {
     }
 }
 
-/* --- VENTANA MODAL (POPUP) --- */
+/* --- VENTANA MODAL PREMIUM --- */
 .modal-overlay {
     display: none;
-    /* Oculto por defecto */
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    /* Fondo oscuro semitransparente */
-    backdrop-filter: blur(5px);
-    /* Efecto borroso de fondo */
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(12px);
     z-index: 1000;
     justify-content: center;
     align-items: center;
-    animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    padding: 20px;
 }
 
-/* Clase para activar la visualización */
-.modal-overlay.active {
-    display: flex;
-}
-
-.modal-window {
-    background: white;
-    width: 90%;
-    max-width: 500px;
-    border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+.modal-window.premium-modal {
+    background: rgba(255, 255, 255, 0.95);
+    width: 100%;
+    max-width: 550px;
+    border-radius: 28px;
+    padding: 2.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     position: relative;
-    transform: translateY(20px);
-    animation: slideUp 0.3s ease forwards;
+    transform: translateY(30px);
+    animation: modalSlideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-.modal-header {
+@keyframes modalSlideUp {
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-title-group {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    gap: 15px;
+}
+
+.modal-icon-header {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, var(--accent-color) 0%, #ff5252 100%);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    box-shadow: 0 8px 16px rgba(255, 107, 107, 0.25);
 }
 
 .modal-header h3 {
-    color: var(--text-color);
-    font-family: var(--font-serif);
-    font-size: 1.5rem;
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #0f172a;
 }
 
 .close-btn {
-    background: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f1f5f9;
     border: none;
-    font-size: 1.2rem;
-    color: #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
     cursor: pointer;
-    transition: color 0.3s;
+    transition: all 0.2s;
 }
 
 .close-btn:hover {
-    color: var(--accent-color);
+    background: #e2e8f0;
+    color: #0f172a;
+    transform: rotate(90deg);
 }
 
-/* Formulario del Modal */
+/* Formulario Premium */
 .modal-form .form-group {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .modal-form label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-    color: #666;
-    font-weight: 600;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-form label i {
+    color: var(--accent-color);
+    width: 16px;
 }
 
 .modal-form input {
     width: 100%;
-    padding: 12px;
-    border: 2px solid #eee;
-    border-radius: 10px;
+    padding: 14px 18px;
+    background: #f8fafc;
+    border: 2px solid #f1f5f9;
+    border-radius: 16px;
     font-size: 1rem;
-    transition: border-color 0.3s;
+    color: #1e293b;
+    transition: all 0.3s;
 }
 
 .modal-form input:focus {
-    outline: none;
+    background: white;
     border-color: var(--accent-color);
+    box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.1);
 }
 
-.form-row {
+.flex-1 { flex: 1; }
+
+.color-palette-container {
     display: flex;
-    gap: 15px;
+    align-items: center;
+    gap: 12px;
+    background: #f8fafc;
+    padding: 8px 12px;
+    border-radius: 14px;
+    border: 2px solid #f1f5f9;
+}
+
+.color-presets {
+    display: flex;
+    gap: 10px;
+}
+
+.color-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+}
+
+.color-dot:hover { transform: scale(1.15); }
+
+.color-divider {
+    width: 1px;
+    height: 24px;
+    background: #e2e8f0;
+}
+
+input[type="color"] {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
 }
 
 .modal-footer {
     display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 2rem;
+    gap: 15px;
+    margin-top: 2.5rem;
 }
 
 .btn-cancel {
-    background: none;
+    flex: 1;
+    background: #f1f5f9;
+    color: #64748b;
     border: none;
-    color: #888;
+    padding: 14px;
+    border-radius: 16px;
+    font-weight: 700;
     cursor: pointer;
-    font-weight: 600;
-    padding: 10px 20px;
+    transition: all 0.2s;
 }
 
+.btn-cancel:hover { background: #e2e8f0; color: #1e293b; }
+
 .btn-save {
-    background: var(--accent-color);
+    flex: 2;
+    background: linear-gradient(135deg, var(--accent-color) 0%, #ff5252 100%);
     color: white;
     border: none;
-    padding: 10px 25px;
-    border-radius: 50px;
-    font-weight: 600;
+    padding: 14px;
+    border-radius: 16px;
+    font-weight: 700;
     cursor: pointer;
-    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 10px 20px rgba(255, 107, 107, 0.2);
+    transition: all 0.3s;
 }
 
 .btn-save:hover {
-    transform: scale(1.05);
-}
-
-@keyframes slideUp {
-    to {
-        transform: translateY(0);
-    }
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(255, 107, 107, 0.3);
+    filter: brightness(1.1);
 }
 
 

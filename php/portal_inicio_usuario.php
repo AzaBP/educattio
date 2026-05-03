@@ -286,9 +286,12 @@ try {
 
 <!-- MODAL PARA CREAR CURSO -->
 <div id="modalCurso" class="modal-overlay">
-    <div class="modal-window">
+    <div class="modal-window premium-modal">
         <div class="modal-header">
-            <h3>Crear nuevo curso</h3>
+            <div class="modal-title-group">
+                <div class="modal-icon-header"><i class="fas fa-university"></i></div>
+                <h3>Crear nuevo curso</h3>
+            </div>
             <button class="close-btn" onclick="closeModalCurso()">
                 <i class="fas fa-times"></i>
             </button>
@@ -298,37 +301,36 @@ try {
             <input type="hidden" id="editCursoId" value="">
             
             <div class="form-group">
-                <label for="inputNombreCentro">Centro Educativo</label>
+                <label for="inputNombreCentro"><i class="fas fa-building"></i> Centro Educativo</label>
                 <input type="text" id="inputNombreCentro" placeholder="Ej. IES Cervantes" required>
             </div>
 
             <div class="form-row">
-                <div class="form-group">
-                    <label for="inputPoblacion">Población</label>
+                <div class="form-group flex-1">
+                    <label for="inputPoblacion"><i class="fas fa-city"></i> Población</label>
                     <input type="text" id="inputPoblacion" placeholder="Ej. Zaragoza" required>
                 </div>
-                <div class="form-group">
-                    <label for="inputProvincia">Provincia</label>
+                <div class="form-group flex-1">
+                    <label for="inputProvincia"><i class="fas fa-map-marker-alt"></i> Provincia</label>
                     <input type="text" id="inputProvincia" placeholder="Ej. Zaragoza" required>
                 </div>
             </div>
 
             <div class="form-row">
-                <div class="form-group">
-                    <label for="inputAnio">Año del Curso Lectivo</label>
+                <div class="form-group flex-1">
+                    <label for="inputAnio"><i class="far fa-calendar-alt"></i> Año Lectivo</label>
                     <input type="text" id="inputAnio" value="2025-2026" required>
                 </div>
-                <div class="form-group">
-                    <label>Color del Curso</label>
-                    <div class="color-palette-container" style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
-                        <div class="color-presets" id="colorPresets" style="display: flex; gap: 8px;">
+                <div class="form-group flex-1">
+                    <label><i class="fas fa-palette"></i> Color Distintivo</label>
+                    <div class="color-palette-container">
+                        <div class="color-presets" id="colorPresets">
                             <div class="color-dot" data-color="#ff7a59" onclick="selectPresetColor('#ff7a59', this)" style="background:#ff7a59;"></div>
                             <div class="color-dot" data-color="#4a90e2" onclick="selectPresetColor('#4a90e2', this)" style="background:#4a90e2;"></div>
                             <div class="color-dot" data-color="#47b39d" onclick="selectPresetColor('#47b39d', this)" style="background:#47b39d;"></div>
                             <div class="color-dot" data-color="#ffc107" onclick="selectPresetColor('#ffc107', this)" style="background:#ffc107;"></div>
-                            <div class="color-dot" data-color="#9b59b6" onclick="selectPresetColor('#9b59b6', this)" style="background:#9b59b6;"></div>
                         </div>
-                        <div style="height: 25px; width: 1px; background: #ddd;"></div>
+                        <div class="color-divider"></div>
                         <input type="color" id="inputColor" value="#ff7a59" oninput="deselectPresets()">
                     </div>
                 </div>
@@ -336,12 +338,13 @@ try {
 
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeModalCurso()">Cancelar</button>
-                <button type="submit" class="btn-save" id="btnGuardarCurso">Guardar</button>
+                <button type="submit" class="btn-save" id="btnGuardarCurso">
+                    <span>Guardar Curso</span>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
         </form>
-
     </div>
-    
 </div>
 
 <script src="../js/portal_inicio_usuario.js?v=1.3"></script>
