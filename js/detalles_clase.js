@@ -65,7 +65,7 @@ async function guardarEdicionAlumno(e) {
 }
 document.addEventListener('DOMContentLoaded', () => {
     cargarDatosClase();
-    
+
     // Inicializar mini-calendario para la clase
     if (window.MiniCalendar && CLASE_ACTUAL_ID) {
         window.miniCalendarClase = new MiniCalendar('#miniCalendarClaseContainer', {
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-window.abrirMiniEventoClase = function() {
+window.abrirMiniEventoClase = function () {
     if (!window.miniCalendarClase) return;
     if (!window.miniCalendarClase.selectedDate) {
         const today = new Date();
@@ -147,7 +147,7 @@ function renderizarAsignaturas(asignaturas) {
                     </button>
                 </div>`;
         }
-           const card = document.createElement('div');
+        const card = document.createElement('div');
         card.className = 'col-md-4 mb-4';
         card.innerHTML = `
             <div class="premium-card-wrapper" style="position: relative; height: 100%;">
@@ -188,7 +188,7 @@ function renderizarAsignaturas(asignaturas) {
             if (e.target.closest('button') || e.target.closest('.btn-group')) return;
             window.location.href = `detalles_asignatura.php?id=${asig.id}`;
         });
-     
+
         contenedor.appendChild(card);
     });
 }
@@ -215,7 +215,7 @@ function renderizarAlumnos(alumnos) {
                 <td>
                     <div style="display:flex;align-items:center;gap:10px;">
                         <div style="width:38px;height:38px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-                            ${alum.foto ? `<img src="../icons/${alum.foto}" alt="${alum.nombre_alumno}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : `<span style='font-weight:bold;color:#888;'>${alum.nombre_alumno.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase()}</span>`}
+                            ${alum.foto ? `<img src="../icons/${alum.foto}" alt="${alum.nombre_alumno}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : `<span style='font-weight:bold;color:#888;'>${alum.nombre_alumno.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}</span>`}
                         </div>
                         <div>
                             <div class="fw-bold">${escapeHtml(alum.nombre_alumno)}</div>
@@ -239,7 +239,7 @@ function renderizarAlumnos(alumnos) {
 
 function escapeHtml(text) {
     if (!text) return '';
-    return text.toString().replace(/[&<>"]+/g, function(match) {
+    return text.toString().replace(/[&<>"]+/g, function (match) {
         const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
         return escape[match];
     });
@@ -247,13 +247,14 @@ function escapeHtml(text) {
 
 // --- FUNCIONES DE GUARDADO ---
 
-async function guardarAsignatura(e) {
+async function guardarAsignatura(e, isEdit) {
     e.preventDefault();
-    const id = document.getElementById('editAsigId').value;
-    const nombre = document.getElementById('nombreAsignatura').value;
-    const url = id ? 'controllers/editar_asignatura.php' : 'controllers/crear_asignatura.php';
+    const id = isEdit ? document.getElementById('editAsigId').value : null;
+    const nombre = isEdit ? document.getElementById('editNombreAsignatura').value : document.getElementById('nuevoNombreAsignatura').value;
+    const url = isEdit ? 'controllers/editar_asignatura.php' : 'controllers/crear_asignatura.php';
+    
     const payload = { nombre_asignatura: nombre, clase_id: CLASE_ACTUAL_ID };
-    if (id) payload.id = id;
+    if (isEdit) payload.id = id;
 
     try {
         const response = await fetch(url, {
@@ -263,12 +264,20 @@ async function guardarAsignatura(e) {
         });
         const res = await response.json();
         if (res.status === 'success') {
-            cerrarModalAsignatura();
-            document.getElementById('formAsignatura').reset();
-            document.getElementById('editAsigId').value = '';
+            hideModal(isEdit ? 'modalEditarAsignatura' : 'modalNuevaAsignatura');
+            if(isEdit) document.getElementById('formEditarAsignatura').reset();
+            else document.getElementById('formNuevaAsignatura').reset();
             cargarDatosClase();
         } else { alert("Error: " + res.message); }
     } catch (error) { console.error(error); }
+}
+
+function eliminarAsignaturaModal() {
+    const id = document.getElementById('editAsigId').value;
+    if(id) {
+        eliminarAsignatura(id);
+        hideModal('modalEditarAsignatura');
+    }
 }
 
 async function guardarAlumno(e) {
@@ -287,11 +296,53 @@ async function guardarAlumno(e) {
         });
         const res = await response.json();
         if (res.status === 'success') {
-            cerrarModalAlumno();
+            hideModal('modalAlumno');
             document.getElementById('formAlumno').reset();
             cargarDatosClase();
         } else { alert("Error: " + res.message); }
     } catch (error) { console.error(error); }
+}
+
+async function guardarEdicionAlumno(e) {
+    e.preventDefault();
+    const id = document.getElementById('editAlumnoId').value;
+    const nombre = document.getElementById('editNombreAlumno').value;
+    const obs = document.getElementById('editObsAlumno').value;
+    const foto = document.getElementById('editFotoAlumno').value;
+    const telefono = document.getElementById('editTelefonoAlumno').value;
+    const contacto = document.getElementById('editContactoAlumno').value;
+    const alergias = document.getElementById('editAlergiasAlumno').value;
+    
+    try {
+        const response = await fetch('controllers/editar_alumno.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id, nombre_alumno: nombre, observaciones: obs, foto: foto, clase_id: CLASE_ACTUAL_ID, telefono, contacto, alergias })
+        });
+        const res = await response.json();
+        if (res.status === 'success') {
+            hideModal('modalEditarAlumno');
+            document.getElementById('formEditarAlumno').reset();
+            cargarDatosClase();
+        } else { alert("Error: " + res.message); }
+    } catch (error) { console.error(error); }
+}
+
+async function eliminarAlumnoModal() {
+    const id = document.getElementById('editAlumnoId').value;
+    if (!id || !confirm('¿Seguro que quieres eliminar este alumno? Se borrarán sus datos y matriculaciones.')) return;
+    try {
+        const res = await fetch('controllers/eliminar_alumno.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+            hideModal('modalEditarAlumno');
+            cargarDatosClase();
+        } else { alert('Error: ' + data.message); }
+    } catch (e) { console.error(e); }
 }
 
 // --- FUNCIONES DE PERIODOS ---
@@ -330,7 +381,7 @@ async function eliminarPeriodo(idPeriodo, nombrePeriodo) {
             body: JSON.stringify({ id: idPeriodo })
         });
         const res = await response.json();
-        
+
         if (res.status === 'success') {
             cargarDatosClase(); // Recargamos las tarjetas
         } else {
@@ -349,7 +400,8 @@ async function abrirMatriculaAsig(asigId, nombre) {
     document.getElementById('tituloModalGestion').innerText = nombre;
     document.getElementById('subtituloModal').innerText = "Selecciona qué alumnos cursan esta asignatura:";
     mostrarCargandoMatricula();
-    
+    showModal('modalGestion');
+
     const res = await fetch('controllers/gestion_matricula.php', {
         method: 'POST',
         body: JSON.stringify({ accion: 'get_alumnos_por_asig', asig_id: asigId, clase_id: CLASE_ACTUAL_ID })
@@ -363,6 +415,7 @@ async function abrirMatriculaAlum(alumId, nombre) {
     document.getElementById('tituloModalGestion').innerText = nombre;
     document.getElementById('subtituloModal').innerText = "Selecciona en qué asignaturas está matriculado:";
     mostrarCargandoMatricula();
+    showModal('modalGestion');
 
     const res = await fetch('controllers/gestion_matricula.php', {
         method: 'POST',
@@ -380,13 +433,12 @@ function renderizarChecksMatricula(items, idKey, textKey) {
             <input class="form-check-input me-1" type="checkbox" value="${item[idKey]}" ${item.matriculado > 0 ? 'checked' : ''}>
         </label>
     `).join('');
-    document.getElementById('modalGestion').style.display = 'flex';
 }
 
 document.getElementById('btnGuardarGestion').onclick = async () => {
     const checks = document.querySelectorAll('#lista-checks-gestion input:checked');
     const ids = Array.from(checks).map(c => c.value);
-    
+
     const body = { accion: 'guardar_matricula', lista_ids: ids };
     if (gestionActual.tipo === 'asig') body.asig_id = gestionActual.id;
     else body.alumno_id = gestionActual.id;
@@ -394,34 +446,84 @@ document.getElementById('btnGuardarGestion').onclick = async () => {
     const res = await fetch('controllers/gestion_matricula.php', { method: 'POST', body: JSON.stringify(body) });
     const data = await res.json();
     if (data.status === 'success') {
-        cerrarModalGestion();
+        hideModal('modalGestion');
+        cargarDatosClase();
         alert("Cambios guardados correctamente");
     }
 };
 
-function cerrarModalGestion() { document.getElementById('modalGestion').style.display = 'none'; }
 function mostrarCargandoMatricula() { document.getElementById('lista-checks-gestion').innerHTML = '<div class="p-3 text-center">Cargando...</div>'; }
 
-// Función para eliminar un periodo
-async function eliminarPeriodo(id, nombre) {
-    if (!confirm(`¿Borrar "${nombre}"? Perderás todas las notas de este periodo.`)) return;
-    const res = await fetch('controllers/eliminar_periodo.php', { method: 'POST', body: JSON.stringify({ id: id }) });
-    const data = await res.json();
-    if (data.status === 'success') cargarDatosClase();
+// Control Modales Bootstrap Helper
+function showModal(id) {
+    const el = document.getElementById(id);
+    if(el) {
+        const m = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
+        m.show();
+    }
+}
+function hideModal(id) {
+    const el = document.getElementById(id);
+    if(el) {
+        const m = bootstrap.Modal.getInstance(el);
+        if(m) m.hide();
+    }
 }
 
-// Control Modales
-function abrirModalNuevaAsignatura() { document.getElementById('modalAsignatura').style.display = 'flex'; }
-function cerrarModalAsignatura() { document.getElementById('modalAsignatura').style.display = 'none'; }
+// Interfaz Asignaturas
+function abrirModalNuevaAsignatura() { 
+    document.getElementById('formNuevaAsignatura').reset();
+    showModal('modalNuevaAsignatura'); 
+}
+// Override global editarAsignatura since the old one was different
+window.editarAsignatura = async function(id) {
+    try {
+        const res = await fetch(`controllers/get_detalles_asignatura.php?id=${id}`);
+        const data = await res.json();
+        if (data.status === 'success') {
+            document.getElementById('editAsigId').value = data.asignatura.id;
+            document.getElementById('editNombreAsignatura').value = data.asignatura.nombre_asignatura;
+            showModal('modalEditarAsignatura');
+        }
+    } catch (e) { console.error(e); }
+}
+
 const iconosDisponibles = [
     'alumna_01.png', 'alumna_02.png', 'alumna_03.png', 'alumna_04.png', 'alumna_05.png', 'alumna_06.png',
     'alumno_01.png', 'alumno_02.png', 'alumno_03.png', 'alumno_04.png'
 ];
 
 function abrirModalNuevoAlumno() {
-    document.getElementById('modalAlumno').style.display = 'flex';
+    document.getElementById('formAlumno').reset();
     document.getElementById('fotoNuevoAlumno').value = '';
     renderizarIconosNuevo();
+    showModal('modalAlumno');
+}
+
+window.abrirEditarAlumno = async function(id) {
+    try {
+        // Obtenemos los alumnos actuales que ya están cargados en pantalla o pedimos al backend.
+        // Lo ideal es pedirlo al backend para tener la última versión.
+        const res = await fetch(`controllers/get_clase_data.php?clase_id=${CLASE_ACTUAL_ID}`);
+        const data = await res.json();
+        if (data.status === 'success') {
+            const alum = data.alumnos.find(a => a.id == id);
+            if(alum) {
+                document.getElementById('editAlumnoId').value = alum.id;
+                document.getElementById('editNombreAlumno').value = alum.nombre_alumno;
+                document.getElementById('editObsAlumno').value = alum.observaciones || '';
+                document.getElementById('editFotoAlumno').value = alum.foto || '';
+                
+                const datosPersonales = alum.datos_personales ? JSON.parse(alum.datos_personales) : {};
+                document.getElementById('editTelefonoAlumno').value = datosPersonales.telefono || '';
+                document.getElementById('editContactoAlumno').value = datosPersonales.contacto || '';
+                document.getElementById('editAlergiasAlumno').value = datosPersonales.alergias || '';
+                
+                renderizarIconosEditar();
+                showModal('modalEditarAlumno');
+            }
+        }
+    } catch (e) { console.error(e); }
 }
 
 function renderizarIconosNuevo() {
@@ -437,4 +539,17 @@ function seleccionarIconoNuevo(icono) {
     document.getElementById('fotoNuevoAlumno').value = icono;
     renderizarIconosNuevo();
 }
-function cerrarModalAlumno() { document.getElementById('modalAlumno').style.display = 'none'; }
+
+function renderizarIconosEditar() {
+    const seleccionado = document.getElementById('editFotoAlumno').value;
+    document.getElementById('lista-iconos-editar').innerHTML = iconosDisponibles.map(icono => `
+        <img src="../icons/${icono}" 
+             class="avatar-option ${icono === seleccionado ? 'selected' : ''}" 
+             onclick="seleccionarIconoEditar('${icono}')" alt="Icono">
+    `).join('');
+}
+
+function seleccionarIconoEditar(icono) {
+    document.getElementById('editFotoAlumno').value = icono;
+    renderizarIconosEditar();
+}

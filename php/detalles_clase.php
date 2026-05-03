@@ -1,45 +1,4 @@
-<div id="modalEditarAlumno" class="modal-overlay" style="display: none;">
-    <div class="modal-content" style="max-width: 450px;">
-        <div class="modal-header">
-            <h3>Editar Alumno</h3>
-            <button class="close-btn" onclick="cerrarModalEditarAlumno()"><i class="fas fa-times"></i></button>
-        </div>
-        <form id="formEditarAlumno" onsubmit="guardarEdicionAlumno(event)">
-            <input type="hidden" id="editAlumnoId">
-            <div class="form-group mb-3">
-                <label>Nombre Completo</label>
-                <input type="text" id="editNombreAlumno" class="form-control" required>
-            </div>
-            <div class="form-row row gx-3">
-                <div class="col-12 col-md-6 mb-3">
-                    <label>Teléfono de contacto</label>
-                    <input type="tel" id="editTelefonoAlumno" class="form-control" placeholder="+34 600 000 000">
-                </div>
-                <div class="col-12 col-md-6 mb-3">
-                    <label>Persona de contacto</label>
-                    <input type="text" id="editContactoAlumno" class="form-control" placeholder="Ej: Madre / Tutor">
-                </div>
-            </div>
-            <div class="form-group mb-3">
-                <label>Enfermedades / Alergias</label>
-                <textarea id="editAlergiasAlumno" class="form-control" rows="2" placeholder="Ej: Asma, intolerancia a la lactosa..."></textarea>
-            </div>
-            <div class="form-group mb-3">
-                <label>Observaciones</label>
-                <textarea id="editObsAlumno" class="form-control" rows="2"></textarea>
-            </div>
-            <div class="form-group mb-3 text-center p-3 rounded bg-light border">
-                <label class="mb-2 fw-bold text-muted">Avatar</label>
-                <input type="hidden" id="editFotoAlumno" value="">
-                <div class="d-flex justify-content-center flex-wrap gap-2" id="lista-iconos-editar"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="cerrarModalEditarAlumno()">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-            </div>
-        </form>
-    </div>
-</div>
+
 <?php
 require_once __DIR__ . '/controllers/auth_check.php';
 
@@ -221,13 +180,12 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
 
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="calendario" role="tabpanel">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-                        <h3 class="m-0" style="font-size:1.05rem;">Eventos de la clase</h3>
-                        <button class="btn btn-primary btn-sm" onclick="abrirMiniEventoClase()">
-                            <i class="fas fa-plus"></i> Añadir evento
-                        </button>
+                    <div class="d-flex justify-content-center align-items-center mb-4 mt-3">
+                        <h3 class="m-0" style="font-size: 1.2rem; font-family: 'Georgia', serif;">Eventos de la clase</h3>
                     </div>
-                    <div id="miniCalendarClaseContainer" style="padding: 2rem 0;"></div>
+                    <div class="d-flex justify-content-center w-100">
+                        <div id="miniCalendarClaseContainer" style="padding: 1rem 0; width: 100%; max-width: 900px;"></div>
+                    </div>
                 </div>
                 
                 <div class="tab-pane fade" id="asignaturas" role="tabpanel">
@@ -326,82 +284,221 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
         const CLASE_ACTUAL_ID = <?php echo $clase_id; ?>;
     </script>
 
-<div id="modalAsignatura" class="modal-overlay" style="display: none;">
-    <div class="modal-content" style="max-width: 450px;">
-        <div class="modal-header">
-            <h3 id="modalAsigTitle">Nueva Asignatura</h3>
-            <button class="close-btn" onclick="cerrarModalAsignatura()"><i class="fas fa-times"></i></button>
+<!-- MODAL NUEVA ASIGNATURA -->
+<div class="modal fade" id="modalNuevaAsignatura" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+            <div class="modal-header" style="border-bottom: none; padding: 25px 30px 0 30px;">
+                <h3 class="modal-title fw-bold" style="font-family: 'Georgia', serif; font-size: 1.5rem; color: #1f2937; margin: 0;">Nueva Asignatura</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formNuevaAsignatura" onsubmit="guardarAsignatura(event, false)">
+                <div class="modal-body" style="padding: 20px 30px;">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Nombre de la Asignatura</label>
+                        <div class="d-flex align-items-center" style="border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
+                            <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                <i class="fas fa-book" style="color: #6b7280; font-size: 1.1rem;"></i>
+                            </div>
+                            <input type="text" id="nuevoNombreAsignatura" class="form-control" placeholder="Ej: Matemáticas II" style="border: none; box-shadow: none; padding: 0; background: transparent; width: 100%; font-size: 0.95rem; outline: none;" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: none; padding: 0 30px 25px; display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="background-color: #f3f4f6; color: #4b5563; border: none; border-radius: 10px; font-weight: 600; padding: 10px 20px;">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" style="background-color: #3b82f6; border: none; border-radius: 10px; color: white; font-weight: 600; padding: 10px 25px;">Crear Asignatura</button>
+                </div>
+            </form>
         </div>
-        <form id="formAsignatura" onsubmit="guardarAsignatura(event)">
-            <input type="hidden" id="editAsigId" value="">
-            <div class="form-group mb-3">
-                <label>Nombre de la Asignatura</label>
-                <input type="text" id="nombreAsignatura" class="form-control" placeholder="Ej: Matemáticas II" required>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="cerrarModalAsignatura()">Cancelar</button>
-                <button type="submit" class="btn btn-primary" id="btnSaveAsig">Crear Asignatura</button>
-            </div>
-        </form>
     </div>
 </div>
 
-<div id="modalAlumno" class="modal-overlay" style="display: none;">
-    <div class="modal-content" style="max-width: 450px;">
-        <div class="modal-header">
-            <h3>Añadir Alumno</h3>
-            <button class="close-btn" onclick="cerrarModalAlumno()"><i class="fas fa-times"></i></button>
+<!-- MODAL EDITAR ASIGNATURA -->
+<div class="modal fade" id="modalEditarAsignatura" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+            <div class="modal-header" style="border-bottom: none; padding: 25px 30px 0 30px;">
+                <h3 class="modal-title fw-bold" style="font-family: 'Georgia', serif; font-size: 1.5rem; color: #1f2937; margin: 0;">Modificar Asignatura</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formEditarAsignatura" onsubmit="guardarAsignatura(event, true)">
+                <input type="hidden" id="editAsigId" value="">
+                <div class="modal-body" style="padding: 20px 30px;">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Nombre de la Asignatura</label>
+                        <div class="d-flex align-items-center" style="border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
+                            <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                <i class="fas fa-edit" style="color: #6b7280; font-size: 1.1rem;"></i>
+                            </div>
+                            <input type="text" id="editNombreAsignatura" class="form-control" style="border: none; box-shadow: none; padding: 0; background: transparent; width: 100%; font-size: 0.95rem; outline: none;" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: none; padding: 0 30px 25px; display: flex; justify-content: space-between;">
+                    <button type="button" class="btn btn-outline-danger" onclick="eliminarAsignaturaModal()" style="border-radius: 10px; font-weight: 600; padding: 10px 20px;">Eliminar</button>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="background-color: #f3f4f6; color: #4b5563; border: none; border-radius: 10px; font-weight: 600; padding: 10px 20px;">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" style="background-color: #3b82f6; border: none; border-radius: 10px; color: white; font-weight: 600; padding: 10px 25px;">Guardar Cambios</button>
+                    </div>
+                </div>
+            </form>
         </div>
-        <form id="formAlumno" onsubmit="guardarAlumno(event)">
-            <div class="form-group mb-3">
-                <label>Nombre Completo</label>
-                <input type="text" id="nombreAlumno" class="form-control" placeholder="Apellidos, Nombre" required>
-            </div>
-            <div class="form-row row gx-3">
-                <div class="col-12 col-md-6 mb-3">
-                    <label>Teléfono de contacto</label>
-                    <input type="tel" id="telefonoAlumno" class="form-control" placeholder="+34 600 000 000">
-                </div>
-                <div class="col-12 col-md-6 mb-3">
-                    <label>Persona de contacto</label>
-                    <input type="text" id="contactoAlumno" class="form-control" placeholder="Ej: Madre / Tutor">
-                </div>
-            </div>
-            <div class="form-group mb-3">
-                <label>Enfermedades / Alergias</label>
-                <textarea id="alergiasAlumno" class="form-control" rows="2" placeholder="Ej: Asma, intolerancia a la lactosa..."></textarea>
-            </div>
-            <div class="form-group mb-3">
-                <label>Observaciones iniciales (opcional)</label>
-                <textarea id="obsAlumno" class="form-control" rows="2"></textarea>
-            </div>
-            <div class="form-group mb-3 text-center p-3 rounded bg-light border">
-                <label class="mb-2 fw-bold text-muted">Avatar (Opcional)</label>
-                <input type="hidden" id="fotoNuevoAlumno" value="">
-                <div class="d-flex justify-content-center flex-wrap gap-2" id="lista-iconos-nuevo">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="cerrarModalAlumno()">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Registrar Alumno</button>
-            </div>
-        </form>
     </div>
 </div>
-<div id="modalGestion" class="modal-overlay" style="display: none;">
-    <div class="modal-content" style="max-width: 500px;">
-        <div class="modal-header">
-            <h3 id="tituloModalGestion">Gestionar Matrícula</h3>
-            <button class="close-btn" onclick="cerrarModalGestion()"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="modal-body">
-            <p id="subtituloModal" class="text-muted small mb-3"></p>
-            <div id="lista-checks-gestion" class="list-group" style="max-height: 400px; overflow-y: auto;">
+
+<!-- MODAL NUEVO ALUMNO -->
+<div class="modal fade" id="modalAlumno" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 650px;">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+            <div class="modal-header" style="border-bottom: none; padding: 25px 30px 0 30px;">
+                <h3 class="modal-title fw-bold" style="font-family: 'Georgia', serif; font-size: 1.5rem; color: #1f2937; margin: 0;">Añadir Alumno</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formAlumno" onsubmit="guardarAlumno(event)">
+                <div class="modal-body" style="padding: 20px 30px;">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Nombre Completo</label>
+                        <div class="d-flex align-items-center" style="border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
+                            <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                <i class="fas fa-user" style="color: #6b7280; font-size: 1.1rem;"></i>
+                            </div>
+                            <input type="text" id="nombreAlumno" class="form-control" placeholder="Apellidos, Nombre" style="border: none; box-shadow: none; padding: 0; background: transparent; width: 100%; font-size: 0.95rem; outline: none;" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-4">
+                            <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Teléfono de contacto</label>
+                            <div class="d-flex align-items-center" style="border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
+                                <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                    <i class="fas fa-phone" style="color: #6b7280; font-size: 1.1rem;"></i>
+                                </div>
+                                <input type="tel" id="telefonoAlumno" class="form-control" placeholder="+34 600 000 000" style="border: none; box-shadow: none; padding: 0; background: transparent; width: 100%; font-size: 0.95rem; outline: none;">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 mb-4">
+                            <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Persona de contacto</label>
+                            <div class="d-flex align-items-center" style="border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
+                                <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                    <i class="fas fa-user-friends" style="color: #6b7280; font-size: 1.1rem;"></i>
+                                </div>
+                                <input type="text" id="contactoAlumno" class="form-control" placeholder="Ej: Madre / Tutor" style="border: none; box-shadow: none; padding: 0; background: transparent; width: 100%; font-size: 0.95rem; outline: none;">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Enfermedades / Alergias</label>
+                        <textarea id="alergiasAlumno" class="form-control" rows="2" placeholder="Ej: Asma, intolerancia a la lactosa..." style="border: 1px solid #d1d5db; border-radius: 12px; padding: 10px 12px; box-shadow: none; width: 100%; font-size: 0.95rem; outline: none;"></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Observaciones iniciales</label>
+                        <textarea id="obsAlumno" class="form-control" rows="2" style="border: 1px solid #d1d5db; border-radius: 12px; padding: 10px 12px; box-shadow: none; width: 100%; font-size: 0.95rem; outline: none;"></textarea>
+                    </div>
+                    
+                    <div class="mb-4 text-center p-3" style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px;">
+                        <label class="mb-3 fw-bold text-secondary d-block">Avatar (Opcional)</label>
+                        <input type="hidden" id="fotoNuevoAlumno" value="">
+                        <div class="d-flex justify-content-center flex-wrap gap-2" id="lista-iconos-nuevo" style="display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5rem;">
+                        </div>
+                    </div>
                 </div>
+                <div class="modal-footer" style="border-top: none; padding: 0 30px 25px; display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="background-color: #f3f4f6; color: #4b5563; border: none; border-radius: 10px; font-weight: 600; padding: 10px 20px;">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" style="background-color: #3b82f6; border: none; border-radius: 10px; color: white; font-weight: 600; padding: 10px 25px;">Registrar Alumno</button>
+                </div>
+            </form>
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="cerrarModalGestion()">Cancelar</button>
-            <button type="button" class="btn btn-primary" id="btnGuardarGestion">Guardar Cambios</button>
+    </div>
+</div>
+
+<!-- MODAL EDITAR ALUMNO -->
+<div class="modal fade" id="modalEditarAlumno" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 650px;">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+            <div class="modal-header" style="border-bottom: none; padding: 25px 30px 0 30px;">
+                <h3 class="modal-title fw-bold" style="font-family: 'Georgia', serif; font-size: 1.5rem; color: #1f2937; margin: 0;">Editar Alumno</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formEditarAlumno" onsubmit="guardarEdicionAlumno(event)">
+                <input type="hidden" id="editAlumnoId">
+                <div class="modal-body" style="padding: 20px 30px;">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Nombre Completo</label>
+                        <div class="d-flex align-items-center" style="border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
+                            <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                <i class="fas fa-user" style="color: #6b7280; font-size: 1.1rem;"></i>
+                            </div>
+                            <input type="text" id="editNombreAlumno" class="form-control" style="border: none; box-shadow: none; padding: 0; background: transparent; width: 100%; font-size: 0.95rem; outline: none;" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-4">
+                            <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Teléfono de contacto</label>
+                            <div class="d-flex align-items-center" style="border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
+                                <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                    <i class="fas fa-phone" style="color: #6b7280; font-size: 1.1rem;"></i>
+                                </div>
+                                <input type="tel" id="editTelefonoAlumno" class="form-control" placeholder="+34 600 000 000" style="border: none; box-shadow: none; padding: 0; background: transparent; width: 100%; font-size: 0.95rem; outline: none;">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 mb-4">
+                            <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Persona de contacto</label>
+                            <div class="d-flex align-items-center" style="border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
+                                <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                    <i class="fas fa-user-friends" style="color: #6b7280; font-size: 1.1rem;"></i>
+                                </div>
+                                <input type="text" id="editContactoAlumno" class="form-control" placeholder="Ej: Madre / Tutor" style="border: none; box-shadow: none; padding: 0; background: transparent; width: 100%; font-size: 0.95rem; outline: none;">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Enfermedades / Alergias</label>
+                        <textarea id="editAlergiasAlumno" class="form-control" rows="2" placeholder="Ej: Asma, intolerancia a la lactosa..." style="border: 1px solid #d1d5db; border-radius: 12px; padding: 10px 12px; box-shadow: none; width: 100%; font-size: 0.95rem; outline: none;"></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Observaciones</label>
+                        <textarea id="editObsAlumno" class="form-control" rows="2" style="border: 1px solid #d1d5db; border-radius: 12px; padding: 10px 12px; box-shadow: none; width: 100%; font-size: 0.95rem; outline: none;"></textarea>
+                    </div>
+                    
+                    <div class="mb-4 text-center p-3" style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px;">
+                        <label class="mb-3 fw-bold text-secondary d-block">Avatar</label>
+                        <input type="hidden" id="editFotoAlumno" value="">
+                        <div class="d-flex justify-content-center flex-wrap gap-2" id="lista-iconos-editar" style="display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5rem;">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: none; padding: 0 30px 25px; display: flex; justify-content: space-between;">
+                    <button type="button" class="btn btn-outline-danger" onclick="eliminarAlumnoModal()" style="border-radius: 10px; font-weight: 600; padding: 10px 20px;">Eliminar</button>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="background-color: #f3f4f6; color: #4b5563; border: none; border-radius: 10px; font-weight: 600; padding: 10px 20px;">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" style="background-color: #3b82f6; border: none; border-radius: 10px; color: white; font-weight: 600; padding: 10px 25px;">Guardar Cambios</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL GESTIONAR MATRICULA -->
+<div class="modal fade" id="modalGestion" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+            <div class="modal-header" style="border-bottom: none; padding: 25px 30px 0 30px;">
+                <h3 id="tituloModalGestion" class="modal-title fw-bold" style="font-family: 'Georgia', serif; font-size: 1.5rem; color: #1f2937; margin: 0;">Gestionar Matrícula</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding: 20px 30px;">
+                <p id="subtituloModal" class="text-muted small mb-3" style="color: #6b7280;"></p>
+                <div id="lista-checks-gestion" class="list-group" style="max-height: 400px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px;">
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top: none; padding: 0 30px 25px; display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="background-color: #f3f4f6; color: #4b5563; border: none; border-radius: 10px; font-weight: 600; padding: 10px 20px;">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnGuardarGestion" style="background-color: #3b82f6; border: none; border-radius: 10px; color: white; font-weight: 600; padding: 10px 25px;">Guardar Cambios</button>
+            </div>
         </div>
     </div>
 </div>

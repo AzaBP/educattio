@@ -259,9 +259,9 @@ $numEvaluaciones = $stmtEval->fetchColumn();
 
     <!-- MODAL CLASE (EXISTENTE) -->
     <div id="modalClase" class="modal fade" tabindex="-1" aria-labelledby="modalClaseLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 950px !important; width: 95% !important;">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
-                <div class="modal-header" style="border-bottom: none; padding: 25px 0 0 16px;">
+                <div class="modal-header" style="border-bottom: none; padding: 25px 30px 0 30px;">
                     <h3 class="modal-title fw-bold" id="modalClaseLabel">Añadir Nueva Clase</h3>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>

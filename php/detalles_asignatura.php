@@ -537,35 +537,48 @@ try {
 </div>
 
 <!-- Modal de Ajustes (editar nombre / eliminar) -->
-<div id="settingsModal" class="modal-overlay" style="display: none;">
-    <div class="modal-window">
-        <div class="modal-header">
-            <h3>Ajustes de la asignatura</h3>
-            <button class="close-btn" onclick="closeSettingsModal()"><i class="fas fa-times"></i></button>
-        </div>
-        <form method="POST">
-            <input type="hidden" name="action" value="edit_asignatura">
-            <div class="form-group mb-3">
-                <label class="form-label">Nombre de la asignatura</label>
-                <input type="text" name="nombre_asignatura" class="form-control" value="<?= htmlspecialchars($asignatura['nombre_asignatura']) ?>" required>
+<div id="settingsModal" class="modal fade" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+            <div class="modal-header" style="border-bottom: none; padding: 25px 25px 0 25px;">
+                <h3 class="modal-title fw-bold" id="settingsModalLabel">Ajustes de la asignatura</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeSettingsModal()"></button>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" onclick="closeSettingsModal()">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            
+            <div class="modal-body" style="padding: 20px 25px;">
+                <form method="POST" id="formAjustesAsignatura">
+                    <input type="hidden" name="action" value="edit_asignatura">
+                    <div class="form-group mb-3">
+                        <label class="form-label fw-bold" style="color: #4b5563;">Nombre de la asignatura</label>
+                        <div class="d-flex align-items-center" style="border: 1px solid #d1d5db; border-radius: 12px; padding: 5px 10px; background: #fff;">
+                            <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                <i class="fas fa-book" style="color: #6b7280; font-size: 1.1rem;"></i>
+                            </div>
+                            <input type="text" name="nombre_asignatura" class="form-control" value="<?= htmlspecialchars($asignatura['nombre_asignatura']) ?>" required style="border: none !important; box-shadow: none !important; padding: 0 !important; background: transparent !important; width: 100%; font-size: 0.95rem; margin: 0 !important;">
+                        </div>
+                    </div>
+                </form>
+
+                <hr style="margin: 20px 0; border-color: #e5e7eb;">
+                
+                <div class="danger-zone-modal" style="background-color: #fef2f2; border: 1px solid #fca5a5; border-radius: 12px; padding: 15px;">
+                    <div class="danger-info mb-3">
+                        <h4 style="color: #b91c1c; font-size: 1.05rem; margin-bottom: 5px;"><i class="fas fa-exclamation-triangle"></i> Zona peligrosa</h4>
+                        <p style="color: #991b1b; font-size: 0.85rem; margin: 0;">Esta acción eliminará la asignatura, todos sus temas, periodos, items de evaluación y notas asociadas. No se puede deshacer.</p>
+                    </div>
+                    <form method="POST" onsubmit="return confirm('¿Estás completamente seguro? Se perderán todos los datos de esta asignatura.');">
+                        <input type="hidden" name="action" value="delete_asignatura">
+                        <button type="submit" class="btn w-100" style="background-color: #ef4444; color: white; border-radius: 8px; font-weight: 600; padding: 10px;">
+                            <i class="fas fa-trash-alt me-2"></i> Eliminar asignatura
+                        </button>
+                    </form>
+                </div>
             </div>
-        </form>
-        <hr>
-        <div class="danger-zone-modal">
-            <div class="danger-info">
-                <h4><i class="fas fa-exclamation-triangle"></i> Zona peligrosa</h4>
-                <p>Esta acción eliminará la asignatura, todos sus temas, periodos, items de evaluación y notas asociadas. No se puede deshacer.</p>
+
+            <div class="modal-footer" style="border-top: none; padding: 0 25px 25px;">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="closeSettingsModal()" style="border-radius: 10px; font-weight: 600;">Cancelar</button>
+                <button type="submit" form="formAjustesAsignatura" class="btn btn-primary" style="border-radius: 10px; font-weight: 600; padding: 10px 25px;">Guardar cambios</button>
             </div>
-            <form method="POST" onsubmit="return confirm('¿Estás completamente seguro? Se perderán todos los datos de esta asignatura.');">
-                <input type="hidden" name="action" value="delete_asignatura">
-                <button type="submit" class="btn-delete-course">
-                    <i class="fas fa-trash-alt"></i> Eliminar asignatura
-                </button>
-            </form>
         </div>
     </div>
 </div>
@@ -582,16 +595,18 @@ function toggleSection(sectionId) {
 }
 
 function openSettingsModal() {
-    document.getElementById('settingsModal').style.display = 'flex';
+    const el = document.getElementById('settingsModal');
+    if (el) {
+        const m = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
+        m.show();
+    }
 }
+
 function closeSettingsModal() {
-    document.getElementById('settingsModal').style.display = 'none';
-}
-// Cerrar modal al hacer clic fuera
-window.onclick = function(event) {
-    const modal = document.getElementById('settingsModal');
-    if (event.target === modal) {
-        modal.style.display = 'none';
+    const el = document.getElementById('settingsModal');
+    if (el) {
+        const m = bootstrap.Modal.getInstance(el);
+        if (m) m.hide();
     }
 }
 </script>

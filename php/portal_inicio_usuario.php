@@ -285,67 +285,86 @@ try {
 </div>
 
 <!-- MODAL PARA CREAR CURSO -->
-<div id="modalCurso" class="modal-overlay">
-    <div class="modal-window premium-modal">
-        <div class="modal-header">
-            <div class="modal-title-group">
-                <div class="modal-icon-header"><i class="fas fa-university"></i></div>
-                <h3>Crear nuevo curso</h3>
-            </div>
-            <button class="close-btn" onclick="closeModalCurso()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-
-        <form id="formCrearCurso" class="modal-form">
-            <input type="hidden" id="editCursoId" value="">
-            
-            <div class="form-group">
-                <label for="inputNombreCentro"><i class="fas fa-building"></i> Centro Educativo</label>
-                <input type="text" id="inputNombreCentro" placeholder="Ej. IES Cervantes" required>
+<div id="modalCurso" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center;">
+    <div class="modal-dialog" style="width: 100%; max-width: 800px; margin: 1.75rem auto;">
+        <div class="modal-content" style="background: white; border-radius: 16px; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.1); animation: modalSlideUp 0.3s ease-out;">
+            <div class="modal-header" style="border-bottom: none; padding: 25px 30px 0 30px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 class="modal-title fw-bold" id="modalCursoLabel" style="font-family: 'Georgia', serif; font-size: 1.6rem; color: #1f2937; margin: 0;">Crear nuevo curso</h3>
+                <button type="button" class="btn-close" onclick="closeModalCurso()" aria-label="Close" style="background: none; border: none; font-size: 1.5rem; color: #9ca3af; cursor: pointer;">&times;</button>
             </div>
 
-            <div class="form-row">
-                <div class="form-group flex-1">
-                    <label for="inputPoblacion"><i class="fas fa-city"></i> Población</label>
-                    <input type="text" id="inputPoblacion" placeholder="Ej. Zaragoza" required>
-                </div>
-                <div class="form-group flex-1">
-                    <label for="inputProvincia"><i class="fas fa-map-marker-alt"></i> Provincia</label>
-                    <input type="text" id="inputProvincia" placeholder="Ej. Zaragoza" required>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group flex-1">
-                    <label for="inputAnio"><i class="far fa-calendar-alt"></i> Año Lectivo</label>
-                    <input type="text" id="inputAnio" value="2025-2026" required>
-                </div>
-                <div class="form-group flex-1">
-                    <label><i class="fas fa-palette"></i> Color Distintivo</label>
-                    <div class="color-palette-container">
-                        <div class="color-presets" id="colorPresets">
-                            <div class="color-dot" data-color="#ff7a59" onclick="selectPresetColor('#ff7a59', this)" style="background:#ff7a59;"></div>
-                            <div class="color-dot" data-color="#4a90e2" onclick="selectPresetColor('#4a90e2', this)" style="background:#4a90e2;"></div>
-                            <div class="color-dot" data-color="#47b39d" onclick="selectPresetColor('#47b39d', this)" style="background:#47b39d;"></div>
-                            <div class="color-dot" data-color="#ffc107" onclick="selectPresetColor('#ffc107', this)" style="background:#ffc107;"></div>
+            <form id="formCrearCurso">
+                <input type="hidden" id="editCursoId" value="">
+                
+                <div class="modal-body" style="padding: 20px 30px;">
+                    <div class="row" style="display: flex; flex-wrap: wrap; margin-right: -10px; margin-left: -10px;">
+                        <div class="col-12 mb-4" style="width: 100%; padding: 0 10px; margin-bottom: 1.5rem;">
+                            <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Centro Educativo</label>
+                            <div class="d-flex align-items-center" style="display: flex; align-items: center; border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
+                                <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                    <i class="fas fa-building" style="color: #6b7280; font-size: 1.1rem;"></i>
+                                </div>
+                                <input type="text" id="inputNombreCentro" class="form-control" placeholder="Ej: IES Cervantes" style="border: none !important; box-shadow: none !important; padding: 0 !important; background: transparent !important; width: 100%; font-size: 0.95rem; outline: none;" required>
+                            </div>
                         </div>
-                        <div class="color-divider"></div>
-                        <input type="color" id="inputColor" value="#ff7a59" oninput="deselectPresets()">
+                    </div>
+
+                    <div class="row" style="display: flex; flex-wrap: wrap; margin-right: -10px; margin-left: -10px;">
+                        <div class="col-12 col-md-6 mb-4" style="width: 50%; padding: 0 10px; margin-bottom: 1.5rem; box-sizing: border-box;">
+                            <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Población</label>
+                            <div class="d-flex align-items-center" style="display: flex; align-items: center; border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
+                                <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                    <i class="fas fa-city" style="color: #6b7280; font-size: 1.1rem;"></i>
+                                </div>
+                                <input type="text" id="inputPoblacion" class="form-control" placeholder="Ej: Zaragoza" style="border: none !important; box-shadow: none !important; padding: 0 !important; background: transparent !important; width: 100%; font-size: 0.95rem; outline: none;" required>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 mb-4" style="width: 50%; padding: 0 10px; margin-bottom: 1.5rem; box-sizing: border-box;">
+                            <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Provincia</label>
+                            <div class="d-flex align-items-center" style="display: flex; align-items: center; border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
+                                <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                    <i class="fas fa-map-marker-alt" style="color: #6b7280; font-size: 1.1rem;"></i>
+                                </div>
+                                <input type="text" id="inputProvincia" class="form-control" placeholder="Ej: Zaragoza" style="border: none !important; box-shadow: none !important; padding: 0 !important; background: transparent !important; width: 100%; font-size: 0.95rem; outline: none;" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="display: flex; flex-wrap: wrap; margin-right: -10px; margin-left: -10px;">
+                        <div class="col-12 col-md-6 mb-4" style="width: 50%; padding: 0 10px; margin-bottom: 1.5rem; box-sizing: border-box;">
+                            <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; display: block;">Año Lectivo</label>
+                            <div class="d-flex align-items-center" style="display: flex; align-items: center; border: 1px solid #d1d5db; border-radius: 12px; padding: 6px 12px; background: #fff;">
+                                <div style="background-color: #f3f4f6; border-radius: 8px; min-width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                                    <i class="far fa-calendar-alt" style="color: #6b7280; font-size: 1.1rem;"></i>
+                                </div>
+                                <input type="text" id="inputAnio" class="form-control" value="2025-2026" style="border: none !important; box-shadow: none !important; padding: 0 !important; background: transparent !important; width: 100%; font-size: 0.95rem; outline: none;" required>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 mb-4" style="width: 50%; padding: 0 10px; margin-bottom: 1.5rem; box-sizing: border-box;">
+                            <label class="form-label fw-bold" style="color: #4b5563; font-size: 0.95rem; margin-bottom: 12px; display: block;">Color Distintivo</label>
+                            <div class="d-flex flex-wrap align-items-center gap-2" style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;">
+                                <div class="color-dot" data-color="#ff7a59" onclick="selectPresetColor('#ff7a59', this)" style="background:#ff7a59; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;"></div>
+                                <div class="color-dot" data-color="#4a90e2" onclick="selectPresetColor('#4a90e2', this)" style="background:#4a90e2; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;"></div>
+                                <div class="color-dot" data-color="#47b39d" onclick="selectPresetColor('#47b39d', this)" style="background:#47b39d; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;"></div>
+                                <div class="color-dot" data-color="#ffc107" onclick="selectPresetColor('#ffc107', this)" style="background:#ffc107; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;"></div>
+                                <div style="width: 1px; height: 24px; background: #d1d5db; margin: 0 8px;"></div>
+                                <input type="color" id="inputColor" value="#ff7a59" oninput="deselectPresets()" style="width: 38px; height: 38px; padding: 0; border: none; background: transparent; cursor: pointer;">
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeModalCurso()">Cancelar</button>
-                <button type="submit" class="btn-save" id="btnGuardarCurso">
-                    <span>Guardar Curso</span>
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
-        </form>
+                <div class="modal-footer" style="border-top: none; padding: 0 30px 25px; display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" class="btn btn-light" onclick="closeModalCurso()" style="background-color: #f3f4f6; color: #4b5563; border: none; border-radius: 10px; font-weight: 600; padding: 10px 20px; cursor: pointer;">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarCurso" style="background-color: #3b82f6; border: none; border-radius: 10px; color: white; font-weight: 600; padding: 10px 25px; cursor: pointer;">Guardar Curso</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+<style>
+@keyframes modalSlideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+</style>
 
 <script src="../js/portal_inicio_usuario.js?v=1.3"></script>
 <script src="../js/notificaciones.js?v=1.3"></script>

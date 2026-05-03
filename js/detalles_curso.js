@@ -10,42 +10,42 @@ function actualizarReloj() {
     const mYear = document.getElementById('current-month-year');
     const clock = document.getElementById('real-time-clock');
 
-    if(dName) dName.innerText = ahora.toLocaleDateString('es-ES', { weekday: 'long' }).toUpperCase();
-    if(dNumber) dNumber.innerText = ahora.getDate();
-    if(mYear) mYear.innerText = ahora.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }).toUpperCase();
-    if(clock) clock.innerText = ahora.toLocaleTimeString('es-ES');
+    if (dName) dName.innerText = ahora.toLocaleDateString('es-ES', { weekday: 'long' }).toUpperCase();
+    if (dNumber) dNumber.innerText = ahora.getDate();
+    if (mYear) mYear.innerText = ahora.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }).toUpperCase();
+    if (clock) clock.innerText = ahora.toLocaleTimeString('es-ES');
 }
 
 function initModalLogic() {
     document.querySelectorAll('.icono-opcion').forEach(item => {
-        item.addEventListener('click', function() {
+        item.addEventListener('click', function () {
             document.querySelectorAll('.icono-opcion').forEach(i => i.classList.remove('active'));
             this.classList.add('active');
             const hidden = document.getElementById('inputIconoClase');
-            if(hidden) hidden.value = this.getAttribute('data-icon');
+            if (hidden) hidden.value = this.getAttribute('data-icon');
         });
     });
 
     document.querySelectorAll('.color-opcion').forEach(item => {
         if (item.id === 'input-color-personalizado') {
-            item.addEventListener('input', function() {
+            item.addEventListener('input', function () {
                 document.querySelectorAll('.color-opcion').forEach(c => c.classList.remove('active'));
                 this.classList.add('active');
                 const hidden = document.getElementById('inputColorClase');
-                if(hidden) hidden.value = this.value;
+                if (hidden) hidden.value = this.value;
             });
         } else {
-            item.addEventListener('click', function() {
+            item.addEventListener('click', function () {
                 document.querySelectorAll('.color-opcion').forEach(c => c.classList.remove('active'));
                 this.classList.add('active');
                 const hidden = document.getElementById('inputColorClase');
-                if(hidden) hidden.value = this.getAttribute('data-color');
+                if (hidden) hidden.value = this.getAttribute('data-color');
             });
         }
     });
 }
 
-document.getElementById('formCrearClase').onsubmit = async function(e) {
+document.getElementById('formCrearClase').onsubmit = async function (e) {
     e.preventDefault();
     const cursoId = document.getElementById('cursoIdAsociado').value;
     const nombre = document.getElementById('inputNombreClase').value;
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Iniciar Reloj
     actualizarReloj();
     setInterval(actualizarReloj, 1000);
-    
+
     // Iniciar Mini Calendario
     const cursoId = document.getElementById('cursoIdAsociado')?.value;
     if (cursoId && typeof MiniCalendar !== 'undefined') {
