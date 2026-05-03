@@ -18,6 +18,14 @@ try {
     ];
     $datosPersonalesJson = json_encode($datosPersonales, JSON_UNESCAPED_UNICODE);
 
+    // Verificar si ya existe un alumno con el mismo nombre en esta clase para evitar duplicados accidentales
+    $check = $conexion->prepare("SELECT id FROM alumnos WHERE nombre_alumno = ? AND clase_id = ?");
+    $check->execute([trim($data['nombre_alumno']), $data['clase_id']]);
+    if ($check->fetch()) {
+        echo json_encode(['status' => 'error', 'message' => 'Ya existe un alumno con este nombre en la clase']);
+        exit;
+    }
+
     $stmt = $conexion->prepare("INSERT INTO alumnos (nombre_alumno, datos_personales, observaciones, foto, clase_id) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute([
         trim($data['nombre_alumno']),

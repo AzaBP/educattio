@@ -35,7 +35,6 @@ function seleccionarIconoNuevo(icono) {
 }
 
 async function abrirEditarAlumno(id) {
-    // Usamos los datos ya cargados en window.ULTIMOS_ALUMNOS
     const alumno = window.ULTIMOS_ALUMNOS?.find(a => a.id == id);
     if (!alumno) {
         alert("No se encontró la información del alumno.");
@@ -52,7 +51,40 @@ async function abrirEditarAlumno(id) {
     document.getElementById('editObsAlumno').value = alumno.observaciones || '';
     
     renderizarIconosEditar();
+    desactivarModoEdicion(); // Empezamos en modo vista
     showModal('modalEditarAlumno');
+}
+
+function activarModoEdicion() {
+    document.getElementById('tituloFichaAlumno').innerText = "Editar Alumno";
+    document.getElementById('btnActivarEdicion').style.display = 'none';
+    document.getElementById('footerAccionesEdicion').style.display = 'flex';
+    document.getElementById('footerAccionesVista').style.display = 'none';
+    document.getElementById('btnEliminarAlumno').style.display = 'block';
+    document.getElementById('contenedorIconosEditar').style.display = 'block';
+    
+    // Habilitar inputs
+    const inputs = ['editNombreAlumno', 'editTelefonoAlumno', 'editContactoAlumno', 'editAlergiasAlumno', 'editObsAlumno'];
+    inputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.readOnly = false;
+    });
+}
+
+function desactivarModoEdicion() {
+    document.getElementById('tituloFichaAlumno').innerText = "Ficha del Alumno";
+    document.getElementById('btnActivarEdicion').style.display = 'block';
+    document.getElementById('footerAccionesEdicion').style.display = 'none';
+    document.getElementById('footerAccionesVista').style.display = 'flex';
+    document.getElementById('btnEliminarAlumno').style.display = 'none';
+    document.getElementById('contenedorIconosEditar').style.display = 'none';
+    
+    // Deshabilitar inputs
+    const inputs = ['editNombreAlumno', 'editTelefonoAlumno', 'editContactoAlumno', 'editAlergiasAlumno', 'editObsAlumno'];
+    inputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.readOnly = true;
+    });
 }
 
 function renderizarIconosEditar() {
@@ -70,7 +102,10 @@ function seleccionarIconoEditar(icono) {
 }
 
 async function guardarAlumno(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    const btn = e.submitter || document.querySelector('#modalAlumno button[type="submit"]');
+    if (btn) btn.disabled = true;
+
     const nombre = document.getElementById('nombreAlumno').value;
     const obs = document.getElementById('obsAlumno').value;
     const foto = document.getElementById('fotoNuevoAlumno').value;
@@ -98,11 +133,18 @@ async function guardarAlumno(e) {
             document.getElementById('formAlumno').reset();
             cargarDatosClase();
         } else { alert("Error: " + res.message); }
-    } catch (error) { console.error(error); }
+    } catch (error) { 
+        console.error(error); 
+    } finally {
+        if (btn) btn.disabled = false;
+    }
 }
 
 async function guardarEdicionAlumno(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    const btn = e.submitter || document.querySelector('#modalEditarAlumno button[type="submit"]');
+    if (btn) btn.disabled = true;
+
     const id = document.getElementById('editAlumnoId').value;
     const nombre = document.getElementById('editNombreAlumno').value;
     const obs = document.getElementById('editObsAlumno').value;
@@ -131,12 +173,26 @@ async function guardarEdicionAlumno(e) {
             hideModal('modalEditarAlumno');
             cargarDatosClase();
         } else { alert("Error: " + res.message); }
-    } catch (error) { console.error(error); }
+    } catch (error) { 
+        console.error(error); 
+    } finally {
+        if (btn) btn.disabled = false;
+    }
 }
 
 async function eliminarAlumnoModal() {
     const id = document.getElementById('editAlumnoId').value;
-    if (!id || !confirm('¿Seguro que quieres eliminar este alumno? Se borrarán sus datos y matriculaciones.')) return;
+    if (!id) return;
+    await ejecutarEliminacionAlumno(id, () => hideModal('modalEditarAlumno'));
+}
+
+async function eliminarAlumnoFila(id) {
+    await ejecutarEliminacionAlumno(id);
+}
+
+async function ejecutarEliminacionAlumno(id, callback = null) {
+    if (!confirm('¿Seguro que quieres eliminar este alumno? Se borrarán sus datos, notas y matriculaciones de forma permanente.')) return;
+    
     try {
         const res = await fetch('controllers/eliminar_alumno.php', {
             method: 'POST',
@@ -145,10 +201,15 @@ async function eliminarAlumnoModal() {
         });
         const data = await res.json();
         if (data.status === 'success') {
-            hideModal('modalEditarAlumno');
+            if (callback) callback();
             cargarDatosClase();
-        } else { alert('Error: ' + data.message); }
-    } catch (e) { console.error(e); }
+        } else { 
+            alert('Error al eliminar: ' + (data.message || 'Error desconocido')); 
+        }
+    } catch (e) { 
+        console.error(e);
+        alert('Error de conexión al intentar eliminar el alumno.');
+    }
 }
 
 // --- TABLA Y RENDERIZADO ---
@@ -193,14 +254,17 @@ function renderizarAlumnos(alumnos) {
                 <td>${saludHtml}</td>
                 <td class="text-end">
                     <div class="btn-group">
-                        <button class="btn btn-sm btn-outline-secondary" title="Exportar Ficha" onclick="exportarAlumnoPDF(${alum.id})">
+                        <button class="btn btn-sm btn-outline-secondary" title="Exportar Informe" onclick="exportarAlumnoPDF(event, ${alum.id})">
                             <i class="fas fa-file-pdf"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-primary" onclick="abrirMatriculaAlum(${alum.id}, '${alum.nombre_alumno.replace(/'/g, "\\'")}')">
-                            <i class="fas fa-book"></i> Asignaturas
+                        <button class="btn btn-sm btn-outline-primary" title="Gestionar Asignaturas" onclick="abrirMatriculaAlum(${alum.id}, '${alum.nombre_alumno.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-book"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="abrirEditarAlumno(${alum.id})">
-                            <i class="fas fa-edit"></i>
+                        <button class="btn btn-sm btn-outline-secondary" title="Ver Ficha" onclick="abrirEditarAlumno(${alum.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" title="Eliminar Alumno" onclick="eliminarAlumnoFila(${alum.id})">
+                            <i class="fas fa-trash-alt"></i>
                         </button>
                     </div>
                 </td>`;
@@ -262,48 +326,114 @@ function exportarAlumnosPDF() {
     doc.save(`lista_alumnos_${document.querySelector('.course-title-animate').innerText.replace(/\s+/g, '_')}.pdf`);
 }
 
-function exportarAlumnoPDF(id) {
+async function exportarAlumnoPDF(event, id) {
     const alum = window.ULTIMOS_ALUMNOS?.find(a => a.id == id);
     if (!alum) return;
     
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    const datos = parseDatosPersonales(alum.datos_personales);
-    const fecha = new Date().toLocaleDateString();
+    // Notificar al usuario que se está generando
+    const btn = event.currentTarget;
+    const originalHtml = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    btn.disabled = true;
 
-    doc.setFillColor(15, 23, 42); 
-    doc.rect(0, 0, 210, 45, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(22);
-    doc.setFont("helvetica", "bold");
-    doc.text('EDUCATTIO', 105, 20, { align: 'center' });
-    doc.setFontSize(14);
-    doc.text('FICHA PERSONAL DEL ALUMNO', 105, 32, { align: 'center' });
+    try {
+        const response = await fetch(`controllers/obtener_notas_alumno.php?alumno_id=${id}`);
+        const data = await response.json();
 
-    doc.setTextColor(30, 41, 59);
-    doc.setFontSize(16);
-    doc.text(alum.nombre_alumno, 15, 60);
-    
-    doc.setFontSize(11);
-    doc.text(`Clase: ${document.querySelector('.course-title-animate').innerText}`, 15, 68);
-    doc.text(`Fecha de exportación: ${fecha}`, 15, 74);
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const datos = parseDatosPersonales(alum.datos_personales);
+        const fecha = new Date().toLocaleDateString();
 
-    const info = [
-        ['TELÉFONO DE CONTACTO', datos.telefono || 'No disponible'],
-        ['PERSONA DE CONTACTO', datos.contacto || 'No disponible'],
-        ['ALERGIAS / SALUD', datos.alergias || 'Sin información relevante'],
-        ['OBSERVACIONES', alum.observaciones || 'Sin observaciones adicionales']
-    ];
+        // Encabezado Educattio
+        doc.setFillColor(30, 41, 59); 
+        doc.rect(0, 0, 210, 45, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(22);
+        doc.setFont("helvetica", "bold");
+        doc.text('EDUCATTIO', 105, 20, { align: 'center' });
+        doc.setFontSize(14);
+        doc.text('INFORME DE EVALUACIÓN DEL ALUMNO', 105, 32, { align: 'center' });
 
-    doc.autoTable({
-        startY: 85,
-        body: info,
-        theme: 'plain',
-        styles: { fontSize: 11, cellPadding: 8 },
-        columnStyles: { 0: { fontStyle: 'bold', cellWidth: 60 } }
-    });
+        // Datos del Alumno
+        doc.setTextColor(30, 41, 59);
+        doc.setFontSize(16);
+        doc.text(alum.nombre_alumno.toUpperCase(), 15, 60);
+        
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text(`Clase: ${document.querySelector('.course-title-animate').innerText}`, 15, 67);
+        doc.text(`Fecha del informe: ${fecha}`, 15, 72);
 
-    doc.save(`ficha_${alum.nombre_alumno.replace(/\s+/g, '_')}.pdf`);
+        // Tabla de Información Personal
+        const infoPersonal = [
+            ['Teléfono', datos.telefono || '---'],
+            ['Contacto', datos.contacto || '---'],
+            ['Salud', datos.alergias || 'Sin observaciones']
+        ];
+        doc.autoTable({
+            startY: 80,
+            body: infoPersonal,
+            theme: 'plain',
+            styles: { fontSize: 10, cellPadding: 2 },
+            columnStyles: { 0: { fontStyle: 'bold', cellWidth: 30 } },
+            margin: { left: 15 }
+        });
+
+        let currentY = doc.lastAutoTable.finalY + 15;
+
+        // Notas por Asignatura
+        if (data.status === 'success' && data.notas.length > 0) {
+            doc.setFontSize(14);
+            doc.setTextColor(30, 41, 59);
+            doc.text('RESUMEN ACADÉMICO', 15, currentY);
+            currentY += 5;
+
+            data.notas.forEach(asig => {
+                // Título de la asignatura
+                doc.setFontSize(11);
+                doc.setFont("helvetica", "bold");
+                doc.text(asig.asignatura, 15, currentY + 10);
+                
+                const tableBody = asig.items.map(item => [
+                    item.nombre_periodo || '---',
+                    item.titulo,
+                    item.nota !== null ? parseFloat(item.nota).toFixed(2) : 'N/P'
+                ]);
+
+                doc.autoTable({
+                    startY: currentY + 12,
+                    head: [['Periodo', 'Prueba / Ítem', 'Nota']],
+                    body: tableBody,
+                    theme: 'striped',
+                    headStyles: { fillColor: [71, 85, 105], fontSize: 9 },
+                    styles: { fontSize: 8 },
+                    margin: { left: 15, right: 15 },
+                    didDrawPage: (data) => { currentY = data.cursor.y; }
+                });
+                
+                currentY = doc.lastAutoTable.finalY + 10;
+                
+                // Si nos quedamos sin espacio, nueva página
+                if (currentY > 260) {
+                    doc.addPage();
+                    currentY = 20;
+                }
+            });
+        } else {
+            doc.setFontSize(10);
+            doc.text('No hay notas registradas para este alumno.', 15, currentY + 10);
+        }
+
+        doc.save(`Informe_${alum.nombre_alumno.replace(/\s+/g, '_')}.pdf`);
+
+    } catch (e) {
+        console.error(e);
+        alert("Error al generar el PDF");
+    } finally {
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+    }
 }
 
 // --- ASIGNATURAS Y CALENDARIO ---
@@ -650,9 +780,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Re-vincular formularios por seguridad
+    // Vincular formularios para evitar envíos duplicados (se eliminó onsubmit del HTML)
     const formA = document.getElementById('formAlumno');
     if(formA) formA.addEventListener('submit', guardarAlumno);
+    
     const formE = document.getElementById('formEditarAlumno');
     if(formE) formE.addEventListener('submit', guardarEdicionAlumno);
+
+    const formNA = document.getElementById('formNuevaAsignatura');
+    if(formNA) formNA.addEventListener('submit', (e) => guardarAsignatura(e, false));
+
+    const formEA = document.getElementById('formEditarAsignatura');
+    if(formEA) formEA.addEventListener('submit', (e) => guardarAsignatura(e, true));
 });

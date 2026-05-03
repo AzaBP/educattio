@@ -463,7 +463,7 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
                 <h3 class="modal-title">Nueva Asignatura</h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form id="formNuevaAsignatura" onsubmit="guardarAsignatura(event, false)">
+            <form id="formNuevaAsignatura">
                 <div class="modal-body">
                     <div class="mb-4">
                         <label class="modal-label">Nombre de la Asignatura</label>
@@ -545,7 +545,7 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
                 <h3 class="modal-title">Añadir Alumno</h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form id="formAlumno" onsubmit="guardarAlumno(event)">
+            <form id="formAlumno">
                 <div class="modal-body">
                     <div class="mb-4">
                         <label class="modal-label">Nombre Completo</label>
@@ -602,17 +602,17 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Editar Alumno</h3>
+                <h3 class="modal-title" id="tituloFichaAlumno">Ficha del Alumno</h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form id="formEditarAlumno" onsubmit="guardarEdicionAlumno(event)">
+            <form id="formEditarAlumno">
                 <input type="hidden" id="editAlumnoId">
                 <div class="modal-body">
                     <div class="mb-4">
                         <label class="modal-label">Nombre Completo</label>
                         <div class="modal-input-wrapper">
                             <i class="fas fa-user"></i>
-                            <input type="text" id="editNombreAlumno" class="form-control" required>
+                            <input type="text" id="editNombreAlumno" class="form-control" readonly required>
                         </div>
                     </div>
                     
@@ -621,28 +621,28 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
                             <label class="modal-label">Teléfono de contacto</label>
                             <div class="modal-input-wrapper">
                                 <i class="fas fa-phone"></i>
-                                <input type="tel" id="editTelefonoAlumno" class="form-control" placeholder="+34 600 000 000">
+                                <input type="tel" id="editTelefonoAlumno" class="form-control" placeholder="+34 600 000 000" readonly>
                             </div>
                         </div>
                         <div class="col-md-6 mb-4">
                             <label class="modal-label">Persona de contacto</label>
                             <div class="modal-input-wrapper">
                                 <i class="fas fa-user-friends"></i>
-                                <input type="text" id="editContactoAlumno" class="form-control" placeholder="Ej: Madre / Tutor">
+                                <input type="text" id="editContactoAlumno" class="form-control" placeholder="Ej: Madre / Tutor" readonly>
                             </div>
                         </div>
                     </div>
                     
                     <div class="mb-4">
                         <label class="modal-label">Salud / Alergias</label>
-                        <textarea id="editAlergiasAlumno" class="form-control" rows="2" style="border-radius:16px; border:1px solid #e2e8f0; padding:12px; background:#f8fafc; transition:0.3s;"></textarea>
+                        <textarea id="editAlergiasAlumno" class="form-control" rows="2" style="border-radius:16px; border:1px solid #e2e8f0; padding:12px; background:#f8fafc; transition:0.3s;" readonly></textarea>
                     </div>
                     <div class="mb-4">
                         <label class="modal-label">Observaciones</label>
-                        <textarea id="editObsAlumno" class="form-control" rows="2" style="border-radius:16px; border:1px solid #e2e8f0; padding:12px; background:#f8fafc; transition:0.3s;"></textarea>
+                        <textarea id="editObsAlumno" class="form-control" rows="2" style="border-radius:16px; border:1px solid #e2e8f0; padding:12px; background:#f8fafc; transition:0.3s;" readonly></textarea>
                     </div>
                     
-                    <div class="mb-2 p-3 text-center" style="background: rgba(15, 23, 42, 0.02); border-radius: 20px;">
+                    <div class="mb-2 p-3 text-center" id="contenedorIconosEditar" style="background: rgba(15, 23, 42, 0.02); border-radius: 20px; display:none;">
                         <label class="modal-label mb-3">Actualizar Avatar</label>
                         <input type="hidden" id="editFotoAlumno" value="">
                         <div class="d-flex justify-content-center flex-wrap gap-3" id="lista-iconos-editar">
@@ -650,9 +650,13 @@ $fotoUsuario = isset($_SESSION['foto']) ? $_SESSION['foto'] : '../imagenes/icons
                     </div>
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
-                    <button type="button" class="btn btn-outline-danger px-4" style="border-radius:14px; font-weight:600;" onclick="eliminarAlumnoModal()">Eliminar</button>
-                    <div>
-                        <button type="button" class="btn-modal-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-outline-danger px-4" id="btnEliminarAlumno" style="border-radius:14px; font-weight:600; display:none;" onclick="eliminarAlumnoModal()">Eliminar</button>
+                    <div id="footerAccionesVista">
+                        <button type="button" class="btn-modal-secondary me-2" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn-modal-primary" id="btnActivarEdicion" onclick="activarModoEdicion()">Modificar Datos</button>
+                    </div>
+                    <div id="footerAccionesEdicion" style="display:none;">
+                        <button type="button" class="btn-modal-secondary me-2" onclick="desactivarModoEdicion()">Cancelar</button>
                         <button type="submit" class="btn-modal-primary">Guardar Cambios</button>
                     </div>
                 </div>
